@@ -25,7 +25,7 @@ public class Task: NSObject {
     public typealias FinishHandler = (_ state: State)->()
     public typealias ProgressHandler = (_ percent: Float)->()
     public typealias TaskFinishBlock = (_ state: State)->()
-    public typealias TaskWorkBlock = (_ progress: ProgressHandler, _ finish: TaskFinishBlock)->()
+    public typealias TaskWorkBlock = (_ progress: @escaping ProgressHandler, _ finish: @escaping TaskFinishBlock)->()
     
     
     
@@ -72,6 +72,11 @@ public class Task: NSObject {
     // MARK: - Control
     
     public final func start(finishHandler: FinishHandler? = nil) {
+        
+        // Pass on the finish handler
+        if let handler = finishHandler {
+            onFinish(handler)
+        }
         
         // Get on the safe queue to change our state and get started via helper
         _internalQueue.async {
