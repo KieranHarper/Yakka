@@ -1,0 +1,6 @@
+framework module Yakka {
+  umbrella header "Yakka-umbrella.h"
+
+  export *
+  module * { export * }
+}

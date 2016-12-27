@@ -1,6 +1,0 @@
-use_frameworks!
-target 'Yakka_Tests' do
-  pod 'Yakka', :path => '../'
-  
-  ${INCLUDED_PODS}
-end
