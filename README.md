@@ -20,6 +20,19 @@ it, simply add the following line to your Podfile:
 pod "Yakka"
 ```
 
+## Examples
+
+(bare minimum example case)
+
+(providing handlers)
+(providing handlers in advance vs on start)
+
+(advanced configuration)
+
+(custom subclasses for encapsulating work details for reuse)
+
+
+
 ## Author
 
 Kieran Harper, kieranjharper@gmail.com
