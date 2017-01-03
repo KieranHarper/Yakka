@@ -31,18 +31,18 @@ public class Task: NSObject {
     
     // MARK: - Properties
     
-    public private(set) var identifier = UUID().uuidString
-    public lazy var queueForWork: DispatchQueue = DispatchQueue(label: "TaskWork", attributes: .concurrent)
-    public var queueForFeedback = DispatchQueue.main
+    public final private(set) var identifier = UUID().uuidString
+    public final var queueForWork: DispatchQueue = DispatchQueue(label: "TaskWork", attributes: .concurrent)
+    public final var queueForFeedback = DispatchQueue.main
+    public final private(set) var currentState = State.notStarted
     
-    private var _internalQueue: DispatchQueue!
-    private var _currentState = State.notStarted
+    private let _internalQueue = DispatchQueue(label: "TaskInternal")
     private var _workToDo: TaskWorkBlock?
     private var _startHandler: (()->())?
     private var _progressHandler: ProgressHandler?
     private var _finishHandler: FinishHandler?
     
-    static var _cachedTasks = Dictionary<String, Task>()
+    static private var _cachedTasks = Dictionary<String, Task>()
     
     
     
@@ -63,8 +63,15 @@ public class Task: NSObject {
     }
     
     private func setupTask(workBlock: TaskWorkBlock?) {
-        _internalQueue = DispatchQueue(label: "TaskInternal")
-        _workToDo = workBlock
+        if let work = workBlock {
+            workToDo(workBlock: work)
+        }
+    }
+    
+    public final func workToDo(workBlock: @escaping TaskWorkBlock) {
+        _internalQueue.async {
+            self._workToDo = workBlock
+        }
     }
     
     
@@ -105,7 +112,10 @@ public class Task: NSObject {
     
     public final func cancel() {
         _internalQueue.async { [weak self] in
-            self?._currentState = .cancelling
+            guard let selfRef = self else { return }
+            if selfRef.currentState == .running {
+                selfRef.currentState = .cancelling
+            }
         }
     }
     
@@ -137,6 +147,9 @@ public class Task: NSObject {
     
     private func doStart() {
         
+        // Only allowed to do this if we haven't been run yet
+        guard currentState == .notStarted else { return }
+        
         // Retain ourself and cache for retrieval later
         Task._cachedTasks[identifier] = self
         
@@ -147,7 +160,7 @@ public class Task: NSObject {
         }
         
         // Change the state to running just before we do anything
-        self._currentState = .running
+        self.currentState = .running
         
         // Actually start the work on the worker queue
         self.queueForWork.sync {
@@ -173,11 +186,11 @@ public class Task: NSObject {
     private func doFinish(withFinalState state: State) {
         
         // Change the state
-        self._currentState = state
+        self.currentState = state
         
         // Now get on the feedback queue to finish up
         self.queueForFeedback.sync {
-            self._finishHandler?(self._currentState)
+            self._finishHandler?(self.currentState)
         }
         
         // Remove ourself from the cache / stop retaining self
