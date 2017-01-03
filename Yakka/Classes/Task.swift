@@ -38,9 +38,9 @@ public class Task: NSObject {
     
     private let _internalQueue = DispatchQueue(label: "TaskInternal")
     private var _workToDo: TaskWorkBlock?
-    private var _startHandler: (()->())?
-    private var _progressHandler: ProgressHandler?
-    private var _finishHandler: FinishHandler?
+    private var _startHandlers = Array<(()->())>()
+    private var _progressHandlers = Array<ProgressHandler>()
+    private var _finishHandlers = Array<FinishHandler>()
     
     static private var _cachedTasks = Dictionary<String, Task>()
     
@@ -125,19 +125,19 @@ public class Task: NSObject {
     
     public final func onStart(_ handler: @escaping ()->()) {
         _internalQueue.async { [weak self] in
-            self?._startHandler = handler
+            self?._startHandlers.append(handler)
         }
     }
     
     public final func onProgress(_ handler: @escaping ProgressHandler) {
         _internalQueue.async { [weak self] in
-            self?._progressHandler = handler
+            self?._progressHandlers.append(handler)
         }
     }
     
     public final func onFinish(_ handler: @escaping FinishHandler) {
         _internalQueue.async { [weak self] in
-            self?._finishHandler = handler
+            self?._finishHandlers.append(handler)
         }
     }
     
@@ -165,9 +165,11 @@ public class Task: NSObject {
         // Actually start the work on the worker queue
         self.queueForWork.sync {
             work({ (percent) in
-                if let handler = self._progressHandler {
+                if self._progressHandlers.count > 0 {
                     self.queueForFeedback.async {
-                        handler(percent)
+                        for feedback in self._progressHandlers {
+                            feedback(percent)
+                        }
                     }
                 }
             }, { (outcome) in
@@ -176,9 +178,11 @@ public class Task: NSObject {
         }
         
         // If needed, provide feedback about the fact we've started
-        if let feedback = self._startHandler {
+        if self._startHandlers.count > 0 {
             queueForFeedback.async {
-                feedback()
+                for feedback in self._startHandlers {
+                    feedback()
+                }
             }
         }
     }
@@ -189,8 +193,12 @@ public class Task: NSObject {
         self.currentState = state
         
         // Now get on the feedback queue to finish up
-        self.queueForFeedback.sync {
-            self._finishHandler?(self.currentState)
+        if self._finishHandlers.count > 0 {
+            self.queueForFeedback.sync {
+                for feedback in self._finishHandlers {
+                    feedback(self.currentState)
+                }
+            }
         }
         
         // Remove ourself from the cache / stop retaining self
