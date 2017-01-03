@@ -189,6 +189,9 @@ public class Task: NSObject {
     
     private func doFinish(withFinalState state: State) {
         
+        // Don't do anything if we've already finished
+        guard currentState != .successful, currentState != .failed, currentState != .cancelled else { return }
+        
         // Change the state
         self.currentState = state
         

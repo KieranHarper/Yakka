@@ -83,6 +83,7 @@ public class MultiTask: Task {
             } else {
                 _finishBlock?(.successful)
             }
+            _finishBlock = nil
         }
     }
     
