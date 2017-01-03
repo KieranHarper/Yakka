@@ -17,7 +17,7 @@ public class MultiTask: Task {
     private var _pendingTasks = Array<Task>()
     private var _runningTasks = Array<Task>()
     private var _finishedTasks = Array<Task>()
-    private let _internalQueue = DispatchQueue(label: "MultiTaskInternal")
+    private let _internalQueue = DispatchQueue(label: "YakkaMultiTaskInternal")
     fileprivate var _maxParallelTasks = 0 // (0 == unlimited)
     private var _finishBlock: TaskFinishBlock?
     

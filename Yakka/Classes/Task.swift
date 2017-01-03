@@ -32,11 +32,11 @@ public class Task: NSObject {
     // MARK: - Properties
     
     public final private(set) var identifier = UUID().uuidString
-    public final var queueForWork: DispatchQueue = DispatchQueue(label: "TaskWork", attributes: .concurrent)
+    public final var queueForWork: DispatchQueue = DispatchQueue(label: "YakkaWorkQueue", attributes: .concurrent)
     public final var queueForFeedback = DispatchQueue.main
     public final private(set) var currentState = State.notStarted
     
-    private let _internalQueue = DispatchQueue(label: "TaskInternal")
+    private let _internalQueue = DispatchQueue(label: "YakkaTaskInternal")
     private var _workToDo: TaskWorkBlock?
     private var _startHandlers = Array<(()->())>()
     private var _progressHandlers = Array<ProgressHandler>()
