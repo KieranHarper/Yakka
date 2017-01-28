@@ -28,13 +28,41 @@ public class Task: NSObject {
     
     public typealias ResultPasser = (_ result: Result)->()
     
-    // Handlers passed to Task's work block while running
+    // Helper object to give to work blocks so they can wrap things up and respond to cancellation
+    public class Process {
+        
+        private let task: Task
+        
+        public var shouldCancel: Bool {
+            return task.currentState == .cancelling
+        }
+        
+        init(task: Task) {
+            self.task = task
+        }
+        
+        public func progress(_ percent: Float) {
+            task.reportProgress(percent)
+        }
+        
+        public func succeed() {
+            task.finish(withResult: .successful)
+        }
+        
+        public func cancel() {
+            task.finish(withResult: .cancelled)
+        }
+        
+        public func fail() {
+            task.finish(withResult: .failed)
+        }
+    }
+    
+    public typealias TaskWorkBlock = (_ process: Process)->()
+    
+    // Handler types for reporting about the process
     public typealias FinishHandler = ResultPasser
     public typealias ProgressHandler = (_ percent: Float)->()
-    
-    // Handlers passed to Task to configure it ahead of running
-    public typealias TaskFinishBlock = ResultPasser
-    public typealias TaskWorkBlock = (_ progress: @escaping ProgressHandler, _ finish: @escaping TaskFinishBlock)->()
     
     
     
@@ -173,17 +201,7 @@ public class Task: NSObject {
         
         // Actually start the work on the worker queue
         self.queueForWork.sync {
-            work({ (percent) in
-                if self._progressHandlers.count > 0 {
-                    self.queueForFeedback.async {
-                        for feedback in self._progressHandlers {
-                            feedback(percent)
-                        }
-                    }
-                }
-            }, { (outcome) in
-                self.finish(withResult: outcome)
-            })
+            work(Process(task: self))
         }
         
         // If needed, provide feedback about the fact we've started
@@ -220,6 +238,16 @@ public class Task: NSObject {
     
     
     // MARK: - Private (ON ANY)
+    
+    private func reportProgress(_ percent: Float) {
+        if self._progressHandlers.count > 0 {
+            self.queueForFeedback.async {
+                for feedback in self._progressHandlers {
+                    feedback(percent)
+                }
+            }
+        }
+    }
     
     private func finish(withResult result: Result) {
         

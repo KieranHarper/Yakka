@@ -19,7 +19,7 @@ public class MultiTask: Task {
     private var _finishedTasks = Array<Task>()
     private let _internalQueue = DispatchQueue(label: "YakkaMultiTaskInternal")
     fileprivate var _maxParallelTasks = 0 // (0 == unlimited)
-    private var _finishBlock: TaskFinishBlock?
+    private var _overallProcess: Process?
     
     // TODO: overall progress tracking...
     
@@ -28,10 +28,10 @@ public class MultiTask: Task {
     
     public init(withTasks tasks: [Task]) {
         super.init()
-        workToDo { (_, finish) in
+        workToDo { (process) in
             
             // Start executing tasks
-            self._finishBlock = finish
+            self._overallProcess = process
             self._allTasks = tasks
             self._pendingTasks = tasks
             self.processSubtasks()
@@ -79,11 +79,11 @@ public class MultiTask: Task {
             
             // Consider whether or not we're here because all our tasks were actually cancelling
             if currentState == .cancelling {
-                _finishBlock?(.cancelled)
+                _overallProcess?.cancel()
             } else {
-                _finishBlock?(.successful)
+                _overallProcess?.succeed()
             }
-            _finishBlock = nil
+            _overallProcess = nil
         }
     }
     
@@ -113,7 +113,7 @@ public class MultiTask: Task {
             for running in _runningTasks {
                 running.cancel()
             }
-            _finishBlock?(.failed)
+            _overallProcess?.fail()
             return
         }
         
