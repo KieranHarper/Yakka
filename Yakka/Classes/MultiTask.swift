@@ -103,7 +103,7 @@ public class MultiTask: Task {
         task.start()
     }
     
-    private func subtaskFinished(_ task: Task, withOutcome outcome: State) {
+    private func subtaskFinished(_ task: Task, withOutcome outcome: Result) {
         
         // Put it in the finished pile
         move(subtask: task, fromCollection: &_runningTasks, toCollection: &_finishedTasks)

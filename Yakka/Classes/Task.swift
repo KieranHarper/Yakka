@@ -22,9 +22,18 @@ public class Task: NSObject {
         case successful, cancelled, failed
     }
     
-    public typealias FinishHandler = (_ state: State)->()
+    public enum Result {
+        case successful, cancelled, failed
+    }
+    
+    public typealias ResultPasser = (_ result: Result)->()
+    
+    // Handlers passed to Task's work block while running
+    public typealias FinishHandler = ResultPasser
     public typealias ProgressHandler = (_ percent: Float)->()
-    public typealias TaskFinishBlock = (_ state: State)->()
+    
+    // Handlers passed to Task to configure it ahead of running
+    public typealias TaskFinishBlock = ResultPasser
     public typealias TaskWorkBlock = (_ progress: @escaping ProgressHandler, _ finish: @escaping TaskFinishBlock)->()
     
     
@@ -91,7 +100,7 @@ public class Task: NSObject {
         }
     }
     
-    public final func start(afterTask task: Task, finishesWith allowedOutcomes: [State] = [], finishHandler: FinishHandler? = nil) {
+    public final func start(afterTask task: Task, finishesWith allowedOutcomes: [Result] = [], finishHandler: FinishHandler? = nil) {
         
         // (where empty means any state)
         
@@ -105,7 +114,7 @@ public class Task: NSObject {
                 
                 // Otherwise finish by passing on the dependent's outcome
             else {
-                self.finish(withFinalState: outcome)
+                self.finish(withResult: outcome)
             }
         }
     }
@@ -155,7 +164,7 @@ public class Task: NSObject {
         
         // Ensure we actually have work to do, fail otherwise
         guard let work = _workToDo else {
-            finish(withFinalState: .failed)
+            finish(withResult: .failed)
             return
         }
         
@@ -173,7 +182,7 @@ public class Task: NSObject {
                     }
                 }
             }, { (outcome) in
-                self.finish(withFinalState: outcome)
+                self.finish(withResult: outcome)
             })
         }
         
@@ -187,19 +196,19 @@ public class Task: NSObject {
         }
     }
     
-    private func doFinish(withFinalState state: State) {
+    private func doFinish(withResult result: Result) {
         
         // Don't do anything if we've already finished
         guard currentState != .successful, currentState != .failed, currentState != .cancelled else { return }
         
         // Change the state
-        self.currentState = state
+        self.currentState = stateFromResult(result)
         
         // Now get on the feedback queue to finish up
         if self._finishHandlers.count > 0 {
             self.queueForFeedback.sync {
                 for feedback in self._finishHandlers {
-                    feedback(self.currentState)
+                    feedback(result)
                 }
             }
         }
@@ -212,11 +221,22 @@ public class Task: NSObject {
     
     // MARK: - Private (ON ANY)
     
-    private func finish(withFinalState state: State) {
+    private func finish(withResult result: Result) {
         
         // Get on the safe queue and change the state
         _internalQueue.async {
-            self.doFinish(withFinalState: state)
+            self.doFinish(withResult: result)
+        }
+    }
+    
+    private func stateFromResult(_ result: Result) -> State {
+        switch result {
+        case .successful:
+            return .successful
+        case .cancelled:
+            return .cancelled
+        case .failed:
+            return .failed
         }
     }
     
