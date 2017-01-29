@@ -70,7 +70,9 @@ public class Task: NSObject {
     
     public final private(set) var identifier = UUID().uuidString
     public final var queueForWork: DispatchQueue = DispatchQueue(label: "YakkaWorkQueue", attributes: .concurrent)
-    public final var queueForFeedback = DispatchQueue.main
+    public final var queueForStartFeedback = DispatchQueue.main
+    public final var queueForProgressFeedback = DispatchQueue.main
+    public final var queueForFinishFeedback = DispatchQueue.main
     public final private(set) var currentState = State.notStarted
     
     private let _internalQueue = DispatchQueue(label: "YakkaTaskInternal")
@@ -206,7 +208,7 @@ public class Task: NSObject {
         
         // If needed, provide feedback about the fact we've started
         if self._startHandlers.count > 0 {
-            queueForFeedback.async {
+            queueForStartFeedback.async {
                 for feedback in self._startHandlers {
                     feedback()
                 }
@@ -224,7 +226,7 @@ public class Task: NSObject {
         
         // Now get on the feedback queue to finish up
         if self._finishHandlers.count > 0 {
-            self.queueForFeedback.sync {
+            self.queueForFinishFeedback.sync {
                 for feedback in self._finishHandlers {
                     feedback(result)
                 }
@@ -241,7 +243,7 @@ public class Task: NSObject {
     
     private func reportProgress(_ percent: Float) {
         if self._progressHandlers.count > 0 {
-            self.queueForFeedback.async {
+            self.queueForProgressFeedback.async {
                 for feedback in self._progressHandlers {
                     feedback(percent)
                 }
