@@ -134,7 +134,7 @@ public class Task: NSObject {
         
         // Pass on the finish handler
         if let handler = finishHandler {
-            onFinish(handler)
+            onFinish(via: nil, handler: handler)
         }
         
         // Get on the safe queue to change our state and get started via helper
@@ -175,49 +175,25 @@ public class Task: NSObject {
     
     // MARK: - Feedback
     
-    public final func onStart(_ handler: @escaping ()->()) {
-        _internalQueue.async { [weak self] in
-            self?._startHandlers.append((handler, nil))
-        }
-    }
-    
-    public final func onStart(via queue: DispatchQueue, handler: @escaping ()->()) {
+    public final func onStart(via queue: DispatchQueue? = nil, handler: @escaping ()->()) {
         _internalQueue.async { [weak self] in
             self?._startHandlers.append((handler, queue))
         }
     }
     
-    public final func onProgress(_ handler: @escaping ProgressHandler) {
-        _internalQueue.async { [weak self] in
-            self?._progressHandlers.append((handler, nil))
-        }
-    }
-    
-    public final func onProgress(via queue: DispatchQueue, handler: @escaping ProgressHandler) {
+    public final func onProgress(via queue: DispatchQueue? = nil, handler: @escaping ProgressHandler) {
         _internalQueue.async { [weak self] in
             self?._progressHandlers.append((handler, queue))
         }
     }
     
-    public final func onFinish(_ handler: @escaping FinishHandler) {
-        _internalQueue.async { [weak self] in
-            self?._finishHandlers.append((handler, nil))
-        }
-    }
-    
-    public final func onFinish(via queue: DispatchQueue, handler: @escaping FinishHandler) {
+    public final func onFinish(via queue: DispatchQueue? = nil, handler: @escaping FinishHandler) {
         _internalQueue.async { [weak self] in
             self?._finishHandlers.append((handler, queue))
         }
     }
     
-    public final func onRetry(_ handler: @escaping ()->()) {
-        _internalQueue.async { [weak self] in
-            self?._retryHandlers.append((handler, nil))
-        }
-    }
-    
-    public final func onRetry(via queue: DispatchQueue, handler: @escaping ()->()) {
+    public final func onRetry(via queue: DispatchQueue? = nil, handler: @escaping ()->()) {
         _internalQueue.async { [weak self] in
             self?._retryHandlers.append((handler, queue))
         }
