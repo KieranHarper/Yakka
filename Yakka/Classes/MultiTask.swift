@@ -20,8 +20,7 @@ public class MultiTask: Task {
     private let _internalQueue = DispatchQueue(label: "YakkaMultiTaskInternal")
     fileprivate var _maxParallelTasks = 0 // (0 == unlimited)
     private var _overallProcess: Process?
-    
-    // TODO: overall progress tracking...
+    private var _taskProgressions = Dictionary<String, Float>()
     
     
     // MARK: - Lifecycle
@@ -91,6 +90,13 @@ public class MultiTask: Task {
         
         // Move from pending into running
         move(subtask: task, fromCollection: &_pendingTasks, toCollection: &_runningTasks)
+        
+        // Handle progress, by accumulating the percentages of all tasks (they're equally weighted)
+        task.onProgress(via: _internalQueue) { (percent) in
+            self._taskProgressions[task.identifier] = percent
+            let overallPercent = self._taskProgressions.reduce(0.0, { $0 + $1.value }) / Float(self._allTasks.count)
+            self._overallProcess?.progress(overallPercent)
+        }
         
         // Schedule completion
         task.onFinish { (outcome) in
