@@ -53,7 +53,7 @@ public class Task: NSObject {
         }
         
         public func fail() {
-            _task?.finish(withOutcome: .failure)
+            _task?.failOrRetry()
         }
     }
     
@@ -63,7 +63,7 @@ public class Task: NSObject {
     public typealias StartHandler = ()->()
     public typealias FinishHandler = (_ outcome: Outcome)->()
     public typealias ProgressHandler = (_ percent: Float)->()
-    
+    public typealias RetryHandler = StartHandler
     
     
     
@@ -74,6 +74,16 @@ public class Task: NSObject {
     public final var queueForStartFeedback = DispatchQueue.main
     public final var queueForProgressFeedback = DispatchQueue.main
     public final var queueForFinishFeedback = DispatchQueue.main
+    public final var queueForRetryFeedback = DispatchQueue.main
+    public final var retryWaitTimeline: [TimeInterval]? { // delays to use between retry attempts, if appropriate
+        didSet {
+            if let timeline = retryWaitTimeline {
+                _retryConfig = TaskRetryHelper(waitTimeline: timeline)
+            } else {
+                _retryConfig = nil
+            }
+        }
+    }
     public final private(set) var currentState = State.notStarted
     
     private let _internalQueue = DispatchQueue(label: "YakkaTaskInternal")
@@ -81,6 +91,8 @@ public class Task: NSObject {
     private var _startHandlers = Array<(StartHandler, DispatchQueue?)>()
     private var _progressHandlers = Array<(ProgressHandler, DispatchQueue?)>()
     private var _finishHandlers = Array<(FinishHandler, DispatchQueue?)>()
+    private var _retryHandlers = Array<(RetryHandler, DispatchQueue?)>()
+    private var _retryConfig: TaskRetryHelper?
     
     static private var _cachedTasks = Dictionary<String, Task>()
     
@@ -199,6 +211,18 @@ public class Task: NSObject {
         }
     }
     
+    public final func onRetry(_ handler: @escaping ()->()) {
+        _internalQueue.async { [weak self] in
+            self?._retryHandlers.append((handler, nil))
+        }
+    }
+    
+    public final func onRetry(via queue: DispatchQueue, handler: @escaping ()->()) {
+        _internalQueue.async { [weak self] in
+            self?._retryHandlers.append((handler, queue))
+        }
+    }
+    
     
     
     // MARK: - Private (ON INTERNAL)
@@ -277,6 +301,44 @@ public class Task: NSObject {
         Task._cachedTasks[identifier] = nil
     }
     
+    private func doRetry() {
+        
+        // Only allowed to do this if we're currently running
+        guard currentState == .running else { return }
+        
+        // Ensure we actually have work to do, fail otherwise
+        guard let work = _workToDo else {
+            finish(withOutcome: .failure)
+            return
+        }
+        
+        // Actually restart the work on the worker queue
+        let retryHandlers = self._retryHandlers
+        self.queueForWork.sync {
+            
+            // If needed, provide feedback about the fact we've restarted
+            if retryHandlers.count > 0 {
+                queueForRetryFeedback.async {
+                    for feedback in retryHandlers {
+                        
+                        // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
+                        let handler = feedback.0
+                        if let customQueue = feedback.1 {
+                            customQueue.async {
+                                handler()
+                            }
+                        } else {
+                            handler()
+                        }
+                    }
+                }
+            }
+            
+            // OK GO
+            work(Process(task: self))
+        }
+    }
+    
     
     
     // MARK: - Private (ON ANY)
@@ -308,6 +370,21 @@ public class Task: NSObject {
         }
     }
     
+    private func failOrRetry() {
+        
+        // Can only retry if we have a config, and it's up to that to decide if we've maxxed out the retries
+        // NOTE: these handlers are gonna run straight on internal
+        if let config = _retryConfig {
+            config.retryOrNah(queue: _internalQueue, retry: {
+                self.doRetry()
+            }, nah: {
+                self.doFinish(withOutcome: .failure)
+            })
+        } else {
+            finish(withOutcome: .failure)
+        }
+    }
+    
     private func stateFromOutcome(_ outcome: Outcome) -> State {
         switch outcome {
         case .success:
@@ -318,6 +395,4 @@ public class Task: NSObject {
             return .failed
         }
     }
-    
-    // TODO: Add autoretry capabilities
 }

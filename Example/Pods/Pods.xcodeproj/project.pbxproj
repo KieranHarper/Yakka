@@ -63,6 +63,7 @@
 		8654571F855691C23B7B8E61B2141944 /* EndWith.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5058B4852C449730EE28E5F2CD349B24 /* EndWith.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		86FFB76B2EDCF4AE79CC4C0BD8A0FE9A /* DSL+Wait.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DAB46B24EC3101A9C139178DD3C5F2 /* DSL+Wait.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		87DD62F200DAB5E1D701AB9F94D1D422 /* CwlCatchException.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BB1FA4E1DD555F459E31D6ECB9DB70C /* CwlCatchException.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		89622A691E3DD4470097807E /* TaskRetryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89622A671E3DD4430097807E /* TaskRetryHelper.swift */; };
 		897134EF1E123CDD00A577D5 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 897134EE1E123CDD00A577D5 /* Task.swift */; };
 		897134F11E123D0D00A577D5 /* MultiTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 897134F01E123D0D00A577D5 /* MultiTask.swift */; };
 		8A99C06BA15C96FBB11CA7B06977CAF4 /* NSBundle+CurrentTestBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C81E409DD20CA59AA8A9A08E2B0B1B5F /* NSBundle+CurrentTestBundle.swift */; };
@@ -209,6 +210,7 @@
 		856B2E5E4EC8E2BD9ED45AAD6930A672 /* NMBStringify.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = NMBStringify.m; path = Sources/NimbleObjectiveC/NMBStringify.m; sourceTree = "<group>"; };
 		86806CF3A6F7FB54DF0EEB9134380E4E /* NMBExceptionCapture.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = NMBExceptionCapture.m; path = Sources/NimbleObjectiveC/NMBExceptionCapture.m; sourceTree = "<group>"; };
 		88A9381D91255401863A2174DDDDC0A3 /* Nimble-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Nimble-prefix.pch"; sourceTree = "<group>"; };
+		89622A671E3DD4430097807E /* TaskRetryHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskRetryHelper.swift; sourceTree = "<group>"; };
 		897134EE1E123CDD00A577D5 /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 		897134F01E123D0D00A577D5 /* MultiTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiTask.swift; sourceTree = "<group>"; };
 		8BD3BF5EB0A249E68523B43B6402EA1C /* World.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = World.swift; path = Sources/Quick/World.swift; sourceTree = "<group>"; };
@@ -494,6 +496,7 @@
 			children = (
 				897134EE1E123CDD00A577D5 /* Task.swift */,
 				897134F01E123D0D00A577D5 /* MultiTask.swift */,
+				89622A671E3DD4430097807E /* TaskRetryHelper.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -829,6 +832,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				897134F11E123D0D00A577D5 /* MultiTask.swift in Sources */,
+				89622A691E3DD4470097807E /* TaskRetryHelper.swift in Sources */,
 				897134EF1E123CDD00A577D5 /* Task.swift in Sources */,
 				3918CB0660587D14AEE1FE0DDA91D36C /* Yakka-dummy.m in Sources */,
 			);
