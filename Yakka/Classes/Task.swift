@@ -57,11 +57,13 @@ public class Task: NSObject {
         }
     }
     
-    public typealias TaskWorkBlock = (_ process: Process)->()
+    public typealias TaskWorkClosure = (_ process: Process)->()
     
     // Handler types for reporting about the process
+    public typealias StartHandler = ()->()
     public typealias FinishHandler = (_ outcome: Outcome)->()
     public typealias ProgressHandler = (_ percent: Float)->()
+    
     
     
     
@@ -75,10 +77,10 @@ public class Task: NSObject {
     public final private(set) var currentState = State.notStarted
     
     private let _internalQueue = DispatchQueue(label: "YakkaTaskInternal")
-    private var _workToDo: TaskWorkBlock?
-    private var _startHandlers = Array<(()->())>()
-    private var _progressHandlers = Array<ProgressHandler>()
-    private var _finishHandlers = Array<FinishHandler>()
+    private var _workToDo: TaskWorkClosure?
+    private var _startHandlers = Array<(StartHandler, DispatchQueue?)>()
+    private var _progressHandlers = Array<(ProgressHandler, DispatchQueue?)>()
+    private var _finishHandlers = Array<(FinishHandler, DispatchQueue?)>()
     
     static private var _cachedTasks = Dictionary<String, Task>()
     
@@ -95,18 +97,18 @@ public class Task: NSObject {
         return _cachedTasks[identifier]
     }
     
-    public init(withWork workBlock: @escaping TaskWorkBlock) {
+    public init(withWork workBlock: @escaping TaskWorkClosure) {
         super.init()
         setupTask(workBlock: workBlock)
     }
     
-    private func setupTask(workBlock: TaskWorkBlock?) {
+    private func setupTask(workBlock: TaskWorkClosure?) {
         if let work = workBlock {
             workToDo(work)
         }
     }
     
-    public final func workToDo(_ workBlock: @escaping TaskWorkBlock) {
+    public final func workToDo(_ workBlock: @escaping TaskWorkClosure) {
         _internalQueue.async {
             self._workToDo = workBlock
         }
@@ -163,19 +165,37 @@ public class Task: NSObject {
     
     public final func onStart(_ handler: @escaping ()->()) {
         _internalQueue.async { [weak self] in
-            self?._startHandlers.append(handler)
+            self?._startHandlers.append((handler, nil))
+        }
+    }
+    
+    public final func onStart(via queue: DispatchQueue, handler: @escaping ()->()) {
+        _internalQueue.async { [weak self] in
+            self?._startHandlers.append((handler, queue))
         }
     }
     
     public final func onProgress(_ handler: @escaping ProgressHandler) {
         _internalQueue.async { [weak self] in
-            self?._progressHandlers.append(handler)
+            self?._progressHandlers.append((handler, nil))
+        }
+    }
+    
+    public final func onProgress(via queue: DispatchQueue, handler: @escaping ProgressHandler) {
+        _internalQueue.async { [weak self] in
+            self?._progressHandlers.append((handler, queue))
         }
     }
     
     public final func onFinish(_ handler: @escaping FinishHandler) {
         _internalQueue.async { [weak self] in
-            self?._finishHandlers.append(handler)
+            self?._finishHandlers.append((handler, nil))
+        }
+    }
+    
+    public final func onFinish(via queue: DispatchQueue, handler: @escaping FinishHandler) {
+        _internalQueue.async { [weak self] in
+            self?._finishHandlers.append((handler, queue))
         }
     }
     
@@ -209,7 +229,16 @@ public class Task: NSObject {
         if self._startHandlers.count > 0 {
             queueForStartFeedback.async {
                 for feedback in self._startHandlers {
-                    feedback()
+                    
+                    // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
+                    let handler = feedback.0
+                    if let customQueue = feedback.1 {
+                        customQueue.async {
+                            handler()
+                        }
+                    } else {
+                        handler()
+                    }
                 }
             }
         }
@@ -227,7 +256,16 @@ public class Task: NSObject {
         if self._finishHandlers.count > 0 {
             self.queueForFinishFeedback.sync {
                 for feedback in self._finishHandlers {
-                    feedback(outcome)
+                    
+                    // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
+                    let handler = feedback.0
+                    if let customQueue = feedback.1 {
+                        customQueue.async {
+                            handler(outcome)
+                        }
+                    } else {
+                        handler(outcome)
+                    }
                 }
             }
         }
@@ -244,7 +282,16 @@ public class Task: NSObject {
         if self._progressHandlers.count > 0 {
             self.queueForProgressFeedback.async {
                 for feedback in self._progressHandlers {
-                    feedback(percent)
+                    
+                    // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
+                    let handler = feedback.0
+                    if let customQueue = feedback.1 {
+                        customQueue.async {
+                            handler(percent)
+                        }
+                    } else {
+                        handler(percent)
+                    }
                 }
             }
         }
