@@ -30,30 +30,30 @@ public class Task: NSObject {
     // Helper object to give to work blocks so they can wrap things up and respond to cancellation
     public class Process {
         
-        private let task: Task
+        private weak var _task: Task?
         
         public var shouldCancel: Bool {
-            return task.currentState == .cancelling
+            return _task?.currentState == .cancelling
         }
         
         init(task: Task) {
-            self.task = task
+            _task = task
         }
         
         public func progress(_ percent: Float) {
-            task.reportProgress(percent)
+            _task?.reportProgress(percent)
         }
         
         public func succeed() {
-            task.finish(withOutcome: .success)
+            _task?.finish(withOutcome: .success)
         }
         
         public func cancel() {
-            task.finish(withOutcome: .cancelled)
+            _task?.finish(withOutcome: .cancelled)
         }
         
         public func fail() {
-            task.finish(withOutcome: .failure)
+            _task?.finish(withOutcome: .failure)
         }
     }
     
@@ -221,26 +221,29 @@ public class Task: NSObject {
         self.currentState = .running
         
         // Actually start the work on the worker queue
+        let startHandlers = self._startHandlers
         self.queueForWork.sync {
-            work(Process(task: self))
-        }
-        
-        // If needed, provide feedback about the fact we've started
-        if self._startHandlers.count > 0 {
-            queueForStartFeedback.async {
-                for feedback in self._startHandlers {
-                    
-                    // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
-                    let handler = feedback.0
-                    if let customQueue = feedback.1 {
-                        customQueue.async {
+            
+            // If needed, provide feedback about the fact we've started
+            if startHandlers.count > 0 {
+                queueForStartFeedback.async {
+                    for feedback in startHandlers {
+                        
+                        // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
+                        let handler = feedback.0
+                        if let customQueue = feedback.1 {
+                            customQueue.async {
+                                handler()
+                            }
+                        } else {
                             handler()
                         }
-                    } else {
-                        handler()
                     }
                 }
             }
+            
+            // OK GO
+            work(Process(task: self))
         }
     }
     
