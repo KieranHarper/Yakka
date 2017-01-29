@@ -26,7 +26,7 @@ public class MultiTask: Task {
     
     // MARK: - Lifecycle
     
-    public init(withTasks tasks: [Task]) {
+    public init(involving tasks: [Task]) {
         super.init()
         workToDo { (process) in
             
@@ -103,13 +103,13 @@ public class MultiTask: Task {
         task.start()
     }
     
-    private func subtaskFinished(_ task: Task, withOutcome outcome: Result) {
+    private func subtaskFinished(_ task: Task, withOutcome outcome: Outcome) {
         
         // Put it in the finished pile
         move(subtask: task, fromCollection: &_runningTasks, toCollection: &_finishedTasks)
         
         // If we're supposed to fail whenever an outcome isn't successful, then handle that now
-        if stopIfAnyFail, outcome != .successful {
+        if stopIfAnyFail, outcome != .success {
             for running in _runningTasks {
                 running.cancel()
             }
@@ -140,8 +140,8 @@ public class MultiTask: Task {
 // Task that serializes subtask execution so that each one waits for completion of the one before it.
 public class SerialTask: MultiTask {
     
-    public override init(withTasks tasks: [Task]) {
-        super.init(withTasks: tasks)
+    public override init(involving tasks: [Task]) {
+        super.init(involving: tasks)
         _maxParallelTasks = 1
     }
 }
