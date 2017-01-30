@@ -31,6 +31,7 @@ public class Task: NSObject {
     public class Process {
         
         private weak var _task: Task?
+        public let workQueue: DispatchQueue
         
         public var shouldCancel: Bool {
             return _task?.currentState == .cancelling
@@ -38,6 +39,7 @@ public class Task: NSObject {
         
         init(task: Task) {
             _task = task
+            workQueue = task.queueForWork
         }
         
         public func progress(_ percent: Float) {
