@@ -39,9 +39,12 @@ public class TaskRetryHelper {
     
     public class func exponentialBackoffTimeline(forMaxRetries maxRetries: Int, startingAt initialWait: TimeInterval) -> [TimeInterval] {
         var toReturn = Array<TimeInterval>()
-        toReturn.append(initialWait)
+        toReturn.append(max(initialWait, 0.0))
         for ii in 1..<maxRetries {
-            let next = toReturn[ii - 1] * 2.0
+            var next = toReturn[ii - 1] * 2.0
+            if next == 0.0 {
+                next = 1.0
+            }
             toReturn.append(next)
         }
         return toReturn
