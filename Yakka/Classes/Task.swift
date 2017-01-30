@@ -75,7 +75,7 @@ public class Task: NSObject {
     public final var queueForProgressFeedback = DispatchQueue.main
     public final var queueForFinishFeedback = DispatchQueue.main
     public final var queueForRetryFeedback = DispatchQueue.main
-    public final var retryWaitTimeline: [TimeInterval]? { // delays to use between retry attempts, if appropriate
+    public final var retryWaitTimeline: [TimeInterval]? { // delays to use between retry attempts (if any)
         didSet {
             if let timeline = retryWaitTimeline {
                 _retryConfig = TaskRetryHelper(waitTimeline: timeline)

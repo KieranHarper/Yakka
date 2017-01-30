@@ -158,7 +158,7 @@ public class SerialTask: MultiTask {
 public class ParallelTask: MultiTask {
     
     // Optional limit on the number of subtasks that can run concurrently. 0 == unlimited (the default)
-    public var maxNumberOfTasks: Int {
+    public var maxConcurrentTasks: Int {
         get {
             return _maxParallelTasks
         }
