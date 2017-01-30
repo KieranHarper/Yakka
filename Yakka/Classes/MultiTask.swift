@@ -61,11 +61,12 @@ public class MultiTask: Task {
     
     private func doProcessSubtasks() {
         
-        // Check for cancellation by passing it on to subtasks
+        // Check for cancellation by passing it on to subtasks and prevent pending ones from starting
         if currentState == .cancelling {
             for task in _allTasks {
                 task.cancel()
             }
+            _pendingTasks.removeAll()
         }
         
         // Start any tasks we can and/or have remaining
