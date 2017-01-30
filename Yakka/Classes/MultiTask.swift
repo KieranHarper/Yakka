@@ -11,7 +11,7 @@ import Foundation
 // Base class for tasks that manage the execution of a collection of tasks
 public class MultiTask: Task {
     
-    public var stopIfAnyFail = false
+    public var requireSuccessFromSubtasks = false
     
     private var _allTasks = Array<Task>()
     private var _pendingTasks = Array<Task>()
@@ -116,7 +116,7 @@ public class MultiTask: Task {
         move(subtask: task, fromCollection: &_runningTasks, toCollection: &_finishedTasks)
         
         // If we're supposed to fail whenever an outcome isn't successful, then handle that now
-        if stopIfAnyFail, outcome != .success {
+        if requireSuccessFromSubtasks, outcome != .success {
             for running in _runningTasks {
                 running.cancel()
             }
