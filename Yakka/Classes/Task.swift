@@ -97,6 +97,7 @@ public class Task: NSObject {
     private var _retryConfig: TaskRetryHelper?
     
     static private var _cachedTasks = Dictionary<String, Task>()
+    static private let _cachedTasksSafetyQueue = DispatchQueue(label: "YakkaTaskCacheSafety", attributes: .concurrent)
     
     
     
@@ -108,7 +109,11 @@ public class Task: NSObject {
     }
     
     public final class func with(ID identifier: String) -> Task? {
-        return _cachedTasks[identifier]
+        var toReturn: Task? = nil
+        _cachedTasksSafetyQueue.sync {
+            toReturn = _cachedTasks[identifier]
+        }
+        return toReturn
     }
     
     public init(withWork workBlock: @escaping TaskWorkClosure) {
@@ -211,7 +216,7 @@ public class Task: NSObject {
         guard currentState == .notStarted else { return }
         
         // Retain ourself and cache for retrieval later
-        Task._cachedTasks[identifier] = self
+        Task.cache(task: self, forID: identifier)
         
         // Ensure we actually have work to do, fail otherwise
         guard let work = _workToDo else {
@@ -276,7 +281,7 @@ public class Task: NSObject {
         }
         
         // Remove ourself from the cache / stop retaining self
-        Task._cachedTasks[identifier] = nil
+        Task.cache(task: nil, forID: identifier)
     }
     
     private func doRetry() {
@@ -371,6 +376,12 @@ public class Task: NSObject {
             return .cancelled
         case .failure:
             return .failed
+        }
+    }
+    
+    private class func cache(task: Task?, forID identifier: String) {
+        _cachedTasksSafetyQueue.async(flags: .barrier) {
+            _cachedTasks[identifier] = task
         }
     }
 }
