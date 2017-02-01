@@ -96,6 +96,7 @@ public class Task: NSObject {
     private var _finishHandlers = Array<(FinishHandler, DispatchQueue?)>()
     private var _retryHandlers = Array<(RetryHandler, DispatchQueue?)>()
     private var _retryConfig: TaskRetryHelper?
+    private var _strongSelfWhileWaitingForDependencyToFinish: Task? // only used in start() for dependent tasks
     
     static private var _cachedTasks = Dictionary<String, Task>()
     static private let _cachedTasksSafetyQueue = DispatchQueue(label: "YakkaTaskCacheSafety", attributes: .concurrent)
@@ -148,6 +149,9 @@ public class Task: NSObject {
         // Get on the safe queue to change our state and get started via helper
         _internalQueue.async {
             self.internalStart()
+            
+            // Stop retaining ourself if we were (applies only to the dependent task not finishing yet case)
+            self._strongSelfWhileWaitingForDependencyToFinish = nil
         }
     }
     
@@ -155,26 +159,38 @@ public class Task: NSObject {
         
         // (where empty means any state)
         
+        // Deliberately retain ourself so that we can go out of scope even though we're not running until the dependency finishes, without actually retaining ourself in the onFinish handler. This is done so that we can be cancelled and clean up when we haven't had a chance to run yet (special case for dependent tasks).
+        _internalQueue.async {
+            self._strongSelfWhileWaitingForDependencyToFinish = self
+        }
+        
         // Just attach to the dependent task's finish
-        task.onFinish { (outcome) in
+        task.onFinish { [weak self] (outcome) in
             
             // Start us if the state falls within one of our options
             if allowedOutcomes.isEmpty || allowedOutcomes.contains(outcome) {
-                self.start(onFinish: finishHandler)
+                self?.start(onFinish: finishHandler)
             }
                 
                 // Otherwise finish by passing on the dependent's outcome
             else {
-                self.finish(withOutcome: outcome)
+                self?.finish(withOutcome: outcome)
             }
+            
+            self?._strongSelfWhileWaitingForDependencyToFinish = nil
         }
     }
     
     public final func cancel() {
         _internalQueue.async {
+            
+            // Change the state
             if self.currentState == .running {
                 self.currentState = .cancelling
             }
+            
+            // Stop retaining ourself if we were (applies only to the dependent task not finishing yet case)
+            self._strongSelfWhileWaitingForDependencyToFinish = nil
         }
     }
     
