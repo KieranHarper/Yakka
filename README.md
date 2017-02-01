@@ -12,11 +12,9 @@ Yakka is a toolkit for coordinating the doing of stuff. Here's what it does:
 - Allows any number of interested parties to listen/track the progress and outcome of background work.
 - Gives fine control over the GCD queues involved if required.
 
-Yakka is designed for throwaway code you just need run asynchronously in the background, as well as for creating reusable task classes that encapsulate less trivial processes.
+Yakka is designed for throwaway code you just need run asynchronously in the background, as well as for creating reusable task classes that encapsulate less trivial processes. There are many different ways of tackling this kind of thing – hopefully this one works for you!
 
-There are many different ways of tackling this kind of thing – hopefully this one works for you!
-
-Some details:
+#### Some details:
 - Task class is a building block.
 - Has sensible defaults tuned for casual use.
 - Provide the work to do via a closure.
@@ -33,11 +31,11 @@ Some details:
 - Use SerialTask for a similar objective except the order matters and they execute one after another.
 - Task instances are single shot – they can't be run again after they finish.
 
-Lifecycle of a Yakka Task:
-- Not Started
-- Running
-- Cancelling
-- Successful | Cancelled | Failed
+#### Lifecycle of a Yakka Task:
+1. Not Started
+1. Running
+1. Cancelling
+1. Successful | Cancelled | Failed
 
 Some points about that:
 - Flows downward and never back up.
@@ -47,14 +45,13 @@ Some points about that:
 - Because it never flows backwards, tasks cannot be restarted, even if cancelled.
 - The exception to the above is dependent tasks that are cancelled while still in Not Started while they waited. In that case it behaves as if it was never asked to start yet.
 
-A note on memory management:
+#### A note on memory management:
 Tasks retain themselves while running, which is done deliberately to make it easier to work with. The working queue used by the task is also retained while running. All you gotta do is make sure your work eventually finishes by calling one of the methods on the process object, and that the process object isn't retained beyond that point. If for example your task involves multiple async closures that need the process object but only one will run and clean up, ensure you only weakly capture the process object.
 
 ## Examples
 
+### Trivial one-off work
 ```swift
-// Trivial one-off work:
-
 Task(withWork: { (process) in
     // some call you wanted backgrounded here
     process.succeed()
@@ -63,9 +60,8 @@ Task(withWork: { (process) in
 }
 ```
 
+### Less trivial one-off example
 ```swift
-// Less trivial one-off example:
-
 let someWork = Task { (process) in
 
     // do something here...
@@ -97,9 +93,8 @@ someWork.onFinish { (outcome) in
 someWork.start()
 ```
 
+### Trivial parallel grouping
 ```swift
-// Trivial parallel grouping:
-
 var tasks = [Task]()
 for ii in 0...4 {
     let t = Task { (process) in
@@ -113,9 +108,8 @@ ParallelTask(involving: tasks).start { (outcome) in
 }
 ```
 
+### Trivial serial grouping
 ```swift
-// Trivial serial grouping:
-
 var tasks = [Task]()
 for ii in 0...4 {
     let t = Task { (process) in
@@ -129,9 +123,8 @@ SerialTask(involving: tasks).start { (outcome) in
 }
 ```
 
+### Conditional chain example
 ```swift
-// Conditional chain example:
-
 let first = Task { (process) in
     print("first work")
     process.fail()
@@ -150,9 +143,8 @@ first.onRetry {
 first.start()
 ```
 
+### Reusable process approach
 ```swift
-// Reusable process approach:
-
 class DigMassiveHole: Task {
 
     let diameter: Float
@@ -183,15 +175,16 @@ dig.start { (outcome) in
 }
 ```
 
+These examples all complete their work by the end of the work closure (they're synchronous), but you can check out the tests file for a few more examples where work completes at arbitrary later times.
+
 
 
 ## Yakka?
-As in Hard Yakka.
-The word Yakka is classic Aussie slang for work. It was derived from 'yaga', used by the indigenous people (Yagawara tribe) of the region now known as Brisbane.
+As in Hard Yakka – classic Aussie slang for work. It's derived from 'yaga', which is a term from the Yagara language spoken by indigenous peoples of the region now known as Brisbane.
 
 ## Requirements
 
-Swift 3+
+Swift 3.0+
 
 ## Installation
 
