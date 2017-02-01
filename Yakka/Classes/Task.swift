@@ -30,11 +30,12 @@ public class Task: NSObject {
     // Helper object to give to work blocks so they can wrap things up and respond to cancellation
     public class Process {
         
-        private weak var _task: Task?
+        // NOTE: We're ok with strong references to these things as the rule is, Tasks are strongly retained while running, and these process objects only have a lifetime as long as the running part of the Task lifecycle.
+        private let _task: Task
         public let workQueue: DispatchQueue
         
         public var shouldCancel: Bool {
-            return _task?.currentState == .cancelling
+            return _task.currentState == .cancelling
         }
         
         init(task: Task) {
@@ -43,19 +44,19 @@ public class Task: NSObject {
         }
         
         public func progress(_ percent: Float) {
-            _task?.reportProgress(percent)
+            _task.reportProgress(percent)
         }
         
         public func succeed() {
-            _task?.finish(withOutcome: .success)
+            _task.finish(withOutcome: .success)
         }
         
         public func cancel() {
-            _task?.finish(withOutcome: .cancelled)
+            _task.finish(withOutcome: .cancelled)
         }
         
         public func fail() {
-            _task?.failOrRetry()
+            _task.failOrRetry()
         }
     }
     
@@ -146,7 +147,7 @@ public class Task: NSObject {
         
         // Get on the safe queue to change our state and get started via helper
         _internalQueue.async {
-            self.doStart()
+            self.internalStart()
         }
     }
     
@@ -170,10 +171,9 @@ public class Task: NSObject {
     }
     
     public final func cancel() {
-        _internalQueue.async { [weak self] in
-            guard let selfRef = self else { return }
-            if selfRef.currentState == .running {
-                selfRef.currentState = .cancelling
+        _internalQueue.async {
+            if self.currentState == .running {
+                self.currentState = .cancelling
             }
         }
     }
@@ -183,26 +183,26 @@ public class Task: NSObject {
     // MARK: - Feedback
     
     public final func onStart(via queue: DispatchQueue? = nil, handler: @escaping ()->()) {
-        _internalQueue.async { [weak self] in
-            self?._startHandlers.append((handler, queue))
+        _internalQueue.async {
+            self._startHandlers.append((handler, queue))
         }
     }
     
     public final func onProgress(via queue: DispatchQueue? = nil, handler: @escaping ProgressHandler) {
-        _internalQueue.async { [weak self] in
-            self?._progressHandlers.append((handler, queue))
+        _internalQueue.async {
+            self._progressHandlers.append((handler, queue))
         }
     }
     
     public final func onFinish(via queue: DispatchQueue? = nil, handler: @escaping FinishHandler) {
-        _internalQueue.async { [weak self] in
-            self?._finishHandlers.append((handler, queue))
+        _internalQueue.async {
+            self._finishHandlers.append((handler, queue))
         }
     }
     
     public final func onRetry(via queue: DispatchQueue? = nil, handler: @escaping ()->()) {
-        _internalQueue.async { [weak self] in
-            self?._retryHandlers.append((handler, queue))
+        _internalQueue.async {
+            self._retryHandlers.append((handler, queue))
         }
     }
     
@@ -210,7 +210,7 @@ public class Task: NSObject {
     
     // MARK: - Private (ON INTERNAL)
     
-    private func doStart() {
+    private func internalStart() {
         
         // Only allowed to do this if we haven't been run yet
         guard currentState == .notStarted else { return }
@@ -225,50 +225,50 @@ public class Task: NSObject {
         }
         
         // Change the state to running just before we do anything
-        self.currentState = .running
+        currentState = .running
         
-        // Actually start the work on the worker queue
-        let startHandlers = self._startHandlers
-        self.queueForWork.sync {
-            
-            // If needed, provide feedback about the fact we've started
-            if startHandlers.count > 0 {
-                queueForStartFeedback.async {
-                    for feedback in startHandlers {
-                        
-                        // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
-                        let handler = feedback.0
-                        if let customQueue = feedback.1 {
-                            customQueue.async {
-                                handler()
-                            }
-                        } else {
+        // If needed, start providing feedback about the fact we've started
+        // NOTE: What's important is our currentState has changed, which can only happen on this internal queue and therefore just asking a task to start from any queue will not synchronously result in the state changing – we need this notification mechanism instead.
+        let startHandlers = _startHandlers // copied for thread safety
+        if startHandlers.count > 0 {
+            queueForStartFeedback.async {
+                for feedback in startHandlers {
+                    
+                    // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
+                    let handler = feedback.0
+                    if let customQueue = feedback.1 {
+                        customQueue.async {
                             handler()
                         }
+                    } else {
+                        handler()
                     }
                 }
             }
-            
-            // OK GO
+        }
+        
+        // Actually start the work on the worker queue now
+        queueForWork.async {
             work(Process(task: self))
         }
     }
     
-    private func doFinish(withOutcome outcome: Outcome) {
+    private func internalFinish(withOutcome outcome: Outcome) {
         
         // Don't do anything if we've already finished
         guard currentState != .successful, currentState != .failed, currentState != .cancelled else { return }
         
         // Change the state
-        self.currentState = stateFromOutcome(outcome)
+        currentState = stateFromOutcome(outcome)
         
         // Remove ourself from the running cache / stop deliberately retaining self
         Task.cache(task: nil, forID: identifier)
         
-        // Now get on the feedback queue to finish up
-        if self._finishHandlers.count > 0 {
-            self.queueForFinishFeedback.sync {
-                for feedback in self._finishHandlers {
+        // Notify as needed
+        let finishHandlers = _finishHandlers // copied for thread safety
+        if finishHandlers.count > 0 {
+            queueForFinishFeedback.async {
+                for feedback in finishHandlers {
                     
                     // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
                     let handler = feedback.0
@@ -284,7 +284,7 @@ public class Task: NSObject {
         }
     }
     
-    private func doRetry() {
+    private func internalRetry() {
         
         // Only allowed to do this if we're currently running
         guard currentState == .running else { return }
@@ -295,31 +295,29 @@ public class Task: NSObject {
             return
         }
         
-        // Actually restart the work on the worker queue
-        let retryHandlers = self._retryHandlers
-        self.queueForWork.sync {
-            
-            // If needed, provide feedback about the fact we've restarted
-            if retryHandlers.count > 0 {
-                queueForRetryFeedback.async {
-                    for feedback in retryHandlers {
-                        
-                        // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
-                        let handler = feedback.0
-                        if let customQueue = feedback.1 {
-                            customQueue.async {
-                                handler()
-                            }
-                        } else {
+        // If needed, provide feedback about the fact we've restarted
+        let retryHandlers = _retryHandlers // copied for thread safety
+        if retryHandlers.count > 0 {
+            queueForRetryFeedback.async {
+                for feedback in retryHandlers {
+                    
+                    // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
+                    let handler = feedback.0
+                    if let customQueue = feedback.1 {
+                        customQueue.async {
                             handler()
                         }
+                    } else {
+                        handler()
                     }
                 }
             }
-            
-            // OK GO
-            work(Process(task: self))
         }
+        
+        // Actually restart the work on the worker queue now
+        queueForWork.async {
+            work(Process(task: self))
+        }        
     }
     
     
@@ -327,8 +325,8 @@ public class Task: NSObject {
     // MARK: - Private (ON ANY)
     
     private func reportProgress(_ percent: Float) {
-        if self._progressHandlers.count > 0 {
-            self.queueForProgressFeedback.async {
+        if _progressHandlers.count > 0 {
+            queueForProgressFeedback.async {
                 for feedback in self._progressHandlers {
                     
                     // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
@@ -349,7 +347,7 @@ public class Task: NSObject {
         
         // Get on the safe queue and change the state
         _internalQueue.async {
-            self.doFinish(withOutcome: outcome)
+            self.internalFinish(withOutcome: outcome)
         }
     }
     
@@ -359,9 +357,9 @@ public class Task: NSObject {
         // NOTE: these handlers are gonna run straight on internal
         if let config = _retryConfig {
             config.retryOrNah(queue: _internalQueue, retry: {
-                self.doRetry()
+                self.internalRetry()
             }, nah: {
-                self.doFinish(withOutcome: .failure)
+                self.internalFinish(withOutcome: .failure)
             })
         } else {
             finish(withOutcome: .failure)

@@ -38,8 +38,8 @@ public class MultiTask: Task {
     }
     
     public func useQueueForSubtaskWork(_ queue: DispatchQueue) {
-        _internalQueue.sync {
-            for task in _allTasks {
+        _internalQueue.async {
+            for task in self._allTasks {
                 task.queueForWork = queue
             }
         }
@@ -71,7 +71,7 @@ public class MultiTask: Task {
         
         // Start any tasks we can and/or have remaining
         while (_runningTasks.count < _maxParallelTasks || _maxParallelTasks == 0), let next = _pendingTasks.first {
-            self.startSubtask(next)
+            startSubtask(next)
         }
         
         // Finish up if there's nothing left we're waiting on
