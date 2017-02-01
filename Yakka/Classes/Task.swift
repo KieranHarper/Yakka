@@ -73,6 +73,7 @@ public class Task: NSObject {
     // MARK: - Properties
     
     public final private(set) var identifier = UUID().uuidString
+    public final private(set) var currentState = State.notStarted
     public final var queueForWork: DispatchQueue = DispatchQueue(label: "YakkaWorkQueue", attributes: .concurrent)
     public final var queueForStartFeedback = DispatchQueue.main
     public final var queueForProgressFeedback = DispatchQueue.main
@@ -87,7 +88,9 @@ public class Task: NSObject {
             }
         }
     }
-    public final private(set) var currentState = State.notStarted
+    
+    
+    // MARK: - Private variables
     
     private let _internalQueue = DispatchQueue(label: "YakkaTaskInternal")
     private var _workToDo: TaskWorkClosure?
@@ -110,7 +113,7 @@ public class Task: NSObject {
         setupTask(workBlock: nil)
     }
     
-    public final class func with(ID identifier: String) -> Task? {
+    public final class func find(withID identifier: String) -> Task? {
         var toReturn: Task? = nil
         _cachedTasksSafetyQueue.sync {
             toReturn = _cachedTasks[identifier]

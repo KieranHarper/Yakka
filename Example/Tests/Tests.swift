@@ -146,25 +146,25 @@ class YakkaSpec: QuickSpec {
                     
                     // Before running
                     var possibleTask: Task? = nil
-                    possibleTask = Task.with(ID: task.identifier)
+                    possibleTask = Task.find(withID: task.identifier)
                     expect(possibleTask).to(beNil())
                     
                     // While running
                     task.onStart {
-                        possibleTask = Task.with(ID: task.identifier)
+                        possibleTask = Task.find(withID: task.identifier)
                         expect(possibleTask).notTo(beNil())
                     }
                     
                     // After running
                     task.onFinish { (outcome) in
-                        possibleTask = Task.with(ID: task.identifier)
+                        possibleTask = Task.find(withID: task.identifier)
                         expect(possibleTask).to(beNil())
                         done()
                     }
                     
                     // Before it actually starts
                     task.start()
-                    possibleTask = Task.with(ID: task.identifier)
+                    possibleTask = Task.find(withID: task.identifier)
                     expect(possibleTask).to(beNil())
                 }
             }
