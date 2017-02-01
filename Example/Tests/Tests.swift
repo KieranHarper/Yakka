@@ -162,7 +162,7 @@ class YakkaSpec: QuickSpec {
                         done()
                     }
                     
-                    // Before actually running
+                    // Before it actually starts
                     task.start()
                     possibleTask = Task.with(ID: task.identifier)
                     expect(possibleTask).to(beNil())

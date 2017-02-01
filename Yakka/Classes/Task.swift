@@ -262,6 +262,9 @@ public class Task: NSObject {
         // Change the state
         self.currentState = stateFromOutcome(outcome)
         
+        // Remove ourself from the running cache / stop deliberately retaining self
+        Task.cache(task: nil, forID: identifier)
+        
         // Now get on the feedback queue to finish up
         if self._finishHandlers.count > 0 {
             self.queueForFinishFeedback.sync {
@@ -279,9 +282,6 @@ public class Task: NSObject {
                 }
             }
         }
-        
-        // Remove ourself from the cache / stop retaining self
-        Task.cache(task: nil, forID: identifier)
     }
     
     private func doRetry() {
