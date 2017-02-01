@@ -8,25 +8,41 @@
 
 import UIKit
 
+/// Helper class that provides a means to retry something up to a limit, and according to a wait schedule
 public class TaskRetryHelper {
     
+    
+    
+    // MARK: - Properties
+    
+    /// The timeline of inter-attempt wait durations that was provided on construction
     public let waitTimeline: [TimeInterval]
+    
+    /// The maximum number of retries this will allow
     public var maxNumRetries: Int {
         return waitTimeline.count
     }
-    public private(set) var availableNumRetries: Int
     
+    /// Number of remaining retry attempts before this will elect to fail instead
+    public private(set) var remainingNumRetries: Int
+    
+    
+    
+    
+    // MARK: - Instance methods
+    
+    /// Construct with a wait timeline to use, which defines which delay to use for each retry attempt and how many are allowed
     public init(waitTimeline: [TimeInterval]) {
         self.waitTimeline = waitTimeline
-        self.availableNumRetries = waitTimeline.count
+        self.remainingNumRetries = waitTimeline.count
     }
     
-    // Perform a time delayed retry if one is still available, otherwise perform some give-up code
-    public func retryOrNah(queue: DispatchQueue = DispatchQueue.main, retry: @escaping ()->(), nah: @escaping ()->()) {
+    /// Perform a time delayed retry if it hasn't maxxed them out already, otherwise perform some give-up code
+    public func retryOrNah(onQueue queue: DispatchQueue = DispatchQueue.main, retry: @escaping ()->(), nah: @escaping ()->()) {
         
-        if availableNumRetries > 0 {
-            let wait = waitTimeline[maxNumRetries - availableNumRetries]
-            availableNumRetries = availableNumRetries - 1
+        if remainingNumRetries > 0 {
+            let wait = waitTimeline[maxNumRetries - remainingNumRetries]
+            remainingNumRetries = remainingNumRetries - 1
             queue.asyncAfter(deadline: .now() + wait) {
                 retry()
             }
@@ -36,6 +52,11 @@ public class TaskRetryHelper {
             }
         }
     }
+    
+    
+    
+    
+    // MARK: - Static helpers
     
     public class func exponentialBackoffTimeline(forMaxRetries maxRetries: Int, startingAt initialWait: TimeInterval) -> [TimeInterval] {
         var toReturn = Array<TimeInterval>()

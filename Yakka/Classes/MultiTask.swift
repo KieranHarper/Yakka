@@ -8,23 +8,50 @@
 
 import Foundation
 
-// Base class for tasks that manage the execution of a collection of tasks
+/// Base class for tasks that manage the execution of a collection of tasks. Recommend using ParallelTask or SerialTask, which subclass this.
 public class MultiTask: Task {
     
+    
+    // MARK: - Properties
+    
+    /// Whether or not all the subtasks need to finish successfully in order to continue and finish with success overall.
     public var requireSuccessFromSubtasks = false
     
+    
+    
+    
+    // MARK: - Private variables
+    
+    /// Set of tasks we've been given
     private var _allTasks = Array<Task>()
+    
+    /// Set of tasks that have yet to be asked to run
     private var _pendingTasks = Array<Task>()
+    
+    /// Set of tasks that have been asked to run
     private var _runningTasks = Array<Task>()
+    
+    /// Set of tasks that have finished running
     private var _finishedTasks = Array<Task>()
+    
+    /// Queue providing serialization for state changing and other other thread sensitive things
     private let _internalQueue = DispatchQueue(label: "YakkaMultiTaskInternal")
-    fileprivate var _maxParallelTasks = 0 // (0 == unlimited)
+    
+    /// The maximum number of tasks we're going to ask to start before waiting for some to finish. Defaults to unlimited (0)
+    fileprivate var _maxParallelTasks = 0
+    
+    /// The Process object for the overall task (this one)
     private var _overallProcess: Process?
+    
+    /// Tracking of the percent completion of each of the subtasks, in order to provide overall progress feedback
     private var _taskProgressions = Dictionary<String, Float>()
+    
+    
     
     
     // MARK: - Lifecycle
     
+    /// Construct with the set of tasks to run together
     public init(involving tasks: [Task]) {
         super.init()
         workToDo { (process) in
@@ -39,6 +66,7 @@ public class MultiTask: Task {
         }
     }
     
+    /// Specify a working queue to apply to each of the subtasks. By default N different queues are used, since it's up to the Task instances.
     public func useQueueForSubtaskWork(_ queue: DispatchQueue) {
         _internalQueue.async {
             for task in self._allTasks {
@@ -49,8 +77,10 @@ public class MultiTask: Task {
     
     
     
+    
     // MARK: - Private (ON INTERNAL)
     
+    /// Start tasks as needed, consider cancellation etc
     private func processSubtasks() {
         
         // Check for cancellation by passing it on to subtasks and prevent pending ones from starting
@@ -79,6 +109,7 @@ public class MultiTask: Task {
         }
     }
     
+    /// Start a specific sub task, setting up progress reporting and completion etc
     private func startSubtask(_ task: Task) {
         
         // Move from pending into running
@@ -102,6 +133,7 @@ public class MultiTask: Task {
         task.start()
     }
     
+    /// Handle a subtask finishing, consider what to do next
     private func subtaskFinished(_ task: Task, withOutcome outcome: Outcome) {
         
         // Put it in the finished pile
@@ -120,6 +152,7 @@ public class MultiTask: Task {
         processSubtasks()
     }
     
+    /// Helper to shift subtasks between sets for tracking
     private func move(subtask: Task, fromCollection: inout Array<Task>, toCollection: inout Array<Task>) {
         if let index = indexOf(subtask: subtask, inCollection: fromCollection) {
             fromCollection.remove(at: index)
@@ -127,6 +160,7 @@ public class MultiTask: Task {
         }
     }
     
+    /// Helper to find a task in a collection
     private func indexOf(subtask: Task, inCollection collection: Array<Task>) -> Int? {
         return collection.index { (t) -> Bool in
             return t == subtask
@@ -136,9 +170,11 @@ public class MultiTask: Task {
 
 
 
-// Task that serializes subtask execution so that each one waits for completion of the one before it.
+
+/// Task that serializes subtask execution so that each task waits for completion of the one before it
 public class SerialTask: MultiTask {
     
+    /// Construct with the set of tasks to run in order
     public override init(involving tasks: [Task]) {
         super.init(involving: tasks)
         _maxParallelTasks = 1
@@ -147,10 +183,11 @@ public class SerialTask: MultiTask {
 
 
 
-// Task that allows multiple subtasks to run concurrently with one another.
+
+/// Task that allows multiple subtasks to run concurrently with one another
 public class ParallelTask: MultiTask {
     
-    // Optional limit on the number of subtasks that can run concurrently. 0 == unlimited (the default)
+    /// Optional limit on the number of subtasks that can run concurrently. Defaults to unlimited (0)
     public var maxConcurrentTasks: Int {
         get {
             return _maxParallelTasks
