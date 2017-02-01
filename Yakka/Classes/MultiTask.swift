@@ -33,7 +33,9 @@ public class MultiTask: Task {
             self._overallProcess = process
             self._allTasks = tasks
             self._pendingTasks = tasks
-            self.processSubtasks()
+            self._internalQueue.async {
+                self.processSubtasks()
+            }
         }
     }
     
@@ -47,19 +49,9 @@ public class MultiTask: Task {
     
     
     
-    // MARK: - Private (ON ANY)
-    
-    private func processSubtasks() {
-        _internalQueue.async {
-            self.doProcessSubtasks()
-        }
-    }
-    
-    
-    
     // MARK: - Private (ON INTERNAL)
     
-    private func doProcessSubtasks() {
+    private func processSubtasks() {
         
         // Check for cancellation by passing it on to subtasks and prevent pending ones from starting
         if currentState == .cancelling {
