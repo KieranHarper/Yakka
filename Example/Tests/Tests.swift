@@ -39,6 +39,26 @@ class YakkaSpec: QuickSpec {
         return task
     }
     
+    private func processAwareEventuallySucceedingTask() -> Task {
+        var count = 0
+        let task = Task() { (process) in
+            let step: TimeInterval = 0.25
+            DelayableForLoop.loop(throughItems: [1, 2, 3, 4], delayBetweenLoops: step, itemHandler: { (item) in
+                if process.shouldCancel { process.cancel(); return; }
+                process.progress(Float(item) / 4.0)
+            }, completionHandler: {
+                count = count + 1
+                if count < 3 { // third time's the charm
+                    process.fail()
+                } else {
+                    process.succeed()
+                }
+            })
+        }
+        task.retryWaitTimeline = [0.5, 1.0, 1.5]
+        return task
+    }
+    
     private func setOfSuccedingTasks() -> [Task] {
         var tasks = [Task]()
         for _ in 0...4 {
@@ -179,7 +199,280 @@ class YakkaSpec: QuickSpec {
                             done()
                         }
                     }
+                }
+            }
+            
+            it("should run notification handlers on the main queue by default") {
+                waitUntil(timeout: 10.0) { (done) in
+                    let task = self.processAwareEventuallySucceedingTask()
+                    let queue = DispatchQueue.main
+                    let mainKey = DispatchSpecificKey<String>()
+                    let mainFlag = "main"
+                    queue.setSpecific(key: mainKey, value: mainFlag)
+                    var started = false
+                    var progressed = false
+                    var retried = false
+                    task.onStart {
+                        let maybeFlag = DispatchQueue.getSpecific(key: mainKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(mainFlag))
+                        }
+                        started = true
+                    }
+                    task.onProgress { (percent) in
+                        let maybeFlag = DispatchQueue.getSpecific(key: mainKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(mainFlag))
+                        }
+                        progressed = true
+                    }
+                    task.onRetry {
+                        let maybeFlag = DispatchQueue.getSpecific(key: mainKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(mainFlag))
+                        }
+                        retried = true
+                    }
+                    task.onFinish { (outcome) in
+                        let maybeFlag = DispatchQueue.getSpecific(key: mainKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(mainFlag))
+                        }
+                        
+                        expect(started).to(beTrue())
+                        expect(progressed).to(beTrue())
+                        expect(retried).to(beTrue())
+                        done()
+                    }
+                    task.start()
+                }
+            }
+            
+            it("should use the queue provided for the work closure") {
+                waitUntil(timeout: waitTime) { (done) in
                     
+                    
+                    let queueFlag = "custom"
+                    let queueKey = DispatchSpecificKey<String>()
+                    let queueToUse = DispatchQueue(label: queueFlag)
+                    queueToUse.setSpecific(key: queueKey, value: queueFlag)
+                    
+                    let task = Task { (process) in
+                        let maybeFlag = DispatchQueue.getSpecific(key: queueKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(queueFlag))
+                        }
+                        process.workQueue.asyncAfter(deadline: .now() + 2.0) {
+                            done()
+                        }
+                    }
+                    task.queueForWork = queueToUse
+                    task.start { (outcome) in
+                        done()
+                    }
+                }
+            }
+            
+            it("should use queues that are specified for each type of notification") {
+                waitUntil(timeout: 10.0) { (done) in
+                    let task = self.processAwareEventuallySucceedingTask()
+                    
+                    let startQueueFlag = "start"
+                    let progressQueueFlag = "progress"
+                    let retryQueueFlag = "retry"
+                    let finishQueueFlag = "finish"
+                    
+                    let startQueue = DispatchQueue(label: startQueueFlag)
+                    let progressQueue = DispatchQueue(label: progressQueueFlag)
+                    let retryQueue = DispatchQueue(label: retryQueueFlag)
+                    let finishQueue = DispatchQueue(label: finishQueueFlag)
+                    
+                    let startKey = DispatchSpecificKey<String>()
+                    let progressKey = DispatchSpecificKey<String>()
+                    let retryKey = DispatchSpecificKey<String>()
+                    let finishKey = DispatchSpecificKey<String>()
+                    
+                    startQueue.setSpecific(key: startKey, value: startQueueFlag)
+                    progressQueue.setSpecific(key: progressKey, value: progressQueueFlag)
+                    retryQueue.setSpecific(key: retryKey, value: retryQueueFlag)
+                    finishQueue.setSpecific(key: finishKey, value: finishQueueFlag)
+                    
+                    var started = false
+                    var progressed = false
+                    var retried = false
+                    
+                    task.queueForStartFeedback = startQueue
+                    task.queueForRetryFeedback = retryQueue
+                    task.queueForProgressFeedback = progressQueue
+                    task.queueForFinishFeedback = finishQueue
+                    
+                    task.onStart {
+                        let maybeFlag = DispatchQueue.getSpecific(key: startKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(startQueueFlag))
+                        }
+                        DispatchQueue.main.async {
+                            started = true
+                        }
+                    }
+                    task.onProgress { (percent) in
+                        let maybeFlag = DispatchQueue.getSpecific(key: progressKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(progressQueueFlag))
+                        }
+                        DispatchQueue.main.async {
+                            progressed = true
+                        }
+                    }
+                    task.onRetry {
+                        let maybeFlag = DispatchQueue.getSpecific(key: retryKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(retryQueueFlag))
+                        }
+                        DispatchQueue.main.async {
+                            retried = true
+                        }
+                    }
+                    task.onFinish { (outcome) in
+                        let maybeFlag = DispatchQueue.getSpecific(key: finishKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(finishQueueFlag))
+                        }
+                        
+                        DispatchQueue.main.async {
+                            expect(started).to(beTrue())
+                            expect(progressed).to(beTrue())
+                            expect(retried).to(beTrue())
+                            done()
+                        }
+                    }
+                    task.start()
+                }
+            }
+            
+            it("should use queues that are specified for individual handlers") {
+                waitUntil(timeout: 10.0) { (done) in
+                    let task = self.processAwareEventuallySucceedingTask()
+                    
+                    let mainQueueFlag = "main"
+                    let startQueueFlag = "start"
+                    let progressQueueFlag = "progress"
+                    let retryQueueFlag = "retry"
+                    let finishQueueFlag = "finish"
+                    
+                    let startQueue = DispatchQueue(label: startQueueFlag)
+                    let progressQueue = DispatchQueue(label: progressQueueFlag)
+                    let retryQueue = DispatchQueue(label: retryQueueFlag)
+                    let finishQueue = DispatchQueue(label: finishQueueFlag)
+                    
+                    let mainKey = DispatchSpecificKey<String>()
+                    let startKey = DispatchSpecificKey<String>()
+                    let progressKey = DispatchSpecificKey<String>()
+                    let retryKey = DispatchSpecificKey<String>()
+                    let finishKey = DispatchSpecificKey<String>()
+                    
+                    DispatchQueue.main.setSpecific(key: mainKey, value: mainQueueFlag)
+                    startQueue.setSpecific(key: startKey, value: startQueueFlag)
+                    progressQueue.setSpecific(key: progressKey, value: progressQueueFlag)
+                    retryQueue.setSpecific(key: retryKey, value: retryQueueFlag)
+                    finishQueue.setSpecific(key: finishKey, value: finishQueueFlag)
+                    
+                    var startedMain = false
+                    var startedBackground = false
+                    var progressedMain = false
+                    var progressedBackground = false
+                    var retriedMain = false
+                    var retriedBackground = false
+                    
+                    task.onStart {
+                        let maybeFlag = DispatchQueue.getSpecific(key: mainKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(mainQueueFlag))
+                        }
+                        startedMain = true
+                    }
+                    task.onStart(via: startQueue) {
+                        let maybeFlag = DispatchQueue.getSpecific(key: startKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(startQueueFlag))
+                        }
+                        DispatchQueue.main.async {
+                            startedBackground = true
+                        }
+                    }
+                    task.onProgress { (outcome) in
+                        let maybeFlag = DispatchQueue.getSpecific(key: mainKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(mainQueueFlag))
+                        }
+                        progressedMain = true
+                    }
+                    task.onProgress(via: progressQueue) { (percent) in
+                        let maybeFlag = DispatchQueue.getSpecific(key: progressKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(progressQueueFlag))
+                        }
+                        DispatchQueue.main.async {
+                            progressedBackground = true
+                        }
+                    }
+                    task.onRetry { (outcome) in
+                        let maybeFlag = DispatchQueue.getSpecific(key: mainKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(mainQueueFlag))
+                        }
+                        retriedMain = true
+                    }
+                    task.onRetry(via: retryQueue) {
+                        let maybeFlag = DispatchQueue.getSpecific(key: retryKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(retryQueueFlag))
+                        }
+                        DispatchQueue.main.async {
+                            retriedBackground = true
+                        }
+                    }
+                    task.onFinish { (outcome) in
+                        let maybeFlag = DispatchQueue.getSpecific(key: mainKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(mainQueueFlag))
+                        }
+                    }
+                    task.onFinish(via: finishQueue) { (outcome) in
+                        let maybeFlag = DispatchQueue.getSpecific(key: finishKey)
+                        expect(maybeFlag).toNot(beNil())
+                        if let flag = maybeFlag {
+                            expect(flag).to(equal(finishQueueFlag))
+                        }
+                        
+                        DispatchQueue.main.async {
+                            expect(startedMain).to(beTrue())
+                            expect(startedBackground).to(beTrue())
+                            expect(progressedMain).to(beTrue())
+                            expect(progressedBackground).to(beTrue())
+                            expect(retriedMain).to(beTrue())
+                            expect(retriedBackground).to(beTrue())
+                            
+                            done()
+                        }
+                    }
+                    task.start()
                 }
             }
         }
@@ -205,16 +498,7 @@ class YakkaSpec: QuickSpec {
             
             it("should be able to succeed eventually after N retries") {
                 waitUntil(timeout: 10.0) { (done) in
-                    var count = 0
-                    let eventuallySucceed = Task() { (process) in
-                        count = count + 1
-                        if count < 3 {
-                            process.fail()
-                        } else {
-                            process.succeed()
-                        }
-                    }
-                    eventuallySucceed.retryWaitTimeline = [0.5, 1.0, 1.5]
+                    let eventuallySucceed = self.processAwareEventuallySucceedingTask()
                     eventuallySucceed.start() { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         done()
@@ -283,7 +567,6 @@ class YakkaSpec: QuickSpec {
                 waitUntil(timeout: waitTime) { (done) in
                     var hit = false
                     task.onProgress { (percent) in
-                        print("task progress: \(percent)")
                         hit = true
                     }
                     task.start() { (outcome) in
