@@ -1,5 +1,5 @@
 # Yakka
-[![Build Status](https://travis-ci.org/KieranHarper/Yakka.svg?branch=master)](https://travis-ci.org/KieranHarper/Yakka.svg?branch=master)
+[![Build Status](https://travis-ci.org/KieranHarper/Yakka.svg?branch=master)](https://travis-ci.org/KieranHarper/Yakka?branch=master)
 [![Version](https://img.shields.io/cocoapods/v/Yakka.svg?style=flat)](http://cocoapods.org/pods/Yakka)
 [![License](https://img.shields.io/cocoapods/l/Yakka.svg?style=flat)](http://cocoapods.org/pods/Yakka)
 [![Platform](https://img.shields.io/cocoapods/p/Yakka.svg?style=flat)](http://cocoapods.org/pods/Yakka)
@@ -27,6 +27,7 @@ Yakka is designed for throwaway code you just need run asynchronously in the bac
 - Tasks retain themselves after starting, until finish closure is called.
 - Tasks which are asked to start when another completes will also retain themselves even though they haven't started running yet (unless cancelled).
 - The work closure is given an object which it uses to communicate progress and finishing etc, and can do so at any stage from any queue.
+- Provide progress either by push or pull (polling) or not at all, depending on your work.
 - Use ParallelTask to group independent Task objects and have them execute alongside each other with a final overall finish handler.
 - Use SerialTask for a similar objective except the order matters and they execute one after another.
 - Task instances are single shot – they can't be run again after they finish.
@@ -68,6 +69,11 @@ let someWork = Task { (process) in
 
     // if you can, report progress periodically like this:
     process.progress(0.5) // percent 0..1
+    
+    // or if you have to, provide progress via polling like this:
+    process.progress {
+        return 0.5
+    }
 
     // where it makes sense, check for cancellation and bail
     if process.shouldCancel {
