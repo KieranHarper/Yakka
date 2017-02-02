@@ -46,18 +46,37 @@ public class Task: NSObject {
             _task.reportProgress(percent)
         }
         
+        /* Provide feedback about task progress using polling.
+         This differs from progress(percent) in that the process will periodically ask you for the progress, rather than you providing it when you want to. It's less efficient because the process doesn't know anything about your work and therefore will either ask more often than needed or not often enough (when the goal is to keep interested parties eg UI up to date). However, depending on the work you're doing, this may be the only approach you have (eg your underlying work uses something which only offers a progress property you have to poll).
+         The default polling interval should be fine for most cases, but if your task is particuarly high res in it's measuring of progress then a faster interval might give nicer results.
+         Calling this method subsequent times will stop and replace (passing a nil closure can stop it).
+         */
+        public func progress(every interval: TimeInterval = 0.25, provider: (()->Float)?) {
+            stopPolling()
+            guard let provider = provider else { return }
+            
+            // Switch to main both for thread safety and also because we can't start a timer without a run loop
+            DispatchQueue.main.async {
+                self._pollMe = provider
+                self._pollingTimer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.poll), userInfo: nil, repeats: true)
+            }
+        }
+        
         /// Finish up with success
         public func succeed() {
+            stopPolling()
             _task.finish(withOutcome: .success)
         }
         
         /// Finish up early due to cancellation
         public func cancel() {
+            stopPolling()
             _task.finish(withOutcome: .cancelled)
         }
         
         /// Finish up with failure
         public func fail() {
+            stopPolling()
             _task.failOrRetry()
         }
         
@@ -65,10 +84,31 @@ public class Task: NSObject {
         /// Protected stuff:
         
         private let _task: Task
+        private var _pollingTimer: Timer?
+        private var _pollMe: (()->Float)?
         
         fileprivate init(task: Task) {
             _task = task
             workQueue = task.queueForWork
+        }
+        
+        @objc private func poll() {
+            
+            // Get the value and pipe it through our other method
+            guard let provider = _pollMe else {
+                stopPolling()
+                return
+            }
+            let percent = provider()
+            progress(percent)
+        }
+        
+        private func stopPolling() {
+            DispatchQueue.main.async { // be thread safe
+                self._pollingTimer?.invalidate()
+                self._pollingTimer = nil
+                self._pollMe = nil
+            }
         }
         
         // NOTE: Process objects only have a lifetime as long as the running part of a Task's lifecycle, hence it's ok to strongly retain some internal references (since Tasks are retained while running)

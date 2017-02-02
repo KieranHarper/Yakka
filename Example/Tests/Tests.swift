@@ -575,6 +575,31 @@ class YakkaSpec: QuickSpec {
                     }
                 }
             }
+            
+            it("should be able to provide progress via the polling approach") {
+                let task = Task { (process) in
+                    let step: TimeInterval = 0.5
+                    var percent: Float = 0.0
+                    process.progress(every: 0.1) { () -> Float in
+                        return percent
+                    }
+                    DelayableForLoop.loop(throughItems: [1, 2, 3, 4], delayBetweenLoops: step, itemHandler: { (item) in
+                        percent = Float(item) / 4.0
+                    }, completionHandler: {
+                        process.succeed()
+                    })
+                }
+                waitUntil(timeout: waitTime) { (done) in
+                    var hit = false
+                    task.onProgress { (percent) in
+                        hit = true
+                    }
+                    task.start { (outcome) in
+                        expect(hit).to(equal(true))
+                        done()
+                    }
+                }
+            }
         }
         
         describe("a dependent task") {
