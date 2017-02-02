@@ -1,0 +1,6 @@
+language: objective-c
+osx_image: xcode8
+xcode_workspace: Example/Yakka.xcworkspace
+xcode_scheme: Yakka-Example
+xcode_sdk: iphonesimulator10.1
+script: set -o pipefail && xcodebuild -workspace Example/Yakka.xcworkspace -scheme Yakka-Example -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 6S" test | xcpretty
