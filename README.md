@@ -1,5 +1,5 @@
 # Yakka
-
+[![Build Status](https://travis-ci.org/KieranHarper/Yakka.svg?branch=master)](https://travis-ci.org/KieranHarper/Yakka.svg?branch=master)
 [![Version](https://img.shields.io/cocoapods/v/Yakka.svg?style=flat)](http://cocoapods.org/pods/Yakka)
 [![License](https://img.shields.io/cocoapods/l/Yakka.svg?style=flat)](http://cocoapods.org/pods/Yakka)
 [![Platform](https://img.shields.io/cocoapods/p/Yakka.svg?style=flat)](http://cocoapods.org/pods/Yakka)
