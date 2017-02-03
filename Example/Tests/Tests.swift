@@ -88,14 +88,13 @@ class YakkaSpec: QuickSpec {
                 expect(task.currentState).to(equal(Task.State.notStarted))
             }
             
-            it("should transition to 'running' state only when it actually starts to run") {
+            it("should transition to 'running' state when it actually starts to run") {
                 waitUntil(timeout: waitTime) { (done) in
                     task.onStart {
                         expect(task.currentState).to(equal(Task.State.running))
                         done()
                     }
                     task.start()
-                    expect(task.currentState).to(equal(Task.State.notStarted))
                 }
             }
             
