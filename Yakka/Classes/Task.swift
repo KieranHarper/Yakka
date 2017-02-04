@@ -9,7 +9,7 @@
 import Foundation
 
 /// Building block for work that needs doing
-public class Task: NSObject {
+open class Task: NSObject {
     
     
     
@@ -31,18 +31,18 @@ public class Task: NSObject {
     }
     
     /// Helper object to give to work closures so they can finish up or respond to cancellation
-    public class Process {
+    public final class Process {
         
         /// The queue that the task is supposed to use for working (useful to access if your work closure needs to do nested async stuff and needs to provide a working queue)
-        public let workQueue: DispatchQueue
+        public final let workQueue: DispatchQueue
         
         /// Whether or not the work closure should bail early and call cancel()
-        public var shouldCancel: Bool {
+        public final var shouldCancel: Bool {
             return _task.currentState == .cancelling
         }
         
         /// Provide feedback about task progress
-        public func progress(_ percent: Float) {
+        public final func progress(_ percent: Float) {
             _task.reportProgress(percent)
         }
         
@@ -51,7 +51,7 @@ public class Task: NSObject {
          The default polling interval should be fine for most cases, but if your task is particuarly high res in it's measuring of progress then a faster interval might give nicer results.
          Calling this method subsequent times will stop and replace (passing a nil closure can stop it).
          */
-        public func progress(every interval: TimeInterval = 0.25, provider: (()->Float)?) {
+        public final func progress(every interval: TimeInterval = 0.25, provider: (()->Float)?) {
             stopPolling()
             guard let provider = provider else { return }
             
@@ -63,19 +63,19 @@ public class Task: NSObject {
         }
         
         /// Finish up with success
-        public func succeed() {
+        public final func succeed() {
             stopPolling()
             _task.finish(withOutcome: .success)
         }
         
         /// Finish up early due to cancellation
-        public func cancel() {
+        public final func cancel() {
             stopPolling()
             _task.finish(withOutcome: .cancelled)
         }
         
         /// Finish up with failure
-        public func fail() {
+        public final func fail() {
             stopPolling()
             _task.failOrRetry()
         }

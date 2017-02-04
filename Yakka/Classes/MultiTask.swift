@@ -9,7 +9,7 @@
 import Foundation
 
 /// Base class for tasks that manage the execution of a collection of tasks. Recommend using ParallelTask or SerialTask, which subclass this.
-public class MultiTask: Task {
+open class MultiTask: Task {
     
     
     // MARK: - Properties
@@ -67,7 +67,7 @@ public class MultiTask: Task {
     }
     
     /// Specify a working queue to apply to each of the subtasks. By default N different queues are used, since it's up to the Task instances.
-    public func useQueueForSubtaskWork(_ queue: DispatchQueue) {
+    public final func useQueueForSubtaskWork(_ queue: DispatchQueue) {
         _internalQueue.async {
             for task in self._allTasks {
                 task.queueForWork = queue
@@ -172,7 +172,7 @@ public class MultiTask: Task {
 
 
 /// Task that serializes subtask execution so that each task waits for completion of the one before it
-public class SerialTask: MultiTask {
+open class SerialTask: MultiTask {
     
     /// Construct with the set of tasks to run in order
     public override init(involving tasks: [Task]) {
@@ -185,10 +185,10 @@ public class SerialTask: MultiTask {
 
 
 /// Task that allows multiple subtasks to run concurrently with one another
-public class ParallelTask: MultiTask {
+open class ParallelTask: MultiTask {
     
     /// Optional limit on the number of subtasks that can run concurrently. Defaults to unlimited (0)
-    public var maxConcurrentTasks: Int {
+    public final var maxConcurrentTasks: Int {
         get {
             return _maxParallelTasks
         }
