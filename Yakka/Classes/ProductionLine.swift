@@ -1,13 +1,12 @@
 //
 //  ProductionLine.swift
-//  QuickShot
+//  Yakka
 //
 //  Created by Kieran Harper on 1/3/17.
-//  Copyright © 2017 Amity Worldwide Pty Ltd. All rights reserved.
+//
 //
 
-import UIKit
-import Yakka
+import Foundation
 
 /* Object that can execute a number of tasks simultaneously and continue to accept and queue new tasks over its lifetime.
  This is a bit like a ParallelTask except that it lets you keep adding tasks while it runs, and there is no dependency between the tasks. A ProductionLine doesn't care whether tasks succeed or fail (you can attach handlers for that yourself), and never 'finishes' for itself - it will run as long as it lives.
