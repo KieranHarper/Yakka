@@ -1,7 +1,7 @@
 PODS:
   - Nimble (5.1.1)
   - Quick (1.0.0)
-  - Yakka (0.1.0)
+  - Yakka (0.2.1)
 
 DEPENDENCIES:
   - Nimble (~> 5.1.1)
@@ -10,13 +10,13 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   Yakka:
-    :path: ../
+    :path: "../"
 
 SPEC CHECKSUMS:
   Nimble: 415e3aa3267e7bc2c96b05fa814ddea7bb686a29
   Quick: 8024e4a47e6cc03a9d5245ef0948264fc6d27cff
-  Yakka: f2b821c3f78de5c626877669864b6bc97db5d372
+  Yakka: 99f8058cfaf0211d3191fd007108f735906d40a6
 
 PODFILE CHECKSUM: 87aa6c601c438434f004488b7a10c21fbda6a234
 
-COCOAPODS: 1.2.0.beta.1
+COCOAPODS: 1.2.0

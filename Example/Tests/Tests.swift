@@ -75,6 +75,127 @@ class YakkaSpec: QuickSpec {
     
     override func spec() {
         
+        describe("a production line") {
+            
+            var productionLine: ProductionLine!
+            let waitTime: TimeInterval = 3.0
+            
+            beforeEach {
+                productionLine = ProductionLine()
+            }
+            
+            it("should begin in 'not running' state") {
+                expect(productionLine.isRunning).to(equal(false))
+            }
+            
+            it("should run tasks that are queued before it starts") {
+                var multiple = self.setOfSuccedingTasks()
+                var startCount = 0
+                var set1 = [Task]()
+                var set2 = [Task]()
+                for task in multiple {
+                    task.onStart {
+                        startCount = startCount + 1
+                    }
+                    if set1.count > 2 {
+                        set2.append(task)
+                    } else {
+                        set1.append(task)
+                    }
+                }
+                
+                // Deliberately exercise both add methods
+                productionLine.addTasks(set1)
+                for task in set2 {
+                    productionLine.addTask(task)
+                }
+                
+                // Start
+                productionLine.start()
+                expect(startCount).toEventually(equal(multiple.count))
+            }
+            
+            it("should run tasks that are queued after it starts") {
+                
+                // Start first
+                productionLine.start()
+                
+                // Create tasks
+                var multiple = self.setOfSuccedingTasks()
+                var startCount = 0
+                var set1 = [Task]()
+                var set2 = [Task]()
+                for task in multiple {
+                    task.onStart {
+                        startCount = startCount + 1
+                    }
+                    if set1.count > 2 {
+                        set2.append(task)
+                    } else {
+                        set1.append(task)
+                    }
+                }
+                
+                // Deliberately exercise both add methods
+                productionLine.addTasks(set1)
+                for task in set2 {
+                    productionLine.addTask(task)
+                }
+                
+                // Wait
+                expect(startCount).toEventually(equal(multiple.count))
+            }
+            
+            it("should limit the maximum number of tasks when asked") {
+                let maxTasks = 4
+                var startFlags = [Int]()
+                var tasks = [Task]()
+                var finishCount = 0
+                for ii in 0...10 {
+                    let t = Task { (process) in
+                        let delay: TimeInterval = 0.25
+                        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                            process.succeed()
+                        }
+                    }
+                    t.onStart {
+                        DispatchQueue.main.async {
+                            startFlags.append(ii)
+                            expect(startFlags.count).to(beLessThanOrEqualTo(maxTasks))
+                        }
+                    }
+                    t.onFinish(handler: { (_) in
+                        DispatchQueue.main.async {
+                            startFlags.removeLast()
+                            finishCount = finishCount + 1
+                        }
+                    })
+                    tasks.append(t)
+                }
+                
+                productionLine.maxConcurrentTasks = maxTasks
+                productionLine.addTasks(tasks)
+                productionLine.start()
+                expect(finishCount).toEventually(equal(tasks.count), timeout: 5.0)
+            }
+            
+            it("should be stoppable without affecting running tasks") {
+                
+            }
+            
+            it("should let you easily ask all running tasks to cancel") {
+                
+            }
+            
+            it("should be let you stop and cancel in one go") {
+                
+            }
+            
+            it("should not outlive its scope (retain itself), even while running") {
+                
+            }
+        }
+        
         describe("any task") {
             
             var task: Task!

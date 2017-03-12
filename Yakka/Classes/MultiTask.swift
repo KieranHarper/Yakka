@@ -151,21 +151,6 @@ open class MultiTask: Task {
         // Otherwise consider starting any subsequent task/s
         processSubtasks()
     }
-    
-    /// Helper to shift subtasks between sets for tracking
-    private func move(subtask: Task, fromCollection: inout Array<Task>, toCollection: inout Array<Task>) {
-        if let index = indexOf(subtask: subtask, inCollection: fromCollection) {
-            fromCollection.remove(at: index)
-            toCollection.append(subtask)
-        }
-    }
-    
-    /// Helper to find a task in a collection
-    private func indexOf(subtask: Task, inCollection collection: Array<Task>) -> Int? {
-        return collection.index { (t) -> Bool in
-            return t == subtask
-        }
-    }
 }
 
 
@@ -197,3 +182,28 @@ open class ParallelTask: MultiTask {
         }
     }
 }
+
+
+
+
+// MARK: - General purpose helpers
+
+internal func remove(subtask: Task, fromCollection: inout Array<Task>) {
+    if let index = indexOf(subtask: subtask, inCollection: fromCollection) {
+        fromCollection.remove(at: index)
+    }
+}
+
+/// Helper to shift subtasks between sets for tracking
+internal func move(subtask: Task, fromCollection: inout Array<Task>, toCollection: inout Array<Task>) {
+    remove(subtask: subtask, fromCollection: &fromCollection)
+    toCollection.append(subtask)
+}
+
+/// Helper to find a task in a collection
+internal func indexOf(subtask: Task, inCollection collection: Array<Task>) -> Int? {
+    return collection.index { (t) -> Bool in
+        return t == subtask
+    }
+}
+
