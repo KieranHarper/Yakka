@@ -10,6 +10,7 @@ import Foundation
 
 /* Object that can execute a number of tasks simultaneously and continue to accept and queue new tasks over its lifetime.
  This is a bit like a ParallelTask except that it lets you keep adding tasks while it runs, and there is no dependency between the tasks. A ProductionLine doesn't care whether tasks succeed or fail (you can attach handlers for that yourself), and never 'finishes' for itself - it will run as long as it lives.
+ Tasks are started in the order they're added. You can control the maximum number that can be started before others finish, via the maxConcurrentTasks property.
  NOTE: While Task and its subclasses will retain itself while running, ProductionLine will not.
  */
 public final class ProductionLine: NSObject {
@@ -17,21 +18,30 @@ public final class ProductionLine: NSObject {
     
     // MARK: - Properties
     
+    /// Optional limit on the number of tasks that can run concurrently. Defaults to unlimited (0)
     public var maxConcurrentTasks: Int = 0
+    
+    /// Whether or not the production line is running / will execute tasks upon adding (and when ready, depending on maxConcurrentTasks)
     public private(set) var isRunning = false
     
     
     
     // MARK: - Private variables
     
+    /// Set of tasks that have yet to be asked to run
     private lazy var _pendingTasks = [Task]()
+    
+    /// Set of tasks that have been asked to run
     private lazy var _runningTasks = [Task]()
-    private let _internalQueue = DispatchQueue(label: "ProductionLinePipelineQueue")
+    
+    /// Queue providing serialization for state changing and other other thread sensitive things
+    private let _internalQueue = DispatchQueue(label: "ProductionLineInternal")
     
     
     
     // MARK: - Public methods
     
+    /// Add a task to the pipeline. If the pipeline is running then the task will be started asap, depending on maxConcurrentTasks
     public func addTask(_ task: Task) {
         _internalQueue.async {
             self._pendingTasks.append(task)
@@ -39,6 +49,7 @@ public final class ProductionLine: NSObject {
         }
     }
     
+    /// Add multiple tasks to the pipeline. If the pipeline is running then the task will be started asap, depending on maxConcurrentTasks
     public func addTasks(_ tasks: [Task]) {
         _internalQueue.async {
             self._pendingTasks.append(contentsOf: tasks)
@@ -46,6 +57,7 @@ public final class ProductionLine: NSObject {
         }
     }
     
+    /// Start the pipeline. This will start any tasks that were already added (up to maxConcurrentTasks)
     public func start() {
         _internalQueue.async {
             if !self.isRunning {
@@ -55,12 +67,14 @@ public final class ProductionLine: NSObject {
         }
     }
     
+    /// Stops the pipeline from starting any new tasks, until the next time you ask it to start. Tasks that were already running are unaffected by this.
     public func stop() {
         _internalQueue.async {
             self.isRunning = false
         }
     }
     
+    /// Ask all the currently executing tasks to cancel themselves and remove everything from the pipeline. The pipeline will still be running after this, ready to accept and start new tasks.
     public func cancelTasks() {
         _internalQueue.async {
             for task in self._runningTasks {
@@ -74,6 +88,7 @@ public final class ProductionLine: NSObject {
         }
     }
     
+    /// Stop the pipeline and also cancel/clear out all the running and pending tasks.
     public func stopAndCancel() {
         stop()
         cancelTasks()
