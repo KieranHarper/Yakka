@@ -20,6 +20,9 @@ platform :ios do
 	desc "Builds the framework and runs all the tests"
 	lane :test do
 
+		# Working around a timeout issue
+		ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120" 
+
 		# Build and test
 		scan(
 			workspace: "Example/Yakka.xcworkspace",
