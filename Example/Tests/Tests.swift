@@ -180,7 +180,32 @@ class YakkaSpec: QuickSpec {
             }
             
             it("should be stoppable without affecting running tasks") {
-                
+                let tasks = self.setOfSuccedingTasks()
+                var startCount = 0
+                var finishCount = 0
+                for task in tasks {
+                    task.onStart {
+                        DispatchQueue.main.async {
+                            expect(productionLine.isRunning).to(equal(true))
+                            startCount = startCount + 1
+                            if startCount == tasks.count {
+                                productionLine.stop()
+                            }
+                        }
+                    }
+                    task.onFinish(handler: { (outcome) in
+                        DispatchQueue.main.async {
+                            if outcome == .success {
+                                finishCount = finishCount + 1
+                            }
+                        }
+                    })
+                }
+                productionLine.addTasks(tasks)
+                productionLine.start()
+                expect(startCount).toEventually(equal(tasks.count))
+                expect(finishCount).toEventually(equal(tasks.count))
+                expect(productionLine.isRunning).toEventually(equal(false))
             }
             
             it("should let you easily ask all running tasks to cancel") {
@@ -188,10 +213,6 @@ class YakkaSpec: QuickSpec {
             }
             
             it("should be let you stop and cancel in one go") {
-                
-            }
-            
-            it("should not outlive its scope (retain itself), even while running") {
                 
             }
         }
