@@ -75,148 +75,6 @@ class YakkaSpec: QuickSpec {
     
     override func spec() {
         
-        describe("a production line") {
-            
-            var productionLine: ProductionLine!
-            let waitTime: TimeInterval = 3.0
-            
-            beforeEach {
-                productionLine = ProductionLine()
-            }
-            
-            it("should begin in 'not running' state") {
-                expect(productionLine.isRunning).to(equal(false))
-            }
-            
-            it("should run tasks that are queued before it starts") {
-                var multiple = self.setOfSuccedingTasks()
-                var startCount = 0
-                var set1 = [Task]()
-                var set2 = [Task]()
-                for task in multiple {
-                    task.onStart {
-                        startCount = startCount + 1
-                    }
-                    if set1.count > 2 {
-                        set2.append(task)
-                    } else {
-                        set1.append(task)
-                    }
-                }
-                
-                // Deliberately exercise both add methods
-                productionLine.addTasks(set1)
-                for task in set2 {
-                    productionLine.addTask(task)
-                }
-                
-                // Start
-                productionLine.start()
-                expect(startCount).toEventually(equal(multiple.count))
-            }
-            
-            it("should run tasks that are queued after it starts") {
-                
-                // Start first
-                productionLine.start()
-                
-                // Create tasks
-                var multiple = self.setOfSuccedingTasks()
-                var startCount = 0
-                var set1 = [Task]()
-                var set2 = [Task]()
-                for task in multiple {
-                    task.onStart {
-                        startCount = startCount + 1
-                    }
-                    if set1.count > 2 {
-                        set2.append(task)
-                    } else {
-                        set1.append(task)
-                    }
-                }
-                
-                // Deliberately exercise both add methods
-                productionLine.addTasks(set1)
-                for task in set2 {
-                    productionLine.addTask(task)
-                }
-                
-                // Wait
-                expect(startCount).toEventually(equal(multiple.count))
-            }
-            
-            it("should limit the maximum number of tasks when asked") {
-                let maxTasks = 4
-                var startFlags = [Int]()
-                var tasks = [Task]()
-                var finishCount = 0
-                for ii in 0...10 {
-                    let t = Task { (process) in
-                        let delay: TimeInterval = 0.25
-                        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                            process.succeed()
-                        }
-                    }
-                    t.onStart {
-                        DispatchQueue.main.async {
-                            startFlags.append(ii)
-                            expect(startFlags.count).to(beLessThanOrEqualTo(maxTasks))
-                        }
-                    }
-                    t.onFinish(handler: { (_) in
-                        DispatchQueue.main.async {
-                            startFlags.removeLast()
-                            finishCount = finishCount + 1
-                        }
-                    })
-                    tasks.append(t)
-                }
-                
-                productionLine.maxConcurrentTasks = maxTasks
-                productionLine.addTasks(tasks)
-                productionLine.start()
-                expect(finishCount).toEventually(equal(tasks.count), timeout: 5.0)
-            }
-            
-            it("should be stoppable without affecting running tasks") {
-                let tasks = self.setOfSuccedingTasks()
-                var startCount = 0
-                var finishCount = 0
-                for task in tasks {
-                    task.onStart {
-                        DispatchQueue.main.async {
-                            expect(productionLine.isRunning).to(equal(true))
-                            startCount = startCount + 1
-                            if startCount == tasks.count {
-                                productionLine.stop()
-                            }
-                        }
-                    }
-                    task.onFinish(handler: { (outcome) in
-                        DispatchQueue.main.async {
-                            if outcome == .success {
-                                finishCount = finishCount + 1
-                            }
-                        }
-                    })
-                }
-                productionLine.addTasks(tasks)
-                productionLine.start()
-                expect(startCount).toEventually(equal(tasks.count))
-                expect(finishCount).toEventually(equal(tasks.count))
-                expect(productionLine.isRunning).toEventually(equal(false))
-            }
-            
-            it("should let you easily ask all running tasks to cancel") {
-                
-            }
-            
-            it("should be let you stop and cancel in one go") {
-                
-            }
-        }
-        
         describe("any task") {
             
             var task: Task!
@@ -975,6 +833,197 @@ class YakkaSpec: QuickSpec {
                 checkTimeline(c)
                 checkTimeline(d)
                 checkTimeline(e)
+            }
+        }
+        
+        describe("a production line") {
+            
+            var productionLine: ProductionLine!
+            
+            beforeEach {
+                productionLine = ProductionLine()
+            }
+            
+            it("should begin in 'not running' state") {
+                expect(productionLine.isRunning).to(equal(false))
+            }
+            
+            it("should run tasks that are queued before it starts") {
+                let multiple = self.setOfSuccedingTasks()
+                var startCount = 0
+                var set1 = [Task]()
+                var set2 = [Task]()
+                for task in multiple {
+                    task.onStart {
+                        startCount = startCount + 1
+                    }
+                    if set1.count > 2 {
+                        set2.append(task)
+                    } else {
+                        set1.append(task)
+                    }
+                }
+                
+                // Deliberately exercise both add methods
+                productionLine.addTasks(set1)
+                for task in set2 {
+                    productionLine.addTask(task)
+                }
+                
+                // Start
+                productionLine.start()
+                expect(startCount).toEventually(equal(multiple.count))
+            }
+            
+            it("should run tasks that are queued after it starts") {
+                
+                // Start first
+                productionLine.start()
+                
+                // Create tasks
+                let multiple = self.setOfSuccedingTasks()
+                var startCount = 0
+                var set1 = [Task]()
+                var set2 = [Task]()
+                for task in multiple {
+                    task.onStart {
+                        startCount = startCount + 1
+                    }
+                    if set1.count > 2 {
+                        set2.append(task)
+                    } else {
+                        set1.append(task)
+                    }
+                }
+                
+                // Deliberately exercise both add methods
+                productionLine.addTasks(set1)
+                for task in set2 {
+                    productionLine.addTask(task)
+                }
+                
+                // Wait
+                expect(startCount).toEventually(equal(multiple.count))
+            }
+            
+            it("should limit the maximum number of tasks when asked") {
+                let maxTasks = 4
+                var startFlags = [Int]()
+                var tasks = [Task]()
+                var finishCount = 0
+                for ii in 0...10 {
+                    let t = Task { (process) in
+                        let delay: TimeInterval = 0.25
+                        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                            process.succeed()
+                        }
+                    }
+                    t.onStart {
+                        DispatchQueue.main.async {
+                            startFlags.append(ii)
+                            expect(startFlags.count).to(beLessThanOrEqualTo(maxTasks))
+                        }
+                    }
+                    t.onFinish(handler: { (_) in
+                        DispatchQueue.main.async {
+                            startFlags.removeLast()
+                            finishCount = finishCount + 1
+                        }
+                    })
+                    tasks.append(t)
+                }
+                
+                productionLine.maxConcurrentTasks = maxTasks
+                productionLine.addTasks(tasks)
+                productionLine.start()
+                expect(finishCount).toEventually(equal(tasks.count), timeout: 5.0)
+            }
+            
+            it("should be stoppable without affecting running tasks") {
+                let tasks = self.setOfSuccedingTasks()
+                var startCount = 0
+                var finishCount = 0
+                for task in tasks {
+                    task.onStart {
+                        DispatchQueue.main.async {
+                            startCount = startCount + 1
+                            if startCount == tasks.count {
+                                productionLine.stop()
+                            }
+                        }
+                    }
+                    task.onFinish(handler: { (outcome) in
+                        DispatchQueue.main.async {
+                            if outcome == .success {
+                                finishCount = finishCount + 1
+                            }
+                        }
+                    })
+                }
+                productionLine.addTasks(tasks)
+                productionLine.start()
+                expect(startCount).toEventually(equal(tasks.count))
+                expect(finishCount).toEventually(equal(tasks.count))
+                expect(productionLine.isRunning).toEventually(equal(false))
+                expect((startCount == tasks.count) && !productionLine.isRunning).toEventually(equal(true))
+            }
+            
+            it("should let you easily ask all running tasks to cancel") {
+                var tasks = [Task]()
+                var cancelledCount = 0
+                var startedCount = 0
+                let tasksCount = 5
+                for _ in 0..<tasksCount {
+                    let task = self.processAwareSucceedingTask()
+                    tasks.append(task)
+                    task.onFinish(handler: { (outcome) in
+                        DispatchQueue.main.async {
+                            if outcome == .cancelled {
+                                cancelledCount = cancelledCount + 1
+                            }
+                        }
+                    })
+                    task.onStart {
+                        startedCount = startedCount + 1
+                        if startedCount == tasksCount {
+                            productionLine.cancelTasks()
+                        }
+                    }
+                }
+                productionLine.addTasks(tasks)
+                productionLine.start()
+                expect(productionLine.isRunning).toEventually(equal(true))
+                expect(cancelledCount).toEventually(equal(tasksCount))
+            }
+            
+            it("should be let you stop and cancel in one go") {
+                var tasks = [Task]()
+                var cancelledCount = 0
+                var startedCount = 0
+                let tasksCount = 5
+                for _ in 0..<tasksCount {
+                    let task = self.processAwareSucceedingTask()
+                    tasks.append(task)
+                    task.onStart {
+                        DispatchQueue.main.async {
+                            startedCount = startedCount + 1
+                            if startedCount == tasksCount {
+                                productionLine.stopAndCancel()
+                            }
+                        }
+                    }
+                    task.onFinish(handler: { (outcome) in
+                        DispatchQueue.main.async {
+                            if outcome == .cancelled {
+                                cancelledCount = cancelledCount + 1
+                            }
+                        }
+                    })
+                }
+                productionLine.addTasks(tasks)
+                productionLine.start()
+                expect(cancelledCount).toEventually(equal(tasksCount))
+                expect((startedCount == tasksCount) && !productionLine.isRunning).toEventually(equal(true))
             }
         }
     }
