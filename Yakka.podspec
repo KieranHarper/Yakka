@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'Yakka'
-  s.version          = '0.2.1'
+  s.version          = '0.3.0'
   s.summary          = 'A toolkit for coordinating the doing of stuff'
 
   s.description      = <<-DESC
