@@ -1,0 +1,7 @@
+app_identifier ENV["APP_IDENTIFIER"]
+apple_id "engineering-no-reply@amity.io" # Your Apple email address
+
+team_id "6XMKYK7W24"  # Developer Portal Team ID
+
+# you can even provide different app identifiers, Apple IDs and team names per lane:
+# More information: https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Appfile.md
