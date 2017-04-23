@@ -532,6 +532,13 @@ open class Task: NSObject {
     private func storeOnCancelHandler(handler: @escaping ()->()) {
         _internalQueue.async {
             self._onCancellingHandler = handler
+            
+            // Notify straight away if we're already in the cancelling state
+            if self.currentState == .cancelling {
+                self.queueForWork.async {
+                    handler()
+                }
+            }
         }
     }
     
