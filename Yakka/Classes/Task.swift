@@ -41,6 +41,11 @@ open class Task: NSObject {
             return _task.currentState == .cancelling
         }
         
+        /// Provide a closure to run (on the work queue) when shouldCancel changes to true. Useful if you want to support canceling your work but can't poll shouldCancel.
+        public final func onShouldCancel(handler: @escaping ()->()) {
+            _task.storeOnCancelHandler(handler: handler)
+        }
+        
         /// Provide feedback about task progress
         public final func progress(_ percent: Float) {
             _task.reportProgress(percent)
@@ -201,6 +206,9 @@ open class Task: NSObject {
     /// Strong reference to ourself used only in start() when the task is dependent on another finishing. Tasks retaining themselves while running is actually due to _cachedTasks, not this.
     private var _strongSelfWhileWaitingForDependencyToFinish: Task?
     
+    /// Handler that will be run when the state transitions to cancelling
+    private var _onCancellingHandler: (()->())?
+    
     
     
     
@@ -307,6 +315,13 @@ open class Task: NSObject {
             // Change the state
             if self.currentState == .running {
                 self.currentState = .cancelling
+            }
+            
+            // Notify the work of the task itself that the state changed to cancelling (in case it wants to support cancelling but can't poll for the state)
+            if let handler = self._onCancellingHandler {
+                self.queueForWork.async {
+                    handler()
+                }
             }
             
             // Stop retaining ourself if we were (applies only to the dependent task not finishing yet case)
@@ -510,6 +525,13 @@ open class Task: NSObject {
             })
         } else {
             finish(withOutcome: .failure)
+        }
+    }
+    
+    /// Safely stores a handler that will notify task's work that it should be cancelling
+    private func storeOnCancelHandler(handler: @escaping ()->()) {
+        _internalQueue.async {
+            self._onCancellingHandler = handler
         }
     }
     

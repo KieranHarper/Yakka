@@ -599,6 +599,27 @@ class YakkaSpec: QuickSpec {
                     }
                 }
             }
+            
+            it("should be able to respond to cancellation without polling") {
+                let t = Task { (process) in
+                    process.onShouldCancel {
+                        process.cancel()
+                        return
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        process.succeed()
+                    }
+                }
+                waitUntil(timeout: waitTime) { (done) in
+                    t.start { (outcome) in
+                        expect(outcome).to(equal(Task.Outcome.cancelled))
+                        done()
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        t.cancel()
+                    }
+                }
+            }
         }
         
         describe("a dependent task") {
