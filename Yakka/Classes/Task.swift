@@ -38,17 +38,18 @@ open class Task: NSObject {
         
         /// Whether or not the work closure should bail early and call cancel()
         public final var shouldCancel: Bool {
-            return _task.currentState == .cancelling
+            guard let t = _task else { return true }
+            return t.currentState == .cancelling
         }
         
         /// Provide a closure to run (on the work queue) when shouldCancel changes to true. Useful if you want to support canceling your work but can't poll shouldCancel.
         public final func onShouldCancel(handler: @escaping ()->()) {
-            _task.storeOnCancelHandler(handler: handler)
+            _task?.storeOnCancelHandler(handler: handler)
         }
         
         /// Provide feedback about task progress
         public final func progress(_ percent: Float) {
-            _task.reportProgress(percent)
+            _task?.reportProgress(percent)
         }
         
         /* Provide feedback about task progress using polling.
@@ -70,25 +71,26 @@ open class Task: NSObject {
         /// Finish up with success
         public final func succeed() {
             stopPolling()
-            _task.finish(withOutcome: .success)
+            _task?.finish(withOutcome: .success)
         }
         
         /// Finish up early due to cancellation
         public final func cancel() {
             stopPolling()
-            _task.finish(withOutcome: .cancelled)
+            _task?.finish(withOutcome: .cancelled)
         }
         
         /// Finish up with failure
         public final func fail() {
             stopPolling()
-            _task.failOrRetry()
+            _task?.failOrRetry()
         }
         
         
         /// Protected stuff:
         
-        private let _task: Task
+        // NOTE: Task isn't retained because it's too easy to end up with a long winded retain cycle if the work closure of a task retains the process object (something they should be free to do without caring).
+        private weak var _task: Task?
         private var _pollingTimer: Timer?
         private var _pollMe: (()->Float)?
         
@@ -115,8 +117,6 @@ open class Task: NSObject {
                 self._pollMe = nil
             }
         }
-        
-        // NOTE: Process objects only have a lifetime as long as the running part of a Task's lifecycle, hence it's ok to strongly retain some internal references (since Tasks are retained while running)
     }
     
     /// Closure type used to provide the task's work and interact with the process
