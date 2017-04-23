@@ -266,19 +266,24 @@ open class Task: NSObject {
     
     /// Ask the task to start
     public final func start() {
-        start(onFinish: nil)
+        start(onFinishQueue: nil, onFinishHandler: nil)
     }
     
     /// Ask the task to start, with a handler to run when it finishes
     public final func startThenOnFinish(_ finishHandler: @escaping FinishHandler) {
-        start(onFinish: finishHandler)
+        start(onFinishQueue: nil, onFinishHandler: finishHandler)
     }
     
-    private func start(onFinish finishHandler: FinishHandler? = nil) {
+    /// Ask the task to start, with a handler to run when it finishes, providing a specific queue to run on
+    public final func startThenOnFinish(via handlerQueue: DispatchQueue, _ handler: @escaping FinishHandler) {
+        start(onFinishQueue: handlerQueue, onFinishHandler: handler)
+    }
+    
+    private func start(onFinishQueue: DispatchQueue? = nil, onFinishHandler: FinishHandler? = nil) {
         
         // Pass on the finish handler
-        if let handler = finishHandler {
-            onFinish(via: nil, handler: handler)
+        if let handler = onFinishHandler {
+            onFinish(via: onFinishQueue, handler: handler)
         }
         
         // Get on the safe queue to change our state and get started via helper
@@ -291,7 +296,7 @@ open class Task: NSObject {
     }
     
     /// Ask the task to start as soon as another dependent task finishes, with options on which outcomes are allowed, and optional handler to run when this task eventually finishes
-    public final func start(after task: Task, finishesWith allowedOutcomes: [Outcome] = [], onFinish finishHandler: FinishHandler? = nil) {
+    public final func start(after task: Task, finishesWith allowedOutcomes: [Outcome] = [], onFinishVia finishQueue: DispatchQueue? = nil, onFinish finishHandler: FinishHandler? = nil) {
         
         // (where empty means any state)
         
@@ -305,7 +310,7 @@ open class Task: NSObject {
             
             // Start us if the state falls within one of our options
             if allowedOutcomes.isEmpty || allowedOutcomes.contains(outcome) {
-                self?.start(onFinish: finishHandler)
+                self?.start(onFinishQueue: finishQueue, onFinishHandler: finishHandler)
             }
                 
                 // Otherwise finish by passing on the dependent's outcome
