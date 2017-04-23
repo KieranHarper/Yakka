@@ -264,8 +264,17 @@ open class Task: NSObject {
     
     // MARK: - Control
     
-    /// Ask the task to start, with the option to attach a handler to run when it finishes
-    public final func start(onFinish finishHandler: FinishHandler? = nil) {
+    /// Ask the task to start
+    public final func start() {
+        start(onFinish: nil)
+    }
+    
+    /// Ask the task to start, with a handler to run when it finishes
+    public final func startThenOnFinish(_ finishHandler: @escaping FinishHandler) {
+        start(onFinish: finishHandler)
+    }
+    
+    private func start(onFinish finishHandler: FinishHandler? = nil) {
         
         // Pass on the finish handler
         if let handler = finishHandler {

@@ -101,7 +101,7 @@ class YakkaSpec: QuickSpec {
             it("should not be able to run again if already been run") {
                 waitUntil(timeout: waitTime) { (done) in
                     let toSucceed = self.suceedingTask()
-                    toSucceed.start(onFinish: { (_) in
+                    toSucceed.startThenOnFinish { (_) in
                         expect(toSucceed.currentState).to(equal(Task.State.successful))
                         toSucceed.start()
                         expect(toSucceed.currentState).to(equal(Task.State.successful))
@@ -109,12 +109,12 @@ class YakkaSpec: QuickSpec {
                             expect(toSucceed.currentState).to(equal(Task.State.successful))
                             done()
                         }
-                    })
+                    }
                 }
                 
                 waitUntil(timeout: waitTime) { (done) in
                     let toFail = self.failingTask()
-                    toFail.start(onFinish: { (_) in
+                    toFail.startThenOnFinish { (_) in
                         expect(toFail.currentState).to(equal(Task.State.failed))
                         toFail.start()
                         expect(toFail.currentState).to(equal(Task.State.failed))
@@ -122,7 +122,7 @@ class YakkaSpec: QuickSpec {
                             expect(toFail.currentState).to(equal(Task.State.failed))
                             done()
                         }
-                    })
+                    }
                 }
             }
             
@@ -131,9 +131,9 @@ class YakkaSpec: QuickSpec {
                 let hangingTask = Task { (process) in
                     // do nothing...
                 }
-                hangingTask.start(onFinish: { (outcome) in
+                hangingTask.startThenOnFinish { (_) in
                     hit = true // never gets here
-                })
+                }
                 expect(hit).toEventually(equal(false))
             }
             
@@ -141,10 +141,10 @@ class YakkaSpec: QuickSpec {
             it("should fail if no work is provided") {
                 waitUntil(timeout: waitTime) { (done) in
                     let toFail = Task()
-                    toFail.start(onFinish: { (outcome) in
+                    toFail.startThenOnFinish { (_) in
                         expect(toFail.currentState).to(equal(Task.State.failed))
                         done()
-                    })
+                    }
                 }
             }
             
@@ -271,7 +271,7 @@ class YakkaSpec: QuickSpec {
                         }
                     }
                     task.queueForWork = queueToUse
-                    task.start { (outcome) in
+                    task.startThenOnFinish { (_) in
                         done()
                     }
                 }
@@ -488,7 +488,7 @@ class YakkaSpec: QuickSpec {
             it("should run the finish handler with 'success'") {
                 
                 waitUntil(timeout: waitTime) { (done) in
-                    task.start { (outcome) in
+                    task.startThenOnFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         done()
                     }
@@ -498,7 +498,7 @@ class YakkaSpec: QuickSpec {
             it("should be able to succeed eventually after N retries") {
                 waitUntil(timeout: 10.0) { (done) in
                     let eventuallySucceed = self.processAwareEventuallySucceedingTask()
-                    eventuallySucceed.start() { (outcome) in
+                    eventuallySucceed.startThenOnFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         done()
                     }
@@ -518,7 +518,7 @@ class YakkaSpec: QuickSpec {
             it("should run the finish handler with 'failure'") {
                 
                 waitUntil(timeout: waitTime) { (done) in
-                    task.start { (outcome) in
+                    task.startThenOnFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.failure))
                         done()
                     }
@@ -532,7 +532,7 @@ class YakkaSpec: QuickSpec {
                     task.onRetry {
                         hit = true
                     }
-                    task.start { (outcome) in
+                    task.startThenOnFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.failure))
                         expect(hit).to(equal(true))
                         done()
@@ -552,7 +552,7 @@ class YakkaSpec: QuickSpec {
             
             it("should finish with 'cancelled' if asked to cancel while running") {
                 waitUntil(timeout: waitTime) { (done) in
-                    task.start { (outcome) in
+                    task.startThenOnFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.cancelled))
                         done()
                     }
@@ -568,7 +568,7 @@ class YakkaSpec: QuickSpec {
                     task.onProgress { (percent) in
                         hit = true
                     }
-                    task.start() { (outcome) in
+                    task.startThenOnFinish { (outcome) in
                         expect(hit).to(equal(true))
                         done()
                     }
@@ -593,7 +593,7 @@ class YakkaSpec: QuickSpec {
                     task.onProgress { (percent) in
                         hit = true
                     }
-                    task.start { (outcome) in
+                    task.startThenOnFinish { (outcome) in
                         expect(hit).to(equal(true))
                         done()
                     }
@@ -611,7 +611,7 @@ class YakkaSpec: QuickSpec {
                     }
                 }
                 waitUntil(timeout: waitTime) { (done) in
-                    t.start { (outcome) in
+                    t.startThenOnFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.cancelled))
                         done()
                     }
@@ -673,7 +673,7 @@ class YakkaSpec: QuickSpec {
                         expect(percent).to(beGreaterThanOrEqualTo(0.0))
                         expect(percent).to(beLessThanOrEqualTo(1.0))
                     }
-                    parallel.start { (outcome) in
+                    parallel.startThenOnFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         done()
                     }
@@ -692,7 +692,7 @@ class YakkaSpec: QuickSpec {
                 
                 waitUntil(timeout: 10.0) { (done) in
                     let serial = SerialTask(involving: tasks)
-                    serial.start { (outcome) in
+                    serial.startThenOnFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         done()
                     }
@@ -712,7 +712,7 @@ class YakkaSpec: QuickSpec {
                 waitUntil(timeout: 10.0) { (done) in
                     let serial = SerialTask(involving: tasks)
                     serial.requireSuccessFromSubtasks = true
-                    serial.start { (outcome) in
+                    serial.startThenOnFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.failure))
                         done()
                     }
@@ -733,7 +733,7 @@ class YakkaSpec: QuickSpec {
                 
                 waitUntil(timeout: 10.0) { (done) in
                     let serial = SerialTask(involving: tasks)
-                    serial.start { (outcome) in
+                    serial.startThenOnFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.cancelled))
                         expect(startFlags.count).to(beLessThan(numTasks))
                         done()
@@ -768,7 +768,7 @@ class YakkaSpec: QuickSpec {
                 
                 waitUntil(timeout: 3.0) { (done) in
                     let serial = SerialTask(involving: tasks)
-                    serial.start { (outcome) in
+                    serial.startThenOnFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         expect(flags).to(equal(expectedOrder))
                         done()
@@ -806,7 +806,7 @@ class YakkaSpec: QuickSpec {
                 waitUntil(timeout: 5.0) { (done) in
                     let parallel = ParallelTask(involving: tasks)
                     parallel.maxConcurrentTasks = maxTasks
-                    parallel.start { (outcome) in
+                    parallel.startThenOnFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         done()
                     }
