@@ -27,7 +27,11 @@ platform :ios do
 		scan(
 			workspace: "Example/Yakka.xcworkspace",
 			scheme: "Yakka-Example",
-			device: "iPhone SE",
+			devices: [
+				"iPhone SE",
+				"iPhone 6",
+				"iPhone 7 Plus"
+			],
 			clean: true,
 			skip_slack: true
 		)
