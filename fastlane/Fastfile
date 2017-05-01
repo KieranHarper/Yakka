@@ -20,17 +20,51 @@ platform :ios do
 	desc "Builds the framework and runs all the tests"
 	lane :test do
 
-		# Working around a timeout issue
+		# Prevent timeout issues
 		ENV["FASTLANE_XCODE_LIST_TIMEOUT"] = "120" 
 
-		# Build and test
+		# Just build the watchOS target (no tests)
+		xcodebuild(
+			workspace: "Yakka.xcworkspace",
+			# project: "Yakka.xcodeproj",
+		    scheme: "Yakka-watchOS",
+		    clean: true,
+		    build: true
+	  	)
+
+		# Build and test the macOS target
 		scan(
-			workspace: "Example/Yakka.xcworkspace",
-			scheme: "Yakka-Example",
+			workspace: "Yakka.xcworkspace",
+			# project: "Yakka.xcodeproj",
+			scheme: "Yakka-macOS",
+			devices: [
+				# (deliberately empty, will use the mac this is running on)
+			],
+			clean: true,
+			skip_slack: true
+		)
+
+		# Build and test the iOS target
+		scan(
+			workspace: "Yakka.xcworkspace",
+			# project: "Yakka.xcodeproj",
+			scheme: "Yakka-iOS",
 			devices: [
 				"iPhone SE",
 				"iPhone 6",
-				"iPhone 7 Plus"
+				"iPhone 7 Plus",
+			],
+			clean: true,
+			skip_slack: true
+		)
+
+		# Build and test the tvOS target
+		scan(
+			workspace: "Yakka.xcworkspace",
+			# project: "Yakka.xcodeproj",
+			scheme: "Yakka-tvOS",
+			devices: [
+				"Apple TV 1080p",
 			],
 			clean: true,
 			skip_slack: true
