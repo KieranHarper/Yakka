@@ -28,9 +28,9 @@
 		898821DB1EC6827B00425EA6 /* TaskRetryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CD1EC6827B00425EA6 /* TaskRetryHelper.swift */; };
 		898821DC1EC6827B00425EA6 /* TaskRetryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CD1EC6827B00425EA6 /* TaskRetryHelper.swift */; };
 		898821DD1EC6827B00425EA6 /* TaskRetryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CD1EC6827B00425EA6 /* TaskRetryHelper.swift */; };
-		898821DF1EC682C100425EA6 /* YakkaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821DE1EC682C100425EA6 /* YakkaTests.swift */; };
-		898821E01EC682C100425EA6 /* YakkaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821DE1EC682C100425EA6 /* YakkaTests.swift */; };
-		898821E11EC682C100425EA6 /* YakkaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821DE1EC682C100425EA6 /* YakkaTests.swift */; };
+		898821DF1EC682C100425EA6 /* YakkaSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821DE1EC682C100425EA6 /* YakkaSpec.swift */; };
+		898821E01EC682C100425EA6 /* YakkaSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821DE1EC682C100425EA6 /* YakkaSpec.swift */; };
+		898821E11EC682C100425EA6 /* YakkaSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821DE1EC682C100425EA6 /* YakkaSpec.swift */; };
 		9684634C286F9E8B6116C2BF /* Pods_Yakka_tvOS_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC24EFF56365786C2A994A48 /* Pods_Yakka_tvOS_Tests.framework */; };
 		C2D3A6A4855417EFC67AC6BA /* Pods_Yakka_watchOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 949EEC260AE481DE2CCABB69 /* Pods_Yakka_watchOS.framework */; };
 		DD7502881C68FEDE006590AF /* Yakka.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6DA0F1BF000BD002C0205 /* Yakka.framework */; };
@@ -83,7 +83,7 @@
 		898821CB1EC6827B00425EA6 /* ProductionLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductionLine.swift; sourceTree = "<group>"; };
 		898821CC1EC6827B00425EA6 /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 		898821CD1EC6827B00425EA6 /* TaskRetryHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskRetryHelper.swift; sourceTree = "<group>"; };
-		898821DE1EC682C100425EA6 /* YakkaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YakkaTests.swift; sourceTree = "<group>"; };
+		898821DE1EC682C100425EA6 /* YakkaSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YakkaSpec.swift; sourceTree = "<group>"; };
 		949EEC260AE481DE2CCABB69 /* Pods_Yakka_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		96536D0C3D78EACB62A765BB /* Pods-Yakka-macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-macOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-macOS/Pods-Yakka-macOS.release.xcconfig"; sourceTree = "<group>"; };
 		AD2FAA261CD0B6D800659CF4 /* Yakka.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Yakka.plist; sourceTree = "<group>"; };
@@ -247,7 +247,7 @@
 		8933C7831EB5B7EB000D00A4 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				898821DE1EC682C100425EA6 /* YakkaTests.swift */,
+				898821DE1EC682C100425EA6 /* YakkaSpec.swift */,
 			);
 			name = Tests;
 			path = Tests/YakkaTests;
@@ -835,7 +835,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				898821DF1EC682C100425EA6 /* YakkaTests.swift in Sources */,
+				898821DF1EC682C100425EA6 /* YakkaSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -876,7 +876,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				898821E01EC682C100425EA6 /* YakkaTests.swift in Sources */,
+				898821E01EC682C100425EA6 /* YakkaSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -884,7 +884,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				898821E11EC682C100425EA6 /* YakkaTests.swift in Sources */,
+				898821E11EC682C100425EA6 /* YakkaSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

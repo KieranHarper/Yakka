@@ -1,9 +1,9 @@
 //
-//  YakkaTests.swift
+//  YakkaSpec.swift
 //  Yakka
 //
 //  Created by Kieran Harper on 30/4/17.
-//  Copyright © 2017 Yakka. All rights reserved.
+//  
 //
 
 import Foundation
@@ -12,11 +12,7 @@ import Quick
 import Nimble
 import Yakka
 
-class YakkaTests: QuickSpec {
-    
-//    static var allTests = [
-//        ("testExample", testExample),
-//        ]
+class YakkaSpec: QuickSpec {
     
     private func suceedingTask() -> Task {
         let task = Task { (process) in
