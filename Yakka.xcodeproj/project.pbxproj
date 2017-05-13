@@ -7,35 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		05C3820FC8CE9A442616FE4B /* Pods_Yakka_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8B38CF333AC6E667CF7E9B6 /* Pods_Yakka_iOS.framework */; };
-		1118D0C861E050C5880FAD6D /* Pods_Yakka_macOS_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B55341D1ACED6C7D21DD7E6 /* Pods_Yakka_macOS_Tests.framework */; };
-		323AA77AFE990AB30CAC2D9F /* Pods_Yakka_macOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8BEA97C019ADDD3802EBF1C /* Pods_Yakka_macOS.framework */; };
+		1D8AD050D801146CBFBF368C /* Pods_Yakka_iOS_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2139C68FE0B99F7F761AA11C /* Pods_Yakka_iOS_Tests.framework */; };
+		39757153350D7C4DF3448810 /* Pods_Yakka_macOS_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A863D78FBF52FAF68C00EB6 /* Pods_Yakka_macOS_Tests.framework */; };
+		3D16A6693FB7D14CFDBAFB37 /* Pods_Yakka_tvOS_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C946BA2109F7EB2A23BC2B6C /* Pods_Yakka_tvOS_Tests.framework */; };
+		3EECF2006579DEBFF4BFC09B /* Pods_Yakka_tvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17AFCBCAAE6510AA166838DA /* Pods_Yakka_tvOS.framework */; };
+		4F8E8AE1179936F6ABBC4FDA /* Pods_Yakka_watchOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 828CEFB7291BBAF15B0ECDCF /* Pods_Yakka_watchOS.framework */; };
 		52D6D9871BEFF229002C0205 /* Yakka.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6D97C1BEFF229002C0205 /* Yakka.framework */; };
-		52DB504F906A6469E37673F1 /* Pods_Yakka_iOS_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0DEB02FA8F96E447F4DCAE /* Pods_Yakka_iOS_Tests.framework */; };
-		898821CE1EC6827B00425EA6 /* MultiTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CA1EC6827B00425EA6 /* MultiTask.swift */; };
-		898821CF1EC6827B00425EA6 /* MultiTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CA1EC6827B00425EA6 /* MultiTask.swift */; };
-		898821D01EC6827B00425EA6 /* MultiTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CA1EC6827B00425EA6 /* MultiTask.swift */; };
-		898821D11EC6827B00425EA6 /* MultiTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CA1EC6827B00425EA6 /* MultiTask.swift */; };
-		898821D21EC6827B00425EA6 /* ProductionLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CB1EC6827B00425EA6 /* ProductionLine.swift */; };
-		898821D31EC6827B00425EA6 /* ProductionLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CB1EC6827B00425EA6 /* ProductionLine.swift */; };
-		898821D41EC6827B00425EA6 /* ProductionLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CB1EC6827B00425EA6 /* ProductionLine.swift */; };
-		898821D51EC6827B00425EA6 /* ProductionLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CB1EC6827B00425EA6 /* ProductionLine.swift */; };
-		898821D61EC6827B00425EA6 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CC1EC6827B00425EA6 /* Task.swift */; };
-		898821D71EC6827B00425EA6 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CC1EC6827B00425EA6 /* Task.swift */; };
-		898821D81EC6827B00425EA6 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CC1EC6827B00425EA6 /* Task.swift */; };
-		898821D91EC6827B00425EA6 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CC1EC6827B00425EA6 /* Task.swift */; };
-		898821DA1EC6827B00425EA6 /* TaskRetryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CD1EC6827B00425EA6 /* TaskRetryHelper.swift */; };
-		898821DB1EC6827B00425EA6 /* TaskRetryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CD1EC6827B00425EA6 /* TaskRetryHelper.swift */; };
-		898821DC1EC6827B00425EA6 /* TaskRetryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CD1EC6827B00425EA6 /* TaskRetryHelper.swift */; };
-		898821DD1EC6827B00425EA6 /* TaskRetryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821CD1EC6827B00425EA6 /* TaskRetryHelper.swift */; };
-		898821DF1EC682C100425EA6 /* YakkaSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821DE1EC682C100425EA6 /* YakkaSpec.swift */; };
-		898821E01EC682C100425EA6 /* YakkaSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821DE1EC682C100425EA6 /* YakkaSpec.swift */; };
-		898821E11EC682C100425EA6 /* YakkaSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821DE1EC682C100425EA6 /* YakkaSpec.swift */; };
-		9684634C286F9E8B6116C2BF /* Pods_Yakka_tvOS_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC24EFF56365786C2A994A48 /* Pods_Yakka_tvOS_Tests.framework */; };
-		C2D3A6A4855417EFC67AC6BA /* Pods_Yakka_watchOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 949EEC260AE481DE2CCABB69 /* Pods_Yakka_watchOS.framework */; };
+		87BA31F7ED55066A0FFB06A2 /* Pods_Yakka_macOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F8E45C377B26D8FEC169BA3 /* Pods_Yakka_macOS.framework */; };
+		8933C78E1EB5B82C000D00A4 /* YakkaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7891EB5B82A000D00A4 /* YakkaTests.swift */; };
+		8933C78F1EB5B82C000D00A4 /* YakkaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7891EB5B82A000D00A4 /* YakkaTests.swift */; };
+		8933C7901EB5B82D000D00A4 /* YakkaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7891EB5B82A000D00A4 /* YakkaTests.swift */; };
+		898821E61EC6DCA600425EA6 /* MultiTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E21EC6DCA600425EA6 /* MultiTask.swift */; };
+		898821E71EC6DCA600425EA6 /* MultiTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E21EC6DCA600425EA6 /* MultiTask.swift */; };
+		898821E81EC6DCA600425EA6 /* MultiTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E21EC6DCA600425EA6 /* MultiTask.swift */; };
+		898821E91EC6DCA600425EA6 /* MultiTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E21EC6DCA600425EA6 /* MultiTask.swift */; };
+		898821EA1EC6DCA600425EA6 /* ProductionLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E31EC6DCA600425EA6 /* ProductionLine.swift */; };
+		898821EB1EC6DCA600425EA6 /* ProductionLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E31EC6DCA600425EA6 /* ProductionLine.swift */; };
+		898821EC1EC6DCA600425EA6 /* ProductionLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E31EC6DCA600425EA6 /* ProductionLine.swift */; };
+		898821ED1EC6DCA600425EA6 /* ProductionLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E31EC6DCA600425EA6 /* ProductionLine.swift */; };
+		898821EE1EC6DCA600425EA6 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E41EC6DCA600425EA6 /* Task.swift */; };
+		898821EF1EC6DCA600425EA6 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E41EC6DCA600425EA6 /* Task.swift */; };
+		898821F01EC6DCA600425EA6 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E41EC6DCA600425EA6 /* Task.swift */; };
+		898821F11EC6DCA600425EA6 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E41EC6DCA600425EA6 /* Task.swift */; };
+		898821F21EC6DCA600425EA6 /* TaskRetryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E51EC6DCA600425EA6 /* TaskRetryHelper.swift */; };
+		898821F31EC6DCA600425EA6 /* TaskRetryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E51EC6DCA600425EA6 /* TaskRetryHelper.swift */; };
+		898821F41EC6DCA600425EA6 /* TaskRetryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E51EC6DCA600425EA6 /* TaskRetryHelper.swift */; };
+		898821F51EC6DCA600425EA6 /* TaskRetryHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E51EC6DCA600425EA6 /* TaskRetryHelper.swift */; };
+		A3078346A533819AB7CA68CD /* Pods_Yakka_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EC94B6DA1B1FE29406E282C /* Pods_Yakka_iOS.framework */; };
 		DD7502881C68FEDE006590AF /* Yakka.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6DA0F1BF000BD002C0205 /* Yakka.framework */; };
 		DD7502921C690C7A006590AF /* Yakka.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D6D9F01BEFFFBE002C0205 /* Yakka.framework */; };
-		E3DD6BBE10BDAE05E4AEC233 /* Pods_Yakka_tvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C7C8A753C8DF8FA56F24076 /* Pods_Yakka_tvOS.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,41 +63,41 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0851C1C8B8D866D356CA8AF4 /* Pods-Yakka-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-tvOS/Pods-Yakka-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
-		25DA48FFFFEC7738768CE885 /* Pods-Yakka-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-macOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-macOS/Pods-Yakka-macOS.debug.xcconfig"; sourceTree = "<group>"; };
-		28F586E3C0963E7BACDA5B5C /* Pods-Yakka-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-iOS/Pods-Yakka-iOS.debug.xcconfig"; sourceTree = "<group>"; };
-		2C7C8A753C8DF8FA56F24076 /* Pods_Yakka_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		3EF2B56C0FACA17D49575C6B /* Pods-Yakka-iOS Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-iOS Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-iOS Tests/Pods-Yakka-iOS Tests.release.xcconfig"; sourceTree = "<group>"; };
+		16A57F406DD2FC00B1E1F31A /* Pods-Yakka-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-tvOS/Pods-Yakka-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		17AFCBCAAE6510AA166838DA /* Pods_Yakka_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2139C68FE0B99F7F761AA11C /* Pods_Yakka_iOS_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_iOS_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		30D2960304B8B72A98BC3D5A /* Pods-Yakka-tvOS Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-tvOS Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-tvOS Tests/Pods-Yakka-tvOS Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		42C4FA7FCEE01C47CD64DF24 /* Pods-Yakka-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-tvOS/Pods-Yakka-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		52D6D97C1BEFF229002C0205 /* Yakka.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Yakka.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6D9861BEFF229002C0205 /* Yakka-iOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Yakka-iOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6D9E21BEFFF6E002C0205 /* Yakka.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Yakka.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6D9F01BEFFFBE002C0205 /* Yakka.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Yakka.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D6DA0F1BF000BD002C0205 /* Yakka.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Yakka.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		5F0DEB02FA8F96E447F4DCAE /* Pods_Yakka_iOS_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_iOS_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		67F1222CE7A6DB46E8E49D98 /* Pods-Yakka-watchOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-watchOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-watchOS/Pods-Yakka-watchOS.debug.xcconfig"; sourceTree = "<group>"; };
-		6B55341D1ACED6C7D21DD7E6 /* Pods_Yakka_macOS_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_macOS_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		758ED03F8BAC78CDADF0BD02 /* Pods-Yakka-tvOS Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-tvOS Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-tvOS Tests/Pods-Yakka-tvOS Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		7A762664554EE69FA2C5B6C0 /* Pods-Yakka-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-iOS/Pods-Yakka-iOS.release.xcconfig"; sourceTree = "<group>"; };
-		866C6E50408D6B4A061C9500 /* Pods-Yakka-macOS Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-macOS Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-macOS Tests/Pods-Yakka-macOS Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		898821CA1EC6827B00425EA6 /* MultiTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiTask.swift; sourceTree = "<group>"; };
-		898821CB1EC6827B00425EA6 /* ProductionLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductionLine.swift; sourceTree = "<group>"; };
-		898821CC1EC6827B00425EA6 /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
-		898821CD1EC6827B00425EA6 /* TaskRetryHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskRetryHelper.swift; sourceTree = "<group>"; };
-		898821DE1EC682C100425EA6 /* YakkaSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YakkaSpec.swift; sourceTree = "<group>"; };
-		949EEC260AE481DE2CCABB69 /* Pods_Yakka_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		96536D0C3D78EACB62A765BB /* Pods-Yakka-macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-macOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-macOS/Pods-Yakka-macOS.release.xcconfig"; sourceTree = "<group>"; };
+		547C62000663C7A46257FFB9 /* Pods-Yakka-macOS Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-macOS Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-macOS Tests/Pods-Yakka-macOS Tests.release.xcconfig"; sourceTree = "<group>"; };
+		7A863D78FBF52FAF68C00EB6 /* Pods_Yakka_macOS_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_macOS_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		828CEFB7291BBAF15B0ECDCF /* Pods_Yakka_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8933C7891EB5B82A000D00A4 /* YakkaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YakkaTests.swift; sourceTree = "<group>"; };
+		895E33C4F6469E4157C7095C /* Pods-Yakka-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-macOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-macOS/Pods-Yakka-macOS.debug.xcconfig"; sourceTree = "<group>"; };
+		898821E21EC6DCA600425EA6 /* MultiTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiTask.swift; sourceTree = "<group>"; };
+		898821E31EC6DCA600425EA6 /* ProductionLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductionLine.swift; sourceTree = "<group>"; };
+		898821E41EC6DCA600425EA6 /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
+		898821E51EC6DCA600425EA6 /* TaskRetryHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskRetryHelper.swift; sourceTree = "<group>"; };
+		8F8E45C377B26D8FEC169BA3 /* Pods_Yakka_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9B10822391F8F590B67C288A /* Pods-Yakka-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-iOS/Pods-Yakka-iOS.debug.xcconfig"; sourceTree = "<group>"; };
+		9EC94B6DA1B1FE29406E282C /* Pods_Yakka_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD2FAA261CD0B6D800659CF4 /* Yakka.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Yakka.plist; sourceTree = "<group>"; };
 		AD2FAA281CD0B6E100659CF4 /* YakkaTests.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = YakkaTests.plist; sourceTree = "<group>"; };
-		BAF840844CB4E6A1E014F52C /* Pods-Yakka-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-tvOS/Pods-Yakka-tvOS.release.xcconfig"; sourceTree = "<group>"; };
-		BC24EFF56365786C2A994A48 /* Pods_Yakka_tvOS_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_tvOS_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C8BEA97C019ADDD3802EBF1C /* Pods_Yakka_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C952EF86BC2E47DAEE85892C /* Pods-Yakka-tvOS Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-tvOS Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-tvOS Tests/Pods-Yakka-tvOS Tests.release.xcconfig"; sourceTree = "<group>"; };
-		D8D3C569BD2F6624204FE3C5 /* Pods-Yakka-iOS Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-iOS Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-iOS Tests/Pods-Yakka-iOS Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		B4B3CF55672B9D3A60E40844 /* Pods-Yakka-watchOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-watchOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-watchOS/Pods-Yakka-watchOS.debug.xcconfig"; sourceTree = "<group>"; };
+		C64C0B30FD5FEDD5B42C80E8 /* Pods-Yakka-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-iOS/Pods-Yakka-iOS.release.xcconfig"; sourceTree = "<group>"; };
+		C946BA2109F7EB2A23BC2B6C /* Pods_Yakka_tvOS_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_tvOS_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC4E43AB0D4FFA1925D167BD /* Pods-Yakka-macOS Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-macOS Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-macOS Tests/Pods-Yakka-macOS Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		DA059859F65D4B69145648CA /* Pods-Yakka-iOS Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-iOS Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-iOS Tests/Pods-Yakka-iOS Tests.release.xcconfig"; sourceTree = "<group>"; };
+		DCECCBF6D72AD6CFA6BA4E4A /* Pods-Yakka-macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-macOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-macOS/Pods-Yakka-macOS.release.xcconfig"; sourceTree = "<group>"; };
 		DD75027A1C68FCFC006590AF /* Yakka-macOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Yakka-macOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD75028D1C690C7A006590AF /* Yakka-tvOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Yakka-tvOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E6E83751C9C5001508738C5D /* Pods-Yakka-macOS Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-macOS Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-macOS Tests/Pods-Yakka-macOS Tests.release.xcconfig"; sourceTree = "<group>"; };
-		F8B38CF333AC6E667CF7E9B6 /* Pods_Yakka_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FE1E8811A034283598EF8ED8 /* Pods-Yakka-watchOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-watchOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-watchOS/Pods-Yakka-watchOS.release.xcconfig"; sourceTree = "<group>"; };
+		E8625BF278D7B51CA2562314 /* Pods-Yakka-iOS Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-iOS Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-iOS Tests/Pods-Yakka-iOS Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		E90D176479B5F2800EAB9C44 /* Pods-Yakka-tvOS Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-tvOS Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-tvOS Tests/Pods-Yakka-tvOS Tests.release.xcconfig"; sourceTree = "<group>"; };
+		FAFAAA351DC016DF26BF25B1 /* Pods-Yakka-watchOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-watchOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-watchOS/Pods-Yakka-watchOS.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,7 +105,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				05C3820FC8CE9A442616FE4B /* Pods_Yakka_iOS.framework in Frameworks */,
+				A3078346A533819AB7CA68CD /* Pods_Yakka_iOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,7 +114,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52D6D9871BEFF229002C0205 /* Yakka.framework in Frameworks */,
-				52DB504F906A6469E37673F1 /* Pods_Yakka_iOS_Tests.framework in Frameworks */,
+				1D8AD050D801146CBFBF368C /* Pods_Yakka_iOS_Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -122,7 +122,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C2D3A6A4855417EFC67AC6BA /* Pods_Yakka_watchOS.framework in Frameworks */,
+				4F8E8AE1179936F6ABBC4FDA /* Pods_Yakka_watchOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,7 +130,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E3DD6BBE10BDAE05E4AEC233 /* Pods_Yakka_tvOS.framework in Frameworks */,
+				3EECF2006579DEBFF4BFC09B /* Pods_Yakka_tvOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,7 +138,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				323AA77AFE990AB30CAC2D9F /* Pods_Yakka_macOS.framework in Frameworks */,
+				87BA31F7ED55066A0FFB06A2 /* Pods_Yakka_macOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,7 +147,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DD7502881C68FEDE006590AF /* Yakka.framework in Frameworks */,
-				1118D0C861E050C5880FAD6D /* Pods_Yakka_macOS_Tests.framework in Frameworks */,
+				39757153350D7C4DF3448810 /* Pods_Yakka_macOS_Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,32 +156,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				DD7502921C690C7A006590AF /* Yakka.framework in Frameworks */,
-				9684634C286F9E8B6116C2BF /* Pods_Yakka_tvOS_Tests.framework in Frameworks */,
+				3D16A6693FB7D14CFDBAFB37 /* Pods_Yakka_tvOS_Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		02ED856E2971CF3DAF7E3E4C /* Pods */ = {
+		00D8069A9A2EEF3642ED0E3D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				28F586E3C0963E7BACDA5B5C /* Pods-Yakka-iOS.debug.xcconfig */,
-				7A762664554EE69FA2C5B6C0 /* Pods-Yakka-iOS.release.xcconfig */,
-				D8D3C569BD2F6624204FE3C5 /* Pods-Yakka-iOS Tests.debug.xcconfig */,
-				3EF2B56C0FACA17D49575C6B /* Pods-Yakka-iOS Tests.release.xcconfig */,
-				25DA48FFFFEC7738768CE885 /* Pods-Yakka-macOS.debug.xcconfig */,
-				96536D0C3D78EACB62A765BB /* Pods-Yakka-macOS.release.xcconfig */,
-				866C6E50408D6B4A061C9500 /* Pods-Yakka-macOS Tests.debug.xcconfig */,
-				E6E83751C9C5001508738C5D /* Pods-Yakka-macOS Tests.release.xcconfig */,
-				0851C1C8B8D866D356CA8AF4 /* Pods-Yakka-tvOS.debug.xcconfig */,
-				BAF840844CB4E6A1E014F52C /* Pods-Yakka-tvOS.release.xcconfig */,
-				758ED03F8BAC78CDADF0BD02 /* Pods-Yakka-tvOS Tests.debug.xcconfig */,
-				C952EF86BC2E47DAEE85892C /* Pods-Yakka-tvOS Tests.release.xcconfig */,
-				67F1222CE7A6DB46E8E49D98 /* Pods-Yakka-watchOS.debug.xcconfig */,
-				FE1E8811A034283598EF8ED8 /* Pods-Yakka-watchOS.release.xcconfig */,
+				9EC94B6DA1B1FE29406E282C /* Pods_Yakka_iOS.framework */,
+				2139C68FE0B99F7F761AA11C /* Pods_Yakka_iOS_Tests.framework */,
+				8F8E45C377B26D8FEC169BA3 /* Pods_Yakka_macOS.framework */,
+				7A863D78FBF52FAF68C00EB6 /* Pods_Yakka_macOS_Tests.framework */,
+				17AFCBCAAE6510AA166838DA /* Pods_Yakka_tvOS.framework */,
+				C946BA2109F7EB2A23BC2B6C /* Pods_Yakka_tvOS_Tests.framework */,
+				828CEFB7291BBAF15B0ECDCF /* Pods_Yakka_watchOS.framework */,
 			);
-			name = Pods;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		52D6D9721BEFF229002C0205 = {
@@ -191,8 +184,8 @@
 				8933C7831EB5B7EB000D00A4 /* Tests */,
 				52D6D99C1BEFF38C002C0205 /* Configs */,
 				52D6D97D1BEFF229002C0205 /* Products */,
-				02ED856E2971CF3DAF7E3E4C /* Pods */,
-				6ABB20F067B3D4A240A3F047 /* Frameworks */,
+				C381B7674E4635D4E96BCE9C /* Pods */,
+				00D8069A9A2EEF3642ED0E3D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -219,27 +212,13 @@
 			path = Configs;
 			sourceTree = "<group>";
 		};
-		6ABB20F067B3D4A240A3F047 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				F8B38CF333AC6E667CF7E9B6 /* Pods_Yakka_iOS.framework */,
-				5F0DEB02FA8F96E447F4DCAE /* Pods_Yakka_iOS_Tests.framework */,
-				C8BEA97C019ADDD3802EBF1C /* Pods_Yakka_macOS.framework */,
-				6B55341D1ACED6C7D21DD7E6 /* Pods_Yakka_macOS_Tests.framework */,
-				2C7C8A753C8DF8FA56F24076 /* Pods_Yakka_tvOS.framework */,
-				BC24EFF56365786C2A994A48 /* Pods_Yakka_tvOS_Tests.framework */,
-				949EEC260AE481DE2CCABB69 /* Pods_Yakka_watchOS.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		8933C7811EB5B7E0000D00A4 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				898821CA1EC6827B00425EA6 /* MultiTask.swift */,
-				898821CB1EC6827B00425EA6 /* ProductionLine.swift */,
-				898821CC1EC6827B00425EA6 /* Task.swift */,
-				898821CD1EC6827B00425EA6 /* TaskRetryHelper.swift */,
+				898821E21EC6DCA600425EA6 /* MultiTask.swift */,
+				898821E31EC6DCA600425EA6 /* ProductionLine.swift */,
+				898821E41EC6DCA600425EA6 /* Task.swift */,
+				898821E51EC6DCA600425EA6 /* TaskRetryHelper.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -247,10 +226,31 @@
 		8933C7831EB5B7EB000D00A4 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				898821DE1EC682C100425EA6 /* YakkaSpec.swift */,
+				8933C7891EB5B82A000D00A4 /* YakkaTests.swift */,
 			);
 			name = Tests;
 			path = Tests/YakkaTests;
+			sourceTree = "<group>";
+		};
+		C381B7674E4635D4E96BCE9C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				9B10822391F8F590B67C288A /* Pods-Yakka-iOS.debug.xcconfig */,
+				C64C0B30FD5FEDD5B42C80E8 /* Pods-Yakka-iOS.release.xcconfig */,
+				E8625BF278D7B51CA2562314 /* Pods-Yakka-iOS Tests.debug.xcconfig */,
+				DA059859F65D4B69145648CA /* Pods-Yakka-iOS Tests.release.xcconfig */,
+				895E33C4F6469E4157C7095C /* Pods-Yakka-macOS.debug.xcconfig */,
+				DCECCBF6D72AD6CFA6BA4E4A /* Pods-Yakka-macOS.release.xcconfig */,
+				CC4E43AB0D4FFA1925D167BD /* Pods-Yakka-macOS Tests.debug.xcconfig */,
+				547C62000663C7A46257FFB9 /* Pods-Yakka-macOS Tests.release.xcconfig */,
+				16A57F406DD2FC00B1E1F31A /* Pods-Yakka-tvOS.debug.xcconfig */,
+				42C4FA7FCEE01C47CD64DF24 /* Pods-Yakka-tvOS.release.xcconfig */,
+				30D2960304B8B72A98BC3D5A /* Pods-Yakka-tvOS Tests.debug.xcconfig */,
+				E90D176479B5F2800EAB9C44 /* Pods-Yakka-tvOS Tests.release.xcconfig */,
+				B4B3CF55672B9D3A60E40844 /* Pods-Yakka-watchOS.debug.xcconfig */,
+				FAFAAA351DC016DF26BF25B1 /* Pods-Yakka-watchOS.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 		DD7502721C68FC1B006590AF /* Frameworks */ = {
@@ -307,12 +307,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52D6D9901BEFF229002C0205 /* Build configuration list for PBXNativeTarget "Yakka-iOS" */;
 			buildPhases = (
-				EC5EF78F5ED9FD9316435F13 /* [CP] Check Pods Manifest.lock */,
+				1C57A185250C012DDEA3D5BE /* [CP] Check Pods Manifest.lock */,
 				52D6D9771BEFF229002C0205 /* Sources */,
 				52D6D9781BEFF229002C0205 /* Frameworks */,
 				52D6D9791BEFF229002C0205 /* Headers */,
 				52D6D97A1BEFF229002C0205 /* Resources */,
-				31C768AE3E9C9FEE62C7AB19 /* [CP] Copy Pods Resources */,
+				31EC7DAF84FF3E36398DCA5F /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -327,12 +327,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52D6D9931BEFF229002C0205 /* Build configuration list for PBXNativeTarget "Yakka-iOS Tests" */;
 			buildPhases = (
-				23193C032287598E9BBF8961 /* [CP] Check Pods Manifest.lock */,
+				C20DDCDA54CA2555186597AA /* [CP] Check Pods Manifest.lock */,
 				52D6D9821BEFF229002C0205 /* Sources */,
 				52D6D9831BEFF229002C0205 /* Frameworks */,
 				52D6D9841BEFF229002C0205 /* Resources */,
-				D6BFED67ECD5542D57E88F19 /* [CP] Embed Pods Frameworks */,
-				1648E5BBDD6C8CA95A27E797 /* [CP] Copy Pods Resources */,
+				C38C5B78B57D375F4772FD3C /* [CP] Embed Pods Frameworks */,
+				A97F3FE9923AEECF90229F45 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -348,12 +348,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52D6D9E71BEFFF6E002C0205 /* Build configuration list for PBXNativeTarget "Yakka-watchOS" */;
 			buildPhases = (
-				4A653DCF33A6A055B8F2101D /* [CP] Check Pods Manifest.lock */,
+				CFB8CA85C11D3EED0F74E7BA /* [CP] Check Pods Manifest.lock */,
 				52D6D9DD1BEFFF6E002C0205 /* Sources */,
 				52D6D9DE1BEFFF6E002C0205 /* Frameworks */,
 				52D6D9DF1BEFFF6E002C0205 /* Headers */,
 				52D6D9E01BEFFF6E002C0205 /* Resources */,
-				3817ADCE2BAA3E466386101B /* [CP] Copy Pods Resources */,
+				763D335A199382398E52CA38 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -368,12 +368,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52D6DA011BEFFFBE002C0205 /* Build configuration list for PBXNativeTarget "Yakka-tvOS" */;
 			buildPhases = (
-				1A576FCD5B5C43A7C2EC658D /* [CP] Check Pods Manifest.lock */,
+				75DC67532769E8486BE87241 /* [CP] Check Pods Manifest.lock */,
 				52D6D9EB1BEFFFBE002C0205 /* Sources */,
 				52D6D9EC1BEFFFBE002C0205 /* Frameworks */,
 				52D6D9ED1BEFFFBE002C0205 /* Headers */,
 				52D6D9EE1BEFFFBE002C0205 /* Resources */,
-				C81B2C9C17EEB25304EBCB06 /* [CP] Copy Pods Resources */,
+				CBC4F08FF42ED524982D8262 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -388,12 +388,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 52D6DA201BF000BD002C0205 /* Build configuration list for PBXNativeTarget "Yakka-macOS" */;
 			buildPhases = (
-				1070AF5782A5F965CDDFCFCE /* [CP] Check Pods Manifest.lock */,
+				EC0DFCF09630EC4B8C93818F /* [CP] Check Pods Manifest.lock */,
 				52D6DA0A1BF000BD002C0205 /* Sources */,
 				52D6DA0B1BF000BD002C0205 /* Frameworks */,
 				52D6DA0C1BF000BD002C0205 /* Headers */,
 				52D6DA0D1BF000BD002C0205 /* Resources */,
-				1CC2BCCE592B8C2DF30CF289 /* [CP] Copy Pods Resources */,
+				F0272D70C4A71CF74BE63057 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -408,12 +408,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DD7502821C68FCFC006590AF /* Build configuration list for PBXNativeTarget "Yakka-macOS Tests" */;
 			buildPhases = (
-				1B8B86C87AE2273637F394E9 /* [CP] Check Pods Manifest.lock */,
+				FEF9A284A876A0D480730ADF /* [CP] Check Pods Manifest.lock */,
 				DD7502761C68FCFC006590AF /* Sources */,
 				DD7502771C68FCFC006590AF /* Frameworks */,
 				DD7502781C68FCFC006590AF /* Resources */,
-				8B308C33F57693C78995E203 /* [CP] Embed Pods Frameworks */,
-				B91D8A8106E0BD4941421874 /* [CP] Copy Pods Resources */,
+				0DCD43FD2EE428E70FBF2F9C /* [CP] Embed Pods Frameworks */,
+				CC2CE9310985A84C9B291A27 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -429,12 +429,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DD7502951C690C7A006590AF /* Build configuration list for PBXNativeTarget "Yakka-tvOS Tests" */;
 			buildPhases = (
-				90FAB2941C33DA02EFD26714 /* [CP] Check Pods Manifest.lock */,
+				90BF88C691D05CDC943D1DC2 /* [CP] Check Pods Manifest.lock */,
 				DD7502891C690C7A006590AF /* Sources */,
 				DD75028A1C690C7A006590AF /* Frameworks */,
 				DD75028B1C690C7A006590AF /* Resources */,
-				7451B49CD620DE90A8701F64 /* [CP] Embed Pods Frameworks */,
-				964C49C4A845480549B59816 /* [CP] Copy Pods Resources */,
+				DC6BA0CC742D56823649C067 /* [CP] Embed Pods Frameworks */,
+				447C9EB122DD13FF0DB540F2 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -454,7 +454,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0810;
-				ORGANIZATIONNAME = Yakka;
+				ORGANIZATIONNAME = "Kieran Harper";
 				TargetAttributes = {
 					52D6D97B1BEFF229002C0205 = {
 						CreatedOnToolsVersion = 7.1;
@@ -462,7 +462,7 @@
 					};
 					52D6D9851BEFF229002C0205 = {
 						CreatedOnToolsVersion = 7.1;
-						LastSwiftMigration = 0830;
+						LastSwiftMigration = 0800;
 					};
 					52D6D9E11BEFFF6E002C0205 = {
 						CreatedOnToolsVersion = 7.1;
@@ -478,11 +478,11 @@
 					};
 					DD7502791C68FCFC006590AF = {
 						CreatedOnToolsVersion = 7.2.1;
-						LastSwiftMigration = 0830;
+						LastSwiftMigration = 0800;
 					};
 					DD75028C1C690C7A006590AF = {
 						CreatedOnToolsVersion = 7.2.1;
-						LastSwiftMigration = 0830;
+						LastSwiftMigration = 0800;
 					};
 				};
 			};
@@ -562,157 +562,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1070AF5782A5F965CDDFCFCE /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		1648E5BBDD6C8CA95A27E797 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-iOS Tests/Pods-Yakka-iOS Tests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		1A576FCD5B5C43A7C2EC658D /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		1B8B86C87AE2273637F394E9 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		1CC2BCCE592B8C2DF30CF289 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-macOS/Pods-Yakka-macOS-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		23193C032287598E9BBF8961 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		31C768AE3E9C9FEE62C7AB19 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-iOS/Pods-Yakka-iOS-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		3817ADCE2BAA3E466386101B /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-watchOS/Pods-Yakka-watchOS-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		4A653DCF33A6A055B8F2101D /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		7451B49CD620DE90A8701F64 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-tvOS Tests/Pods-Yakka-tvOS Tests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		8B308C33F57693C78995E203 /* [CP] Embed Pods Frameworks */ = {
+		0DCD43FD2EE428E70FBF2F9C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -727,7 +577,7 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-macOS Tests/Pods-Yakka-macOS Tests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		90FAB2941C33DA02EFD26714 /* [CP] Check Pods Manifest.lock */ = {
+		1C57A185250C012DDEA3D5BE /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -742,7 +592,22 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		964C49C4A845480549B59816 /* [CP] Copy Pods Resources */ = {
+		31EC7DAF84FF3E36398DCA5F /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-iOS/Pods-Yakka-iOS-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		447C9EB122DD13FF0DB540F2 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -757,7 +622,22 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-tvOS Tests/Pods-Yakka-tvOS Tests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B91D8A8106E0BD4941421874 /* [CP] Copy Pods Resources */ = {
+		75DC67532769E8486BE87241 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		763D335A199382398E52CA38 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -769,10 +649,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-macOS Tests/Pods-Yakka-macOS Tests-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-watchOS/Pods-Yakka-watchOS-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C81B2C9C17EEB25304EBCB06 /* [CP] Copy Pods Resources */ = {
+		90BF88C691D05CDC943D1DC2 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		A97F3FE9923AEECF90229F45 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -784,10 +679,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-tvOS/Pods-Yakka-tvOS-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-iOS Tests/Pods-Yakka-iOS Tests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		D6BFED67ECD5542D57E88F19 /* [CP] Embed Pods Frameworks */ = {
+		C20DDCDA54CA2555186597AA /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		C38C5B78B57D375F4772FD3C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -802,7 +712,97 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-iOS Tests/Pods-Yakka-iOS Tests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		EC5EF78F5ED9FD9316435F13 /* [CP] Check Pods Manifest.lock */ = {
+		CBC4F08FF42ED524982D8262 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-tvOS/Pods-Yakka-tvOS-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CC2CE9310985A84C9B291A27 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-macOS Tests/Pods-Yakka-macOS Tests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CFB8CA85C11D3EED0F74E7BA /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		DC6BA0CC742D56823649C067 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-tvOS Tests/Pods-Yakka-tvOS Tests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EC0DFCF09630EC4B8C93818F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		F0272D70C4A71CF74BE63057 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Yakka-macOS/Pods-Yakka-macOS-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FEF9A284A876A0D480730ADF /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -824,10 +824,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				898821D61EC6827B00425EA6 /* Task.swift in Sources */,
-				898821CE1EC6827B00425EA6 /* MultiTask.swift in Sources */,
-				898821DA1EC6827B00425EA6 /* TaskRetryHelper.swift in Sources */,
-				898821D21EC6827B00425EA6 /* ProductionLine.swift in Sources */,
+				898821EE1EC6DCA600425EA6 /* Task.swift in Sources */,
+				898821E61EC6DCA600425EA6 /* MultiTask.swift in Sources */,
+				898821F21EC6DCA600425EA6 /* TaskRetryHelper.swift in Sources */,
+				898821EA1EC6DCA600425EA6 /* ProductionLine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -835,7 +835,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				898821DF1EC682C100425EA6 /* YakkaSpec.swift in Sources */,
+				8933C7901EB5B82D000D00A4 /* YakkaTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -843,10 +843,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				898821D81EC6827B00425EA6 /* Task.swift in Sources */,
-				898821D01EC6827B00425EA6 /* MultiTask.swift in Sources */,
-				898821DC1EC6827B00425EA6 /* TaskRetryHelper.swift in Sources */,
-				898821D41EC6827B00425EA6 /* ProductionLine.swift in Sources */,
+				898821F01EC6DCA600425EA6 /* Task.swift in Sources */,
+				898821E81EC6DCA600425EA6 /* MultiTask.swift in Sources */,
+				898821F41EC6DCA600425EA6 /* TaskRetryHelper.swift in Sources */,
+				898821EC1EC6DCA600425EA6 /* ProductionLine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -854,10 +854,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				898821D91EC6827B00425EA6 /* Task.swift in Sources */,
-				898821D11EC6827B00425EA6 /* MultiTask.swift in Sources */,
-				898821DD1EC6827B00425EA6 /* TaskRetryHelper.swift in Sources */,
-				898821D51EC6827B00425EA6 /* ProductionLine.swift in Sources */,
+				898821F11EC6DCA600425EA6 /* Task.swift in Sources */,
+				898821E91EC6DCA600425EA6 /* MultiTask.swift in Sources */,
+				898821F51EC6DCA600425EA6 /* TaskRetryHelper.swift in Sources */,
+				898821ED1EC6DCA600425EA6 /* ProductionLine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -865,10 +865,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				898821D71EC6827B00425EA6 /* Task.swift in Sources */,
-				898821CF1EC6827B00425EA6 /* MultiTask.swift in Sources */,
-				898821DB1EC6827B00425EA6 /* TaskRetryHelper.swift in Sources */,
-				898821D31EC6827B00425EA6 /* ProductionLine.swift in Sources */,
+				898821EF1EC6DCA600425EA6 /* Task.swift in Sources */,
+				898821E71EC6DCA600425EA6 /* MultiTask.swift in Sources */,
+				898821F31EC6DCA600425EA6 /* TaskRetryHelper.swift in Sources */,
+				898821EB1EC6DCA600425EA6 /* ProductionLine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -876,7 +876,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				898821E01EC682C100425EA6 /* YakkaSpec.swift in Sources */,
+				8933C78F1EB5B82C000D00A4 /* YakkaTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -884,7 +884,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				898821E11EC682C100425EA6 /* YakkaSpec.swift in Sources */,
+				8933C78E1EB5B82C000D00A4 /* YakkaTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1006,7 +1006,7 @@
 		};
 		52D6D9911BEFF229002C0205 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 28F586E3C0963E7BACDA5B5C /* Pods-Yakka-iOS.debug.xcconfig */;
+			baseConfigurationReference = 9B10822391F8F590B67C288A /* Pods-Yakka-iOS.debug.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
@@ -1029,7 +1029,7 @@
 		};
 		52D6D9921BEFF229002C0205 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7A762664554EE69FA2C5B6C0 /* Pods-Yakka-iOS.release.xcconfig */;
+			baseConfigurationReference = C64C0B30FD5FEDD5B42C80E8 /* Pods-Yakka-iOS.release.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
@@ -1052,7 +1052,7 @@
 		};
 		52D6D9941BEFF229002C0205 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D8D3C569BD2F6624204FE3C5 /* Pods-Yakka-iOS Tests.debug.xcconfig */;
+			baseConfigurationReference = E8625BF278D7B51CA2562314 /* Pods-Yakka-iOS Tests.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Configs/YakkaTests.plist;
@@ -1066,7 +1066,7 @@
 		};
 		52D6D9951BEFF229002C0205 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3EF2B56C0FACA17D49575C6B /* Pods-Yakka-iOS Tests.release.xcconfig */;
+			baseConfigurationReference = DA059859F65D4B69145648CA /* Pods-Yakka-iOS Tests.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Configs/YakkaTests.plist;
@@ -1080,7 +1080,7 @@
 		};
 		52D6D9E81BEFFF6E002C0205 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 67F1222CE7A6DB46E8E49D98 /* Pods-Yakka-watchOS.debug.xcconfig */;
+			baseConfigurationReference = B4B3CF55672B9D3A60E40844 /* Pods-Yakka-watchOS.debug.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -1103,7 +1103,7 @@
 		};
 		52D6D9E91BEFFF6E002C0205 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FE1E8811A034283598EF8ED8 /* Pods-Yakka-watchOS.release.xcconfig */;
+			baseConfigurationReference = FAFAAA351DC016DF26BF25B1 /* Pods-Yakka-watchOS.release.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
@@ -1127,7 +1127,7 @@
 		};
 		52D6DA021BEFFFBE002C0205 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0851C1C8B8D866D356CA8AF4 /* Pods-Yakka-tvOS.debug.xcconfig */;
+			baseConfigurationReference = 16A57F406DD2FC00B1E1F31A /* Pods-Yakka-tvOS.debug.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -1150,7 +1150,7 @@
 		};
 		52D6DA031BEFFFBE002C0205 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BAF840844CB4E6A1E014F52C /* Pods-Yakka-tvOS.release.xcconfig */;
+			baseConfigurationReference = 42C4FA7FCEE01C47CD64DF24 /* Pods-Yakka-tvOS.release.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -1174,7 +1174,7 @@
 		};
 		52D6DA211BF000BD002C0205 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 25DA48FFFFEC7738768CE885 /* Pods-Yakka-macOS.debug.xcconfig */;
+			baseConfigurationReference = 895E33C4F6469E4157C7095C /* Pods-Yakka-macOS.debug.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -1198,7 +1198,7 @@
 		};
 		52D6DA221BF000BD002C0205 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 96536D0C3D78EACB62A765BB /* Pods-Yakka-macOS.release.xcconfig */;
+			baseConfigurationReference = DCECCBF6D72AD6CFA6BA4E4A /* Pods-Yakka-macOS.release.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -1223,9 +1223,8 @@
 		};
 		DD7502831C68FCFC006590AF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 866C6E50408D6B4A061C9500 /* Pods-Yakka-macOS Tests.debug.xcconfig */;
+			baseConfigurationReference = CC4E43AB0D4FFA1925D167BD /* Pods-Yakka-macOS Tests.debug.xcconfig */;
 			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Configs/YakkaTests.plist;
@@ -1234,16 +1233,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Yakka.Yakka-macOS-Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
 		DD7502841C68FCFC006590AF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E6E83751C9C5001508738C5D /* Pods-Yakka-macOS Tests.release.xcconfig */;
+			baseConfigurationReference = 547C62000663C7A46257FFB9 /* Pods-Yakka-macOS Tests.release.xcconfig */;
 			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Configs/YakkaTests.plist;
@@ -1259,15 +1256,13 @@
 		};
 		DD7502961C690C7A006590AF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 758ED03F8BAC78CDADF0BD02 /* Pods-Yakka-tvOS Tests.debug.xcconfig */;
+			baseConfigurationReference = 30D2960304B8B72A98BC3D5A /* Pods-Yakka-tvOS Tests.debug.xcconfig */;
 			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Configs/YakkaTests.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Yakka.Yakka-tvOS-Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TVOS_DEPLOYMENT_TARGET = 9.1;
 			};
@@ -1275,9 +1270,8 @@
 		};
 		DD7502971C690C7A006590AF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C952EF86BC2E47DAEE85892C /* Pods-Yakka-tvOS Tests.release.xcconfig */;
+			baseConfigurationReference = E90D176479B5F2800EAB9C44 /* Pods-Yakka-tvOS Tests.release.xcconfig */;
 			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Configs/YakkaTests.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Yakka.Yakka-tvOS-Tests";

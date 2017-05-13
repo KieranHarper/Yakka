@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.description  = <<-DESC
     Your description here.
   DESC
-  s.homepage     = "https://github.com/KieranHarper/Yakka.git"
+  s.homepage     = "https://github.com/KieranHarper/Yakka"
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.author             = { "Kieran Harper" => "kieranjharper@gmail.com" }
   s.social_media_url   = ""
@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = "10.9"
   s.watchos.deployment_target = "2.0"
   s.tvos.deployment_target = "9.0"
-  s.source       = { :git => "https://github.com/KieranHarper/Yakka.git.git", :tag => s.version.to_s }
+  s.source       = { :git => "https://github.com/KieranHarper/Yakka.git", :tag => s.version.to_s }
   s.source_files  = "Sources/**/*"
   s.frameworks  = "Foundation"
 end

@@ -1,9 +1,9 @@
 //
-//  YakkaSpec.swift
+//  YakkaTests.swift
 //  Yakka
 //
 //  Created by Kieran Harper on 30/4/17.
-//  
+//
 //
 
 import Foundation
@@ -13,7 +13,7 @@ import Nimble
 import Yakka
 
 class YakkaSpec: QuickSpec {
-    
+        
     private func suceedingTask() -> Task {
         let task = Task { (process) in
             let delay: TimeInterval = 0.5

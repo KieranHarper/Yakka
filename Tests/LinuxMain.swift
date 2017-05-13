@@ -3,5 +3,5 @@ import Quick
 @testable import YakkaTests
 
 Quick.QCKMain([
-    YakkaSpec.self,
+    YakkaTests.self,
 ])
