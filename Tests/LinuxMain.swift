@@ -1,7 +1,7 @@
 import XCTest
 import Quick
-@testable import {PROJECT}Tests
+@testable import YakkaSpec
 
 Quick.QCKMain([
-    {PROJECT}Spec.self,
+    YakkaSpec.self,
 ])
