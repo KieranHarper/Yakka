@@ -1,6 +1,7 @@
 import XCTest
-@testable import YakkaTests
+import Quick
+@testable import {PROJECT}Tests
 
-XCTMain([
-    testCase(YakkaTests.allTests),
+Quick.QCKMain([
+    {PROJECT}Spec.self,
 ])
