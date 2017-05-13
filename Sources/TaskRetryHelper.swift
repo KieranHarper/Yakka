@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Dispatch
 
 /// Helper class that provides a means to retry something up to a limit, and according to a wait schedule
 public final class TaskRetryHelper {

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Dispatch
 
 /// Base class for tasks that manage the execution of a collection of tasks. Recommend using ParallelTask or SerialTask, which subclass this.
 open class MultiTask: Task {

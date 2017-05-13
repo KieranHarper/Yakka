@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Dispatch
 
 /// Building block for work that needs doing
 open class Task: NSObject {
@@ -64,7 +65,13 @@ open class Task: NSObject {
             // Switch to main both for thread safety and also because we can't start a timer without a run loop
             DispatchQueue.main.async {
                 self._pollMe = provider
-                self._pollingTimer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.poll), userInfo: nil, repeats: true)
+                #if os(Linux)
+                    self._pollingTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] (_) in
+                        self?.poll()
+                    }
+                #else
+                    self._pollingTimer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.poll), userInfo: nil, repeats: true)
+                #endif
             }
         }
         

@@ -6,6 +6,8 @@
 //  Copyright © 2017 Yakka. All rights reserved.
 //
 
+import Foundation
+import Dispatch
 import Quick
 import Nimble
 import Yakka
