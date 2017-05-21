@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "Yakka"
-  s.version      = "0.1"
+  s.version      = "0.5"
   s.summary      = ""
   s.description  = <<-DESC
     Your description here.
