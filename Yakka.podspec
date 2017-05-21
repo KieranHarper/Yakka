@@ -2,13 +2,10 @@ Pod::Spec.new do |s|
   s.name         = "Yakka"
   s.version      = "0.5.1"
   s.summary      = "A toolkit for coordinating the doing of stuff"
-  s.description  = <<-DESC
-    Your description here.
-  DESC
   s.homepage     = "https://github.com/KieranHarper/Yakka"
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.author             = { "Kieran Harper" => "kieranjharper@gmail.com" }
-  s.social_media_url   = ""
+  s.social_media_url   = "https://twitter.com/KieranTheTwit"
   s.ios.deployment_target = "8.0"
   s.osx.deployment_target = "10.9"
   s.watchos.deployment_target = "2.0"
