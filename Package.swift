@@ -1,7 +1,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "Yakka",
+    name: "Yakka"
 
     // (for running tests)
     // dependencies: [
