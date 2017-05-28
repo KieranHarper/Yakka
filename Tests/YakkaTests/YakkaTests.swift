@@ -1091,7 +1091,7 @@ class YakkaSpec: QuickSpec {
                 expect(cancelledCount).toEventually(equal(tasksCount))
             }
             
-            it("should be let you stop and cancel in one go") {
+            it("should let you stop and cancel in one go") {
                 var tasks = [Task]()
                 var cancelledCount = 0
                 var startedCount = 0
