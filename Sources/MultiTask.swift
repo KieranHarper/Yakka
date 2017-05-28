@@ -24,7 +24,8 @@ open class MultiTask: Task {
     // MARK: - Private variables
     
     /// Set of tasks we've been given
-    private var _allTasks = Array<Task>()
+    //NOTE: This is fileprivate so that a custom operator can tap into it
+    fileprivate var _allTasks = Array<Task>()
     
     /// Set of tasks that have yet to be asked to run
     private var _pendingTasks = Array<Task>()
@@ -182,6 +183,50 @@ open class ParallelTask: MultiTask {
         set {
             _maxParallelTasks = newValue
         }
+    }
+}
+
+
+
+
+/// Operators to construct multi-tasks with ease
+infix operator --> : AdditionPrecedence
+infix operator ||| : AdditionPrecedence
+extension Task {
+    
+    /// String a series of tasks together into a SerialTask
+    public static func --> (left: Task, right: Task) -> SerialTask {
+        var tasks = [Task]()
+        
+        // Handle the expectation that this is going to be used in a chain and that the item on the left may be the result of a previous operation.
+        if let leftSerial = left as? SerialTask {
+            tasks.append(contentsOf: leftSerial._allTasks)
+        } else {
+            tasks.append(left)
+        }
+        
+        // Just add the one on the right as-is
+        tasks.append(right)
+        
+        // Create a new serial task ready for execution
+        return SerialTask(involving: tasks)
+    }
+    
+    /// String a series of tasks together into a ParallelTask
+    public static func ||| (left: Task, right: Task) -> ParallelTask {
+        var tasks = [Task]()
+        
+        // Handle the expectation that this is going to be used in a chain and that the item on the left may be the result of a previous operation.
+        if let leftParallel = left as? ParallelTask {
+            tasks.append(contentsOf: leftParallel._allTasks)
+        } else {
+            tasks.append(left)
+        }
+        
+        // Just add the one on the right as-is
+        tasks.append(right)
+        
+        return ParallelTask(involving: tasks)
     }
 }
 
