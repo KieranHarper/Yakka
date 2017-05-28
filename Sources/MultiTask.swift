@@ -55,14 +55,15 @@ open class MultiTask: Task {
     /// Construct with the set of tasks to run together
     public init(involving tasks: [Task]) {
         super.init()
-        workToDo { (process) in
+        _allTasks = tasks
+        workToDo { [weak self] (process) in
+            guard let selfRef = self else { return }
             
             // Start executing tasks
-            self._overallProcess = process
-            self._allTasks = tasks
-            self._pendingTasks = tasks
-            self._internalQueue.async {
-                self.processSubtasks()
+            selfRef._overallProcess = process
+            selfRef._pendingTasks = tasks
+            selfRef._internalQueue.async {
+                selfRef.processSubtasks()
             }
         }
     }

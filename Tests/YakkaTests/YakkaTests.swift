@@ -783,6 +783,36 @@ class YakkaSpec: QuickSpec {
                     }
                 }
             }
+            
+            it("can be constructed using an operator") {
+                
+                let expectedOrder: [Int] = [0, 1, 2, 3, 4]
+                var flags = [Int]()
+                var tasks = [Task]()
+                for ii in expectedOrder {
+                    let t = Task { (process) in
+                        let delay: TimeInterval = 0.25
+                        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                            process.succeed()
+                        }
+                    }
+                    t.onStart {
+                        DispatchQueue.main.async {
+                            flags.append(ii)
+                        }
+                    }
+                    tasks.append(t)
+                }
+                
+                waitUntil(timeout: 3.0) { (done) in
+                    let serial = tasks[0] --> tasks[1] --> tasks[2] --> tasks[3] --> tasks[4]
+                    serial.startThenOnFinish { (outcome) in
+                        expect(outcome).to(equal(Task.Outcome.success))
+                        expect(flags).to(equal(expectedOrder))
+                        done()
+                    }
+                }
+            }
         }
         
         describe("a parallel task") {
@@ -820,8 +850,44 @@ class YakkaSpec: QuickSpec {
                     }
                 }
             }
+            
+            it("can be constructed using an operator") {
+                
+                let maxTasks = 4
+                var startFlags = [Int]()
+                var tasks = [Task]()
+                for ii in 0...10 {
+                    let t = Task { (process) in
+                        let delay: TimeInterval = 0.25
+                        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                            process.succeed()
+                        }
+                    }
+                    t.onStart {
+                        DispatchQueue.main.async {
+                            startFlags.append(ii)
+                            expect(startFlags.count).to(beLessThanOrEqualTo(maxTasks))
+                        }
+                    }
+                    t.onFinish(handler: { (_) in
+                        DispatchQueue.main.async {
+                            startFlags.removeLast()
+                        }
+                    })
+                    tasks.append(t)
+                }
+                
+                waitUntil(timeout: 5.0) { (done) in
+                    let parallel = tasks[0] ||| tasks[1] ||| tasks[2] ||| tasks[3] ||| tasks[4] ||| tasks[5] ||| tasks[6] ||| tasks[7] ||| tasks[8] ||| tasks[9]
+                    parallel.maxConcurrentTasks = maxTasks
+                    parallel.startThenOnFinish { (outcome) in
+                        expect(outcome).to(equal(Task.Outcome.success))
+                        done()
+                    }
+                }
+            }
         }
-        
+
         describe("exponential backoff") {
             
             var a: [TimeInterval]!
