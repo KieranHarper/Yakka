@@ -1,8 +1,10 @@
 # Yakka
 [![Build Status](https://travis-ci.org/KieranHarper/Yakka.svg?branch=master)](https://travis-ci.org/KieranHarper/Yakka?branch=master)
 [![Version](https://img.shields.io/cocoapods/v/Yakka.svg?style=flat)](http://cocoapods.org/pods/Yakka)
-[![License](https://img.shields.io/cocoapods/l/Yakka.svg?style=flat)](http://cocoapods.org/pods/Yakka)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+[![SwiftPM compatible](https://img.shields.io/badge/SPM-compatible-brightgreen.svg?style=flat)](https://swift.org/package-manager)
 [![Platform](https://img.shields.io/cocoapods/p/Yakka.svg?style=flat)](http://cocoapods.org/pods/Yakka)
+[![License](https://img.shields.io/cocoapods/l/Yakka.svg?style=flat)](http://cocoapods.org/pods/Yakka)
 
 ## Features
 
@@ -16,7 +18,7 @@ Yakka is designed for throwaway code you just need run asynchronously in the bac
 
 ## Examples
 
-### Trivial example
+### Trivial work
 ```swift
 Task(withWork: { process in
     // do something here...
@@ -27,7 +29,7 @@ Task(withWork: { process in
 ```
 Note that synchronous and asynchronous workloads are supported, so long as you tell the process object when it finishes.
 
-### Less trivial one-off example
+### Less trivial work
 ```swift
 let someWork = Task { process in
     
@@ -184,6 +186,21 @@ productionLine.stop() // or
 productionLine.stopAndCancel()
 ```
 
+### Chaining using operators
+```swift
+let someProcess = task1 --> task2 --> task3 // serial
+let anotherProcess = taskA --> taskB --> taskC // serial
+let overall = someProcess ||| anotherProcess // parallel
+
+overall.onFinish { outcome in
+    // now all tasks have finished
+}
+
+overall.start()
+// or..
+someProductionLine.addTask(overall)
+```
+
 These examples all complete their work by the end of the work closure (they're synchronous), but you can check out the tests file for a few more examples where work completes at arbitrary later times.
 
 #### Some details:
@@ -223,16 +240,24 @@ Some points about that:
 #### A note on memory management:
 Tasks retain themselves while running, which is done deliberately to make it easier to work with. The working queue used by the task is also retained while running. All you gotta do is make sure your work eventually finishes by calling one of the methods on the process object, and that the process object isn't retained beyond that point. If for example your task involves multiple async closures that need the process object but only one will run and clean up, ensure you only weakly capture the process object.
 
+SerialTask and ParallelTask both retain the tasks you give to them regardless of whether or not they are started. They retain themselves while running because they're also just Tasks.
+
 
 ## Yakka?
 As in Hard Yakka – classic Aussie slang for work. It's derived from 'yaga', which is a term from the Yagara language spoken by indigenous peoples of the region now known as Brisbane.
 
-## Requirements
+## Requirements & Platforms
 
-Swift 3.0+
+- Swift 3.0+
+- iOS
+- macOS
+- watchOS
+- tvOS
+- Linux
 
 ## Installation
 
+### Cocoapods
 Yakka is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
@@ -240,9 +265,28 @@ it, simply add the following line to your Podfile:
 pod "Yakka"
 ```
 
+### Carthage
+Yakka can be installed using [Carthage](https://github.com/Carthage/Carthage). Add the following to your Cartfile:
+
+```
+github "KieranHarper/Yakka" ~> 1.0
+```
+
+### Swift Package Manager
+Installation through the [Swift Package Manager](https://swift.org/package-manager/) is also supported. Add the following to your Package file:
+
+```swift
+dependencies: [
+    .Package(url: "https://github.com/KieranHarper/Yakka.git", majorVersion: 1)
+]
+```
+
+### Manually
+Just drag the files in from the Sources directory and you're good to go!
+
 ## Author
 
-Kieran Harper, kieranjharper@gmail.com
+Kieran Harper, kieranjharper@gmail.com, [@KieranTheTwit](https://twitter.com/KieranTheTwit)
 
 ## License
 
