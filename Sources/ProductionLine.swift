@@ -36,7 +36,7 @@ public final class ProductionLine: NSObject {
     private lazy var _runningTasks = [Task]()
     
     /// Queue providing serialization for state changing and other other thread sensitive things
-    private let _internalQueue = DispatchQueue(label: "ProductionLineInternal")
+    private let _internalQueue = DispatchQueue(label: "ProductionLineInternal", qos: .background)
     
     
     

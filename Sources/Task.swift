@@ -63,7 +63,7 @@ open class Task: NSObject {
             guard let provider = provider else { return }
             
             // Switch to main both for thread safety and also because we can't start a timer without a run loop
-            DispatchQueue.main.async {
+            DispatchQueue.main.async(qos: _qos) {
                 self._pollMe = provider
                 #if os(Linux)
                     self._pollingTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] (_) in
@@ -100,10 +100,12 @@ open class Task: NSObject {
         private weak var _task: Task?
         private var _pollingTimer: Timer?
         private var _pollMe: (()->Float)?
+        private let _qos: DispatchQoS
         
-        fileprivate init(task: Task) {
+        fileprivate init(task: Task, qos: DispatchQoS) {
             _task = task
             workQueue = task.queueForWork
+            _qos = qos
         }
         
         @objc private func poll() {
@@ -118,7 +120,7 @@ open class Task: NSObject {
         }
         
         private func stopPolling() {
-            DispatchQueue.main.async { // be thread safe
+            DispatchQueue.main.async(qos: _qos) { // be thread safe
                 self._pollingTimer?.invalidate()
                 self._pollingTimer = nil
                 self._pollMe = nil
@@ -153,7 +155,14 @@ open class Task: NSObject {
     public final private(set) var currentState = State.notStarted
     
     /// The queue to run the work closure on (default is a background queue)
-    public final var queueForWork: DispatchQueue = DispatchQueue(label: "YakkaWorkQueue", attributes: .concurrent)
+    public final var queueForWork: DispatchQueue = DispatchQueue.global(qos: globalQoS.qosClass) {
+        didSet {
+            
+            // We want to know when the queue is being set deliberately so that any change to the QoS afterwards doesn't set a new default
+            _queueIsCustom = true
+        }
+    }
+    private var _queueIsCustom = false
     
     /// The queue to deliver 'it started' feedback on (default main)
     public final var queueForStartFeedback = DispatchQueue.main
@@ -166,6 +175,23 @@ open class Task: NSObject {
     
     /// The queue to deliver 'it started again' feedback on (default main)
     public final var queueForRetryFeedback = DispatchQueue.main
+    
+    /// The QoS to use by default for all Yakka tasks.
+    public static var globalQoS = DispatchQoS.background
+    
+    /* The QoS to use for this task instance.
+     This will be applied when asyncing work onto any queues, including the feedback ones. By default it will use the global setting at the time of creation.
+     */
+    public final var qos = globalQoS {
+        didSet {
+            
+            // Update the default working queue if it hasn't been changed yet
+            if !_queueIsCustom {
+                self.queueForWork = DispatchQueue.global(qos: qos.qosClass)
+                _queueIsCustom = false // undo didSet
+            }
+        }
+    }
     
     /* A set of wait times that characterise the behaviour of an autoretry system (used when the task says it failed).
      - Defaults to nil, meaning there's no autoretry behaviour at all.
@@ -224,8 +250,8 @@ open class Task: NSObject {
     /// Global cache of all currently running tasks. This is used to ensure they're retained so the user doesn't have to, and also allows tasks to be retrieved by ID (only if they're running).
     static private var _cachedTasks = Dictionary<String, Task>()
     
-    /// Queue that serializes access to _cachedTasks for thread safety
-    static private let _cachedTasksSafetyQueue = DispatchQueue(label: "YakkaTaskCacheSafety", attributes: .concurrent)
+    /// Queue that serializes write access (via .barrier) to _cachedTasks for thread safety
+    static private let _cachedTasksSafetyQueue = DispatchQueue(label: "YakkaTaskCacheSafety", qos: .background, attributes: .concurrent)
     
     
     
@@ -261,7 +287,7 @@ open class Task: NSObject {
     
     /// Provide or change the work that the task actually does
     public final func workToDo(_ workBlock: @escaping TaskWorkClosure) {
-        _internalQueue.async {
+        _internalQueue.async(qos: qos) {
             self._workToDo = workBlock
         }
     }
@@ -294,7 +320,7 @@ open class Task: NSObject {
         }
         
         // Get on the safe queue to change our state and get started via helper
-        _internalQueue.async {
+        _internalQueue.async(qos: qos) {
             self.internalStart()
             
             // Stop retaining ourself if we were (applies only to the dependent task not finishing yet case)
@@ -308,7 +334,7 @@ open class Task: NSObject {
         // (where empty means any state)
         
         // Deliberately retain ourself so that we can go out of scope even though we're not running until the dependency finishes, without actually retaining ourself in the onFinish handler. This is done so that we can be cancelled and clean up when we haven't had a chance to run yet (special case for dependent tasks).
-        _internalQueue.async {
+        _internalQueue.async(qos: qos) {
             self._strongSelfWhileWaitingForDependencyToFinish = self
         }
         
@@ -331,7 +357,7 @@ open class Task: NSObject {
     
     /// Ask the task to cancel. Only tasks whose work is 'cancel-aware' will actually finish early with a cancelled outcome.
     public final func cancel() {
-        _internalQueue.async {
+        _internalQueue.async(qos: qos) {
             
             // Change the state
             if self.currentState == .running {
@@ -340,7 +366,7 @@ open class Task: NSObject {
             
             // Notify the work of the task itself that the state changed to cancelling (in case it wants to support cancelling but can't poll for the state)
             if let handler = self._onCancellingHandler {
-                self.queueForWork.async {
+                self.queueForWork.async(qos: self.qos) {
                     handler()
                 }
             }
@@ -357,28 +383,28 @@ open class Task: NSObject {
     
     /// Register a closure to handle 'it started' feedback, with an optional queue to use (overriding queueForStartFeedback)
     public final func onStart(via queue: DispatchQueue? = nil, handler: @escaping ()->()) {
-        _internalQueue.async {
+        _internalQueue.async(qos: qos) {
             self._startHandlers.append((handler, queue))
         }
     }
     
     /// Register a closure to handle progress feedback, with an optional queue to use (overriding queueForProgressFeedback)
     public final func onProgress(via queue: DispatchQueue? = nil, handler: @escaping ProgressHandler) {
-        _internalQueue.async {
+        _internalQueue.async(qos: qos) {
             self._progressHandlers.append((handler, queue))
         }
     }
     
     /// Register a closure to handle 'it finished' feedback, with an optional queue to use (overriding queueForFinishFeedback)
     public final func onFinish(via queue: DispatchQueue? = nil, handler: @escaping FinishHandler) {
-        _internalQueue.async {
+        _internalQueue.async(qos: qos) {
             self._finishHandlers.append((handler, queue))
         }
     }
     
     /// Register a closure to handle 'it started again' feedback, with an optional queue to use (overriding queueForRetryFeedback)
     public final func onRetry(via queue: DispatchQueue? = nil, handler: @escaping ()->()) {
-        _internalQueue.async {
+        _internalQueue.async(qos: qos) {
             self._retryHandlers.append((handler, queue))
         }
     }
@@ -409,13 +435,14 @@ open class Task: NSObject {
         // NOTE: What's important is our currentState has changed, which can only happen on this internal queue and therefore just asking a task to start from any queue will not synchronously result in the state changing – we need this notification mechanism instead.
         let startHandlers = _startHandlers // copied for thread safety
         if startHandlers.count > 0 {
-            queueForStartFeedback.async {
+            let qos = self.qos
+            queueForStartFeedback.async(qos: qos) {
                 for feedback in startHandlers {
                     
                     // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
                     let handler = feedback.0
                     if let customQueue = feedback.1 {
-                        customQueue.async {
+                        customQueue.async(qos: qos) {
                             handler()
                         }
                     } else {
@@ -426,8 +453,8 @@ open class Task: NSObject {
         }
         
         // Actually start the work on the worker queue now
-        queueForWork.async {
-            work(Process(task: self))
+        queueForWork.async(qos: qos) {
+            work(Process(task: self, qos: self.qos))
         }
     }
     
@@ -446,13 +473,14 @@ open class Task: NSObject {
         // Notify as needed
         let finishHandlers = _finishHandlers // copied for thread safety
         if finishHandlers.count > 0 {
-            queueForFinishFeedback.async {
+            let qos = self.qos
+            queueForFinishFeedback.async(qos: qos) {
                 for feedback in finishHandlers {
                     
                     // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
                     let handler = feedback.0
                     if let customQueue = feedback.1 {
-                        customQueue.async {
+                        customQueue.async(qos: qos) {
                             handler(outcome)
                         }
                     } else {
@@ -478,13 +506,14 @@ open class Task: NSObject {
         // If needed, provide feedback about the fact we've restarted
         let retryHandlers = _retryHandlers // copied for thread safety
         if retryHandlers.count > 0 {
-            queueForRetryFeedback.async {
+            let qos = self.qos
+            queueForRetryFeedback.async(qos: qos) {
                 for feedback in retryHandlers {
                     
                     // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
                     let handler = feedback.0
                     if let customQueue = feedback.1 {
-                        customQueue.async {
+                        customQueue.async(qos: qos) {
                             handler()
                         }
                     } else {
@@ -495,8 +524,8 @@ open class Task: NSObject {
         }
         
         // Actually restart the work on the worker queue now
-        queueForWork.async {
-            work(Process(task: self))
+        queueForWork.async(qos: qos) {
+            work(Process(task: self, qos: self.qos))
         }        
     }
     
@@ -507,13 +536,14 @@ open class Task: NSObject {
     /// Helper to fire off progress feedback to waiting handlers
     private func reportProgress(_ percent: Float) {
         if _progressHandlers.count > 0 {
-            queueForProgressFeedback.async {
+            let qos = self.qos
+            queueForProgressFeedback.async(qos: qos) {
                 for feedback in self._progressHandlers {
                     
                     // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
                     let handler = feedback.0
                     if let customQueue = feedback.1 {
-                        customQueue.async {
+                        customQueue.async(qos: qos) {
                             handler(percent)
                         }
                     } else {
@@ -528,7 +558,7 @@ open class Task: NSObject {
     private func finish(withOutcome outcome: Outcome) {
         
         // Get on the safe queue and change the state
-        _internalQueue.async {
+        _internalQueue.async(qos: qos) {
             self.internalFinish(withOutcome: outcome)
         }
     }
@@ -551,12 +581,12 @@ open class Task: NSObject {
     
     /// Safely stores a handler that will notify task's work that it should be cancelling
     private func storeOnCancelHandler(handler: @escaping ()->()) {
-        _internalQueue.async {
+        _internalQueue.async(qos: qos) {
             self._onCancellingHandler = handler
             
             // Notify straight away if we're already in the cancelling state
             if self.currentState == .cancelling {
-                self.queueForWork.async {
+                self.queueForWork.async(qos: self.qos) {
                     handler()
                 }
             }
@@ -577,7 +607,7 @@ open class Task: NSObject {
     
     /// Thread-safe write access to the tasks cache
     private class func cache(task: Task?, forID identifier: String) {
-        _cachedTasksSafetyQueue.async(flags: .barrier) {
+        _cachedTasksSafetyQueue.async(qos: globalQoS, flags: .barrier) {
             _cachedTasks[identifier] = task
         }
     }
