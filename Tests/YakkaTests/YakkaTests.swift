@@ -436,7 +436,7 @@ class YakkaSpec: QuickSpec {
                             progressedBackground = true
                         }
                     }
-                    task.onRetry { (outcome) in
+                    task.onRetry {
                         let maybeFlag = DispatchQueue.getSpecific(key: mainKey)
                         expect(maybeFlag).toNot(beNil())
                         if let flag = maybeFlag {
