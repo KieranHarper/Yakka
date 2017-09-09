@@ -11,7 +11,7 @@ end
 
 def testing_pods
     pod 'Quick'
-    pod 'Nimble'
+    pod 'Nimble', :git => 'https://github.com/Quick/Nimble.git', :branch => 'master'
 end
 
 
@@ -41,13 +41,16 @@ end
 # Test targets
 
 target 'Yakka-iOS Tests' do  
+    platform :ios, '10.0'
     testing_pods
 end
 
 target 'Yakka-macOS Tests' do  
+    platform :osx, '10.10'
     testing_pods
 end
 
 target 'Yakka-tvOS Tests' do  
+    platform :tvos, '10.0'
     testing_pods
 end
