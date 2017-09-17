@@ -909,8 +909,8 @@ class YakkaSpec: QuickSpec {
                 productionLine = ProductionLine()
             }
 
-            it("should begin in 'not running' state") {
-                expect(productionLine.isRunning).to(equal(false))
+            it("should begin in 'running' state") {
+                expect(productionLine.isRunning).to(equal(true))
             }
 
             it("should run tasks that are queued before it starts") {
@@ -941,9 +941,6 @@ class YakkaSpec: QuickSpec {
             }
 
             it("should run tasks that are queued after it starts") {
-
-                // Start first
-                productionLine.start()
 
                 // Create tasks
                 let multiple = self.setOfSuccedingTasks()
@@ -1000,7 +997,6 @@ class YakkaSpec: QuickSpec {
 
                 productionLine.maxConcurrentTasks = maxTasks
                 productionLine.addTasks(tasks)
-                productionLine.start()
                 expect(finishCount).toEventually(equal(tasks.count), timeout: 5.0)
             }
 
@@ -1026,7 +1022,6 @@ class YakkaSpec: QuickSpec {
                     })
                 }
                 productionLine.addTasks(tasks)
-                productionLine.start()
                 expect(startCount).toEventually(equal(tasks.count))
                 expect(finishCount).toEventually(equal(tasks.count))
                 expect(productionLine.isRunning).toEventually(equal(false))
@@ -1056,7 +1051,6 @@ class YakkaSpec: QuickSpec {
                     }
                 }
                 productionLine.addTasks(tasks)
-                productionLine.start()
                 expect(productionLine.isRunning).toEventually(equal(true))
                 expect(cancelledCount).toEventually(equal(tasksCount))
             }
@@ -1089,6 +1083,31 @@ class YakkaSpec: QuickSpec {
                 productionLine.start()
                 expect(cancelledCount).toEventually(equal(tasksCount))
                 expect((startedCount == tasksCount) && !productionLine.isRunning).toEventually(equal(true))
+            }
+            
+            it("should be useful in throwaway scope") {
+                waitUntil(timeout: 3.0) { (done) in
+                    var tasks = [Task]()
+                    var finishedCount = 0
+                    let tasksCount = 5
+                    for _ in 0..<tasksCount {
+                        let task = self.processAwareSucceedingTask()
+                        tasks.append(task)
+                        task.onFinish(handler: { (outcome) in
+                            DispatchQueue.main.async {
+                                finishedCount = finishedCount + 1
+                                if finishedCount == tasksCount {
+                                    expect(finishedCount).to(equal(tasksCount))
+                                    done()
+                                }
+                            }
+                        })
+                    }
+                    if tasksCount >= 5 { // just create throwaway scope...
+                        let line = ProductionLine()
+                        line.addTasks(tasks)
+                    }
+                }
             }
         }
     }

@@ -23,7 +23,7 @@ public final class ProductionLine: NSObject {
     public var maxConcurrentTasks: Int
     
     /// Whether or not the production line is running / will execute tasks upon adding (and when ready, depending on maxConcurrentTasks)
-    public private(set) var isRunning = false
+    public private(set) var isRunning = true
     
     
     
@@ -115,7 +115,7 @@ public final class ProductionLine: NSObject {
     private func processSubtasks() {
         
         // Start any tasks we can and/or have remaining
-        while (_runningTasks.count < maxConcurrentTasks || maxConcurrentTasks == 0), let next = _pendingTasks.first {
+        while isRunning, (_runningTasks.count < maxConcurrentTasks || maxConcurrentTasks == 0), let next = _pendingTasks.first {
             startSubtask(next)
         }
     }
