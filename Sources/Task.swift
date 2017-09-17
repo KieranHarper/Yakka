@@ -184,6 +184,9 @@ open class Task: NSObject {
         }
     }
     
+    /// The most recently reported value for task progress in percent 0..1
+    public final private(set) var currentProgress: Float = 0.0
+    
     
     
     
@@ -451,6 +454,11 @@ open class Task: NSObject {
     
     /// Helper to fire off progress feedback to waiting handlers
     private func reportProgress(_ percent: Float) {
+        
+        // Hang onto this new value for anyone that wants to access it synchronously
+        currentProgress = percent
+        
+        // Do the reporting
         if _progressHandlers.count > 0 {
             queueForProgressFeedback.async {
                 for feedback in self._progressHandlers {
