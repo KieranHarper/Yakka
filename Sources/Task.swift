@@ -153,7 +153,7 @@ open class Task: NSObject {
     public final private(set) var currentState = State.notStarted
     
     /// The queue to run the work closure on (default is a background queue)
-    public final var queueForWork: DispatchQueue = DispatchQueue(label: "YakkaWorkQueue", attributes: .concurrent)
+    internal final var queueForWork: DispatchQueue = DispatchQueue.global(qos: .background)
     
     /// The queue to deliver 'it started' feedback on (default main)
     public final var queueForStartFeedback = DispatchQueue.main
@@ -190,7 +190,7 @@ open class Task: NSObject {
     // MARK: - Private variables
     
     /// Queue that isolates and coordinates operations such as state changing (otherwise thread-unsafe)
-    private let _internalQueue = DispatchQueue(label: "YakkaTaskInternal")
+    private let _internalQueue = DispatchQueue(label: "YakkaTaskInternal", qos: .background)
     
     /// The closure containing the actual work
     private var _workToDo: TaskWorkClosure?
@@ -210,9 +210,6 @@ open class Task: NSObject {
     /// Helper that assists in tracking the number of retry attempts and performing the delays (nil when no retry behaviour asked for)
     private var _retryHelper: TaskRetryHelper?
     
-    /// Strong reference to ourself used only in start() when the task is dependent on another finishing. Tasks retaining themselves while running is actually due to _cachedTasks, not this.
-    private var _strongSelfWhileWaitingForDependencyToFinish: Task?
-    
     /// Handler that will be run when the state transitions to cancelling
     private var _onCancellingHandler: (()->())?
     
@@ -225,7 +222,7 @@ open class Task: NSObject {
     static private var _cachedTasks = Dictionary<String, Task>()
     
     /// Queue that serializes access to _cachedTasks for thread safety
-    static private let _cachedTasksSafetyQueue = DispatchQueue(label: "YakkaTaskCacheSafety", attributes: .concurrent)
+    static private let _cachedTasksSafetyQueue = DispatchQueue(label: "YakkaTaskCacheSafety", qos: .background, attributes: .concurrent)
     
     
     
@@ -273,59 +270,10 @@ open class Task: NSObject {
     
     /// Ask the task to start
     internal final func start() {
-        start(onFinishQueue: nil, onFinishHandler: nil)
-    }
-    
-    /// Ask the task to start, with a handler to run when it finishes
-    internal final func startThenOnFinish(_ finishHandler: @escaping FinishHandler) {
-        start(onFinishQueue: nil, onFinishHandler: finishHandler)
-    }
-    
-    /// Ask the task to start, with a handler to run when it finishes, providing a specific queue to run on
-    internal final func startThenOnFinish(via handlerQueue: DispatchQueue, _ handler: @escaping FinishHandler) {
-        start(onFinishQueue: handlerQueue, onFinishHandler: handler)
-    }
-    
-    private func start(onFinishQueue: DispatchQueue? = nil, onFinishHandler: FinishHandler? = nil) {
-        
-        // Pass on the finish handler
-        if let handler = onFinishHandler {
-            onFinish(via: onFinishQueue, handler: handler)
-        }
         
         // Get on the safe queue to change our state and get started via helper
         _internalQueue.async {
             self.internalStart()
-            
-            // Stop retaining ourself if we were (applies only to the dependent task not finishing yet case)
-            self._strongSelfWhileWaitingForDependencyToFinish = nil
-        }
-    }
-    
-    /// Ask the task to start as soon as another dependent task finishes, with options on which outcomes are allowed, and optional handler to run when this task eventually finishes
-    public final func start(after task: Task, finishesWith allowedOutcomes: [Outcome] = [], onFinishVia finishQueue: DispatchQueue? = nil, onFinish finishHandler: FinishHandler? = nil) {
-        
-        // (where empty means any state)
-        
-        // Deliberately retain ourself so that we can go out of scope even though we're not running until the dependency finishes, without actually retaining ourself in the onFinish handler. This is done so that we can be cancelled and clean up when we haven't had a chance to run yet (special case for dependent tasks).
-        _internalQueue.async {
-            self._strongSelfWhileWaitingForDependencyToFinish = self
-        }
-        
-        // Just attach to the dependent task's finish
-        task.onFinish { [weak self] (outcome) in
-            
-            // Start us if the state falls within one of our options
-            if allowedOutcomes.isEmpty || allowedOutcomes.contains(outcome) {
-                self?.start(onFinishQueue: finishQueue, onFinishHandler: finishHandler)
-            }
-                
-                // Otherwise finish by passing on the dependent's outcome
-            else {
-                self?.finish(withOutcome: outcome)
-            }
-            
-            self?._strongSelfWhileWaitingForDependencyToFinish = nil
         }
     }
     
@@ -344,9 +292,6 @@ open class Task: NSObject {
                     handler()
                 }
             }
-            
-            // Stop retaining ourself if we were (applies only to the dependent task not finishing yet case)
-            self._strongSelfWhileWaitingForDependencyToFinish = nil
         }
     }
     

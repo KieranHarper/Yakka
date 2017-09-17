@@ -620,43 +620,6 @@ class YakkaSpec: QuickSpec {
             }
         }
 
-        describe("a dependent task") {
-
-            var toSucceed: Task!
-            var toFail: Task!
-            var toWait: Task!
-            let waitTime: TimeInterval = 5.0
-            let line = ProductionLine()
-
-            beforeEach {
-                toSucceed = self.suceedingTask()
-                toFail = self.failingTask()
-                toWait = self.suceedingTask()
-            }
-
-            it("should start only if another one finishes first") {
-                waitUntil(timeout: waitTime) { (done) in
-                    toWait.onStart {
-                        expect(toSucceed.currentState).to(equal(Task.State.successful))
-                        done()
-                    }
-                    toWait.start(after: toSucceed)
-                    line.addTask(toSucceed)
-                }
-            }
-
-            it("should start only if another one finishes with one or more specific outcomes") {
-                waitUntil(timeout: waitTime) { (done) in
-                    toWait.onStart {
-                        expect(toFail.currentState).to(equal(Task.State.failed))
-                        done()
-                    }
-                    toWait.start(after: toFail, finishesWith: [.failure, .cancelled])
-                    line.addTask(toFail)
-                }
-            }
-        }
-
         describe("a multi task") {
             
             let line = ProductionLine()
