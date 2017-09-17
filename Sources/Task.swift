@@ -272,17 +272,17 @@ open class Task: NSObject {
     // MARK: - Control
     
     /// Ask the task to start
-    public final func start() {
+    internal final func start() {
         start(onFinishQueue: nil, onFinishHandler: nil)
     }
     
     /// Ask the task to start, with a handler to run when it finishes
-    public final func startThenOnFinish(_ finishHandler: @escaping FinishHandler) {
+    internal final func startThenOnFinish(_ finishHandler: @escaping FinishHandler) {
         start(onFinishQueue: nil, onFinishHandler: finishHandler)
     }
     
     /// Ask the task to start, with a handler to run when it finishes, providing a specific queue to run on
-    public final func startThenOnFinish(via handlerQueue: DispatchQueue, _ handler: @escaping FinishHandler) {
+    internal final func startThenOnFinish(via handlerQueue: DispatchQueue, _ handler: @escaping FinishHandler) {
         start(onFinishQueue: handlerQueue, onFinishHandler: handler)
     }
     

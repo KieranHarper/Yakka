@@ -10,7 +10,7 @@ import Foundation
 import Dispatch
 
 /* Object that can execute a number of tasks simultaneously and continue to accept and queue new tasks over its lifetime.
- This is a bit like a ParallelTask except that it lets you keep adding tasks while it runs, and there is no dependency between the tasks. A ProductionLine doesn't care whether tasks succeed or fail (you can attach handlers for that yourself), and never 'finishes' for itself - it will run as long as it lives.
+ This is a bit like an OperationQueue in that you create one and add tasks to it as a way to coordinate execution.
  Tasks are started in the order they're added. You can control the maximum number that can be started before others finish, via the maxConcurrentTasks property.
  NOTE: While Task and its subclasses will retain itself while running, ProductionLine will not.
  */
@@ -20,7 +20,7 @@ public final class ProductionLine: NSObject {
     // MARK: - Properties
     
     /// Optional limit on the number of tasks that can run concurrently. Defaults to unlimited (0)
-    public var maxConcurrentTasks: Int = 0
+    public var maxConcurrentTasks: Int
     
     /// Whether or not the production line is running / will execute tasks upon adding (and when ready, depending on maxConcurrentTasks)
     public private(set) var isRunning = false
@@ -36,7 +36,19 @@ public final class ProductionLine: NSObject {
     private lazy var _runningTasks = [Task]()
     
     /// Queue providing serialization for state changing and other other thread sensitive things
-    private let _internalQueue = DispatchQueue(label: "ProductionLineInternal")
+    private let _internalQueue = DispatchQueue(label: "ProductionLineInternal", qos: .background)
+    
+    /// The GCD queue on which tasks will perform their work
+    private let _workQueue: DispatchQueue
+    
+    
+    
+    // MARK: - Lifecycle
+    
+    public init(workQueue: DispatchQueue = DispatchQueue.global(qos: .background), maxConcurrentTasks: Int = 0) {
+        _workQueue = workQueue
+        self.maxConcurrentTasks = maxConcurrentTasks
+    }
     
     
     
@@ -124,6 +136,7 @@ public final class ProductionLine: NSObject {
         }
         
         // Kick it off
+        task.queueForWork = _workQueue
         task.start()
     }
 }

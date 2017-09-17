@@ -87,6 +87,7 @@ class YakkaSpec: QuickSpec {
             
             var task: Task!
             let waitTime: TimeInterval = 3.0
+            let line = ProductionLine()
             
             beforeEach {
                 task = self.suceedingTask()
@@ -102,35 +103,37 @@ class YakkaSpec: QuickSpec {
                         expect(task.currentState).to(equal(Task.State.running))
                         done()
                     }
-                    task.start()
+                    line.addTask(task)
                 }
             }
             
             it("should not be able to run again if already been run") {
                 waitUntil(timeout: waitTime) { (done) in
                     let toSucceed = self.suceedingTask()
-                    toSucceed.startThenOnFinish { (_) in
+                    toSucceed.onFinish { (_) in
                         expect(toSucceed.currentState).to(equal(Task.State.successful))
-                        toSucceed.start()
+                        line.addTask(toSucceed)
                         expect(toSucceed.currentState).to(equal(Task.State.successful))
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                             expect(toSucceed.currentState).to(equal(Task.State.successful))
                             done()
                         }
                     }
+                    line.addTask(toSucceed)
                 }
                 
                 waitUntil(timeout: waitTime) { (done) in
                     let toFail = self.failingTask()
-                    toFail.startThenOnFinish { (_) in
+                    toFail.onFinish { (_) in
                         expect(toFail.currentState).to(equal(Task.State.failed))
-                        toFail.start()
+                        line.addTask(toFail)
                         expect(toFail.currentState).to(equal(Task.State.failed))
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                             expect(toFail.currentState).to(equal(Task.State.failed))
                             done()
                         }
                     }
+                    line.addTask(toFail)
                 }
             }
             
@@ -139,23 +142,25 @@ class YakkaSpec: QuickSpec {
                 let hangingTask = Task { (process) in
                     // do nothing...
                 }
-                hangingTask.startThenOnFinish { (_) in
+                hangingTask.onFinish { (_) in
                     hit = true // never gets here
                 }
+                line.addTask(hangingTask)
                 expect(hit).toEventually(equal(false))
             }
-            
-            
+
+
             it("should fail if no work is provided") {
                 waitUntil(timeout: waitTime) { (done) in
                     let toFail = Task()
-                    toFail.startThenOnFinish { (_) in
+                    toFail.onFinish { (_) in
                         expect(toFail.currentState).to(equal(Task.State.failed))
                         done()
                     }
+                    line.addTask(toFail)
                 }
             }
-            
+
             it("should allow the work to be specified any time before being started") {
                 let toConfigure = Task()
                 var hit = false
@@ -163,42 +168,42 @@ class YakkaSpec: QuickSpec {
                     hit = true
                     process.succeed()
                 }
-                toConfigure.start()
+                line.addTask(toConfigure)
                 expect(hit).toEventually(equal(true))
             }
-            
+
             it("should be retrievable by ID, but only while running") {
-                
+
                 waitUntil(timeout: waitTime) { (done) in
-                    
+
                     // Before running
                     var possibleTask: Task? = nil
                     possibleTask = Task.find(withID: task.identifier)
                     expect(possibleTask).to(beNil())
-                    
+
                     // While running
                     task.onStart {
                         possibleTask = Task.find(withID: task.identifier)
                         expect(possibleTask).notTo(beNil())
                     }
-                    
+
                     // After running
                     task.onFinish { (outcome) in
                         possibleTask = Task.find(withID: task.identifier)
                         expect(possibleTask).to(beNil())
                         done()
                     }
-                    
+
                     // Before it actually starts
-                    task.start()
+                    line.addTask(task)
                     possibleTask = Task.find(withID: task.identifier)
                     expect(possibleTask).to(beNil())
                 }
             }
-            
+
             it("should transition to 'cancelling' even if it isn't cancel-aware") {
                 waitUntil(timeout: waitTime) { (done) in
-                    task.start()
+                    line.addTask(task)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                         task.cancel()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
@@ -208,7 +213,7 @@ class YakkaSpec: QuickSpec {
                     }
                 }
             }
-            
+
             it("should run notification handlers on the main queue by default") {
                 waitUntil(timeout: 10.0) { (done) in
                     let task = self.processAwareEventuallySucceedingTask()
@@ -249,75 +254,49 @@ class YakkaSpec: QuickSpec {
                         if let flag = maybeFlag {
                             expect(flag).to(equal(mainFlag))
                         }
-                        
+
                         expect(started).to(beTrue())
                         expect(progressed).to(beTrue())
                         expect(retried).to(beTrue())
                         done()
                     }
-                    task.start()
+                    line.addTask(task)
                 }
             }
-            
-            it("should use the queue provided for the work closure") {
-                waitUntil(timeout: waitTime) { (done) in
-                    
-                    
-                    let queueFlag = "custom"
-                    let queueKey = DispatchSpecificKey<String>()
-                    let queueToUse = DispatchQueue(label: queueFlag)
-                    queueToUse.setSpecific(key: queueKey, value: queueFlag)
-                    
-                    let task = Task { (process) in
-                        let maybeFlag = DispatchQueue.getSpecific(key: queueKey)
-                        expect(maybeFlag).toNot(beNil())
-                        if let flag = maybeFlag {
-                            expect(flag).to(equal(queueFlag))
-                        }
-                        process.workQueue.asyncAfter(deadline: .now() + 2.0) {
-                            done()
-                        }
-                    }
-                    task.queueForWork = queueToUse
-                    task.startThenOnFinish { (_) in
-                        done()
-                    }
-                }
-            }
-            
+
             it("should use queues that are specified for each type of notification") {
                 waitUntil(timeout: 10.0) { (done) in
                     let task = self.processAwareEventuallySucceedingTask()
-                    
+
                     let startQueueFlag = "start"
                     let progressQueueFlag = "progress"
                     let retryQueueFlag = "retry"
                     let finishQueueFlag = "finish"
-                    
+
                     let startQueue = DispatchQueue(label: startQueueFlag)
                     let progressQueue = DispatchQueue(label: progressQueueFlag)
                     let retryQueue = DispatchQueue(label: retryQueueFlag)
                     let finishQueue = DispatchQueue(label: finishQueueFlag)
-                    
+
                     let startKey = DispatchSpecificKey<String>()
                     let progressKey = DispatchSpecificKey<String>()
                     let retryKey = DispatchSpecificKey<String>()
                     let finishKey = DispatchSpecificKey<String>()
-                    
+
                     startQueue.setSpecific(key: startKey, value: startQueueFlag)
                     progressQueue.setSpecific(key: progressKey, value: progressQueueFlag)
                     retryQueue.setSpecific(key: retryKey, value: retryQueueFlag)
                     finishQueue.setSpecific(key: finishKey, value: finishQueueFlag)
-                    
+
                     var started = false
                     var progressed = false
                     var retried = false
-                    
+
                     task.queueForStartFeedback = startQueue
                     task.queueForRetryFeedback = retryQueue
                     task.queueForProgressFeedback = progressQueue
                     task.queueForFinishFeedback = finishQueue
-                    
+
                     task.onStart {
                         let maybeFlag = DispatchQueue.getSpecific(key: startKey)
                         expect(maybeFlag).toNot(beNil())
@@ -354,7 +333,7 @@ class YakkaSpec: QuickSpec {
                         if let flag = maybeFlag {
                             expect(flag).to(equal(finishQueueFlag))
                         }
-                        
+
                         DispatchQueue.main.async {
                             expect(started).to(beTrue())
                             expect(progressed).to(beTrue())
@@ -362,44 +341,44 @@ class YakkaSpec: QuickSpec {
                             done()
                         }
                     }
-                    task.start()
+                    line.addTask(task)
                 }
             }
-            
+
             it("should use queues that are specified for individual handlers") {
                 waitUntil(timeout: 10.0) { (done) in
                     let task = self.processAwareEventuallySucceedingTask()
-                    
+
                     let mainQueueFlag = "main"
                     let startQueueFlag = "start"
                     let progressQueueFlag = "progress"
                     let retryQueueFlag = "retry"
                     let finishQueueFlag = "finish"
-                    
+
                     let startQueue = DispatchQueue(label: startQueueFlag)
                     let progressQueue = DispatchQueue(label: progressQueueFlag)
                     let retryQueue = DispatchQueue(label: retryQueueFlag)
                     let finishQueue = DispatchQueue(label: finishQueueFlag)
-                    
+
                     let mainKey = DispatchSpecificKey<String>()
                     let startKey = DispatchSpecificKey<String>()
                     let progressKey = DispatchSpecificKey<String>()
                     let retryKey = DispatchSpecificKey<String>()
                     let finishKey = DispatchSpecificKey<String>()
-                    
+
                     DispatchQueue.main.setSpecific(key: mainKey, value: mainQueueFlag)
                     startQueue.setSpecific(key: startKey, value: startQueueFlag)
                     progressQueue.setSpecific(key: progressKey, value: progressQueueFlag)
                     retryQueue.setSpecific(key: retryKey, value: retryQueueFlag)
                     finishQueue.setSpecific(key: finishKey, value: finishQueueFlag)
-                    
+
                     var startedMain = false
                     var startedBackground = false
                     var progressedMain = false
                     var progressedBackground = false
                     var retriedMain = false
                     var retriedBackground = false
-                    
+
                     task.onStart {
                         let maybeFlag = DispatchQueue.getSpecific(key: mainKey)
                         expect(maybeFlag).toNot(beNil())
@@ -467,7 +446,7 @@ class YakkaSpec: QuickSpec {
                         if let flag = maybeFlag {
                             expect(flag).to(equal(finishQueueFlag))
                         }
-                        
+
                         DispatchQueue.main.async {
                             expect(startedMain).to(beTrue())
                             expect(startedBackground).to(beTrue())
@@ -475,64 +454,69 @@ class YakkaSpec: QuickSpec {
                             expect(progressedBackground).to(beTrue())
                             expect(retriedMain).to(beTrue())
                             expect(retriedBackground).to(beTrue())
-                            
+
                             done()
                         }
                     }
-                    task.start()
+                    line.addTask(task)
                 }
             }
         }
         
         describe("a successful task") {
-            
+
             var task: Task!
             let waitTime: TimeInterval = 3.0
-            
+            let line = ProductionLine()
+
             beforeEach {
                 task = self.suceedingTask()
             }
-            
+
             it("should run the finish handler with 'success'") {
-                
+
                 waitUntil(timeout: waitTime) { (done) in
-                    task.startThenOnFinish { (outcome) in
+                    task.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         done()
                     }
+                    line.addTask(task)
                 }
             }
-            
+
             it("should be able to succeed eventually after N retries") {
                 waitUntil(timeout: 10.0) { (done) in
                     let eventuallySucceed = self.processAwareEventuallySucceedingTask()
-                    eventuallySucceed.startThenOnFinish { (outcome) in
+                    eventuallySucceed.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         done()
                     }
+                    line.addTask(eventuallySucceed)
                 }
             }
         }
-        
+
         describe("a failing task") {
-            
+
             var task: Task!
             let waitTime: TimeInterval = 3.0
-            
+            let line = ProductionLine()
+
             beforeEach {
                 task = self.failingTask()
             }
-            
+
             it("should run the finish handler with 'failure'") {
-                
+
                 waitUntil(timeout: waitTime) { (done) in
-                    task.startThenOnFinish { (outcome) in
+                    task.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.failure))
                         done()
                     }
+                    line.addTask(task)
                 }
             }
-            
+
             it("should retry N times before giving up") {
                 waitUntil(timeout: 10.0) { (done) in
                     var hit = false
@@ -540,49 +524,53 @@ class YakkaSpec: QuickSpec {
                     task.onRetry {
                         hit = true
                     }
-                    task.startThenOnFinish { (outcome) in
+                    task.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.failure))
                         expect(hit).to(equal(true))
                         done()
                     }
+                    line.addTask(task)
                 }
             }
         }
-        
+
         describe("a process-aware task") {
-            
+
             var task: Task!
             let waitTime: TimeInterval = 5.0
-            
+            let line = ProductionLine()
+
             beforeEach {
                 task = self.processAwareSucceedingTask()
             }
-            
+
             it("should finish with 'cancelled' if asked to cancel while running") {
                 waitUntil(timeout: waitTime) { (done) in
-                    task.startThenOnFinish { (outcome) in
+                    task.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.cancelled))
                         done()
                     }
+                    line.addTask(task)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         task.cancel()
                     }
                 }
             }
-            
+
             it("should generate notifications about progress") {
                 waitUntil(timeout: waitTime) { (done) in
                     var hit = false
                     task.onProgress { (percent) in
                         hit = true
                     }
-                    task.startThenOnFinish { (outcome) in
+                    task.onFinish { (outcome) in
                         expect(hit).to(equal(true))
                         done()
                     }
+                    line.addTask(task)
                 }
             }
-            
+
             it("should be able to provide progress via the polling approach") {
                 let task = Task { (process) in
                     let step: TimeInterval = 0.5
@@ -601,13 +589,14 @@ class YakkaSpec: QuickSpec {
                     task.onProgress { (percent) in
                         hit = true
                     }
-                    task.startThenOnFinish { (outcome) in
+                    task.onFinish { (outcome) in
                         expect(hit).to(equal(true))
                         done()
                     }
+                    line.addTask(task)
                 }
             }
-            
+
             it("should be able to respond to cancellation without polling") {
                 let t = Task { (process) in
                     process.onShouldCancel {
@@ -619,30 +608,32 @@ class YakkaSpec: QuickSpec {
                     }
                 }
                 waitUntil(timeout: waitTime) { (done) in
-                    t.startThenOnFinish { (outcome) in
+                    t.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.cancelled))
                         done()
                     }
+                    line.addTask(t)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         t.cancel()
                     }
                 }
             }
         }
-        
+
         describe("a dependent task") {
-            
+
             var toSucceed: Task!
             var toFail: Task!
             var toWait: Task!
             let waitTime: TimeInterval = 5.0
-            
+            let line = ProductionLine()
+
             beforeEach {
                 toSucceed = self.suceedingTask()
                 toFail = self.failingTask()
                 toWait = self.suceedingTask()
             }
-            
+
             it("should start only if another one finishes first") {
                 waitUntil(timeout: waitTime) { (done) in
                     toWait.onStart {
@@ -650,10 +641,10 @@ class YakkaSpec: QuickSpec {
                         done()
                     }
                     toWait.start(after: toSucceed)
-                    toSucceed.start()
+                    line.addTask(toSucceed)
                 }
             }
-            
+
             it("should start only if another one finishes with one or more specific outcomes") {
                 waitUntil(timeout: waitTime) { (done) in
                     toWait.onStart {
@@ -661,33 +652,36 @@ class YakkaSpec: QuickSpec {
                         done()
                     }
                     toWait.start(after: toFail, finishesWith: [.failure, .cancelled])
-                    toFail.start()
+                    line.addTask(toFail)
                 }
             }
         }
-        
+
         describe("a multi task") {
             
+            let line = ProductionLine()
+
             it("should provide overall progress") {
                 var tasks = [Task]()
                 for _ in 0...10 {
                     let t = self.processAwareSucceedingTask()
                     tasks.append(t)
                 }
-                
+
                 waitUntil(timeout: 5.0) { (done) in
                     let parallel = ParallelTask(involving: tasks)
                     parallel.onProgress { (percent) in
                         expect(percent).to(beGreaterThanOrEqualTo(0.0))
                         expect(percent).to(beLessThanOrEqualTo(1.0))
                     }
-                    parallel.startThenOnFinish { (outcome) in
+                    parallel.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         done()
                     }
+                    line.addTask(parallel)
                 }
             }
-            
+
             it("should allow subtasks to fail without overall failure (by default)") {
                 var tasks = [Task]()
                 for ii in 0...5 {
@@ -697,16 +691,17 @@ class YakkaSpec: QuickSpec {
                         tasks.append(self.suceedingTask())
                     }
                 }
-                
+
                 waitUntil(timeout: 10.0) { (done) in
                     let serial = SerialTask(involving: tasks)
-                    serial.startThenOnFinish { (outcome) in
+                    serial.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         done()
                     }
+                    line.addTask(serial)
                 }
             }
-            
+
             it("should be configurable to fail overall if any subtask fails") {
                 var tasks = [Task]()
                 for ii in 0...5 {
@@ -716,17 +711,18 @@ class YakkaSpec: QuickSpec {
                         tasks.append(self.suceedingTask())
                     }
                 }
-                
+
                 waitUntil(timeout: 10.0) { (done) in
                     let serial = SerialTask(involving: tasks)
                     serial.requireSuccessFromSubtasks = true
-                    serial.startThenOnFinish { (outcome) in
+                    serial.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.failure))
                         done()
                     }
+                    line.addTask(serial)
                 }
             }
-            
+
             it("should prevent pending subtasks from starting when canceling") {
                 var startFlags = [Int]()
                 let numTasks = 5
@@ -738,24 +734,28 @@ class YakkaSpec: QuickSpec {
                     }
                     tasks.append(t)
                 }
-                
+
                 waitUntil(timeout: 10.0) { (done) in
                     let serial = SerialTask(involving: tasks)
-                    serial.startThenOnFinish { (outcome) in
+                    serial.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.cancelled))
                         expect(startFlags.count).to(beLessThan(numTasks))
                         done()
                     }
+                    line.addTask(serial)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) {
                         serial.cancel()
                     }
                 }
             }
         }
-        
+
         describe("a serial task") {
+            
+            let line = ProductionLine()
+            
             it("should run tasks to completion in the right order") {
-                
+
                 let expectedOrder: [Int] = [0, 1, 2, 3, 4]
                 var flags = [Int]()
                 var tasks = [Task]()
@@ -773,19 +773,20 @@ class YakkaSpec: QuickSpec {
                     }
                     tasks.append(t)
                 }
-                
+
                 waitUntil(timeout: 3.0) { (done) in
                     let serial = SerialTask(involving: tasks)
-                    serial.startThenOnFinish { (outcome) in
+                    serial.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         expect(flags).to(equal(expectedOrder))
                         done()
                     }
+                    line.addTask(serial)
                 }
             }
-            
+
             it("can be constructed using an operator") {
-                
+
                 let expectedOrder: [Int] = [0, 1, 2, 3, 4]
                 var flags = [Int]()
                 var tasks = [Task]()
@@ -803,19 +804,23 @@ class YakkaSpec: QuickSpec {
                     }
                     tasks.append(t)
                 }
-                
+
                 waitUntil(timeout: 3.0) { (done) in
                     let serial = tasks[0] --> tasks[1] --> tasks[2] --> tasks[3] --> tasks[4]
-                    serial.startThenOnFinish { (outcome) in
+                    serial.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         expect(flags).to(equal(expectedOrder))
                         done()
                     }
+                    line.addTask(serial)
                 }
             }
         }
-        
+
         describe("a parallel task") {
+            
+            let line = ProductionLine()
+            
             it("should start no more than the specified max at a time") {
                 let maxTasks = 4
                 var startFlags = [Int]()
@@ -840,19 +845,20 @@ class YakkaSpec: QuickSpec {
                     })
                     tasks.append(t)
                 }
-                
+
                 waitUntil(timeout: 5.0) { (done) in
                     let parallel = ParallelTask(involving: tasks)
                     parallel.maxConcurrentTasks = maxTasks
-                    parallel.startThenOnFinish { (outcome) in
+                    parallel.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         done()
                     }
+                    line.addTask(parallel)
                 }
             }
-            
+
             it("can be constructed using an operator") {
-                
+
                 let maxTasks = 4
                 var startFlags = [Int]()
                 var tasks = [Task]()
@@ -876,26 +882,27 @@ class YakkaSpec: QuickSpec {
                     })
                     tasks.append(t)
                 }
-                
+
                 waitUntil(timeout: 5.0) { (done) in
                     let parallel = tasks[0] ||| tasks[1] ||| tasks[2] ||| tasks[3] ||| tasks[4] ||| tasks[5] ||| tasks[6] ||| tasks[7] ||| tasks[8] ||| tasks[9]
                     parallel.maxConcurrentTasks = maxTasks
-                    parallel.startThenOnFinish { (outcome) in
+                    parallel.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
                         done()
                     }
+                    line.addTask(parallel)
                 }
             }
         }
 
         describe("exponential backoff") {
-            
+
             var a: [TimeInterval]!
             var b: [TimeInterval]!
             var c: [TimeInterval]!
             var d: [TimeInterval]!
             var e: [TimeInterval]!
-            
+
             beforeEach {
                 let numRetries = 5
                 a = TaskRetryHelper.exponentialBackoffTimeline(forMaxRetries: numRetries, startingAt: 0.0)
@@ -904,7 +911,7 @@ class YakkaSpec: QuickSpec {
                 d = TaskRetryHelper.exponentialBackoffTimeline(forMaxRetries: numRetries, startingAt: 1.0)
                 e = TaskRetryHelper.exponentialBackoffTimeline(forMaxRetries: numRetries, startingAt: 3.0)
             }
-            
+
             it("should start with initial value (when positive)") {
                 expect(a[0]).to(equal(0.0))
                 expect(b[0]).to(equal(0.0))
@@ -912,7 +919,7 @@ class YakkaSpec: QuickSpec {
                 expect(d[0]).to(equal(1.0))
                 expect(e[0]).to(equal(3.0))
             }
-            
+
             it("should always increase exponentially from the initial value") {
                 func checkTimeline(_ timeline: [TimeInterval]) {
                     for ii in 1..<timeline.count {
@@ -930,19 +937,19 @@ class YakkaSpec: QuickSpec {
                 checkTimeline(e)
             }
         }
-        
+
         describe("a production line") {
-            
+
             var productionLine: ProductionLine!
-            
+
             beforeEach {
                 productionLine = ProductionLine()
             }
-            
+
             it("should begin in 'not running' state") {
                 expect(productionLine.isRunning).to(equal(false))
             }
-            
+
             it("should run tasks that are queued before it starts") {
                 let multiple = self.setOfSuccedingTasks()
                 var startCount = 0
@@ -958,23 +965,23 @@ class YakkaSpec: QuickSpec {
                         set1.append(task)
                     }
                 }
-                
+
                 // Deliberately exercise both add methods
                 productionLine.addTasks(set1)
                 for task in set2 {
                     productionLine.addTask(task)
                 }
-                
+
                 // Start
                 productionLine.start()
                 expect(startCount).toEventually(equal(multiple.count))
             }
-            
+
             it("should run tasks that are queued after it starts") {
-                
+
                 // Start first
                 productionLine.start()
-                
+
                 // Create tasks
                 let multiple = self.setOfSuccedingTasks()
                 var startCount = 0
@@ -990,17 +997,17 @@ class YakkaSpec: QuickSpec {
                         set1.append(task)
                     }
                 }
-                
+
                 // Deliberately exercise both add methods
                 productionLine.addTasks(set1)
                 for task in set2 {
                     productionLine.addTask(task)
                 }
-                
+
                 // Wait
                 expect(startCount).toEventually(equal(multiple.count))
             }
-            
+
             it("should limit the maximum number of tasks when asked") {
                 let maxTasks = 4
                 var startFlags = [Int]()
@@ -1027,13 +1034,13 @@ class YakkaSpec: QuickSpec {
                     })
                     tasks.append(t)
                 }
-                
+
                 productionLine.maxConcurrentTasks = maxTasks
                 productionLine.addTasks(tasks)
                 productionLine.start()
                 expect(finishCount).toEventually(equal(tasks.count), timeout: 5.0)
             }
-            
+
             it("should be stoppable without affecting running tasks") {
                 let tasks = self.setOfSuccedingTasks()
                 var startCount = 0
@@ -1062,7 +1069,7 @@ class YakkaSpec: QuickSpec {
                 expect(productionLine.isRunning).toEventually(equal(false))
                 expect((startCount == tasks.count) && !productionLine.isRunning).toEventually(equal(true))
             }
-            
+
             it("should let you easily ask all running tasks to cancel") {
                 var tasks = [Task]()
                 var cancelledCount = 0
@@ -1090,7 +1097,7 @@ class YakkaSpec: QuickSpec {
                 expect(productionLine.isRunning).toEventually(equal(true))
                 expect(cancelledCount).toEventually(equal(tasksCount))
             }
-            
+
             it("should let you stop and cancel in one go") {
                 var tasks = [Task]()
                 var cancelledCount = 0

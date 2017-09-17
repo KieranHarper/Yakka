@@ -37,7 +37,7 @@ open class MultiTask: Task {
     private var _finishedTasks = Array<Task>()
     
     /// Queue providing serialization for state changing and other other thread sensitive things
-    private let _internalQueue = DispatchQueue(label: "YakkaMultiTaskInternal")
+    private let _internalQueue = DispatchQueue(label: "YakkaMultiTaskInternal", qos: .background)
     
     /// The maximum number of tasks we're going to ask to start before waiting for some to finish. Defaults to unlimited (0)
     fileprivate var _maxParallelTasks = 0
