@@ -103,7 +103,7 @@ open class Task: NSObject {
         
         fileprivate init(task: Task) {
             _task = task
-            workQueue = task.queueForWork
+            workQueue = task._queueForWork
         }
         
         @objc private func poll() {
@@ -152,9 +152,6 @@ open class Task: NSObject {
     /// State of the task's lifecycle
     public final private(set) var currentState = State.notStarted
     
-    /// The queue to run the work closure on (default is a background queue)
-    internal final var queueForWork: DispatchQueue = DispatchQueue.global(qos: .background)
-    
     /// The queue to deliver 'it started' feedback on (default main)
     public final var queueForStartFeedback = DispatchQueue.main
     
@@ -194,6 +191,9 @@ open class Task: NSObject {
     
     /// Queue that isolates and coordinates operations such as state changing (otherwise thread-unsafe)
     private let _internalQueue = DispatchQueue(label: "YakkaTaskInternal", qos: .background)
+    
+    /// The queue to run the work closure on (default is a background queue)
+    internal private(set) final var _queueForWork: DispatchQueue!
     
     /// The closure containing the actual work
     private var _workToDo: TaskWorkClosure?
@@ -272,10 +272,11 @@ open class Task: NSObject {
     // MARK: - Control
     
     /// Ask the task to start
-    internal final func start() {
+    internal final func start(using workQueue: DispatchQueue) {
         
         // Get on the safe queue to change our state and get started via helper
         _internalQueue.async {
+            self._queueForWork = workQueue
             self.internalStart()
         }
     }
@@ -291,7 +292,7 @@ open class Task: NSObject {
             
             // Notify the work of the task itself that the state changed to cancelling (in case it wants to support cancelling but can't poll for the state)
             if let handler = self._onCancellingHandler {
-                self.queueForWork.async {
+                self._queueForWork.async {
                     handler()
                 }
             }
@@ -374,7 +375,7 @@ open class Task: NSObject {
         }
         
         // Actually start the work on the worker queue now
-        queueForWork.async {
+        _queueForWork.async {
             work(Process(task: self))
         }
     }
@@ -443,7 +444,7 @@ open class Task: NSObject {
         }
         
         // Actually restart the work on the worker queue now
-        queueForWork.async {
+        _queueForWork.async {
             work(Process(task: self))
         }        
     }
@@ -509,7 +510,7 @@ open class Task: NSObject {
             
             // Notify straight away if we're already in the cancelling state
             if self.currentState == .cancelling {
-                self.queueForWork.async {
+                self._queueForWork.async {
                     handler()
                 }
             }

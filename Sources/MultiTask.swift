@@ -69,15 +69,6 @@ open class MultiTask: Task {
         }
     }
     
-    /// Specify a working queue to apply to each of the subtasks. By default N different queues are used, since it's up to the Task instances.
-    public final func useQueueForSubtaskWork(_ queue: DispatchQueue) {
-        _internalQueue.async {
-            for task in self._allTasks {
-                task.queueForWork = queue
-            }
-        }
-    }
-    
     
     
     
@@ -133,7 +124,7 @@ open class MultiTask: Task {
         }
         
         // Kick it off
-        task.start()
+        task.start(using: self._queueForWork)
     }
     
     /// Handle a subtask finishing, consider what to do next

@@ -136,7 +136,6 @@ public final class ProductionLine: NSObject {
         }
         
         // Kick it off
-        task.queueForWork = _workQueue
-        task.start()
+        task.start(using: _workQueue)
     }
 }
