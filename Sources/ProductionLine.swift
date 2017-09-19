@@ -25,6 +25,9 @@ public final class ProductionLine: NSObject {
     /// Whether or not the production line is running / will execute tasks upon adding (and when ready, depending on maxConcurrentTasks)
     public private(set) var isRunning = true
     
+    /// The GCD queue on which tasks will perform their work
+    public let workQueue: DispatchQueue
+    
     
     
     // MARK: - Private variables
@@ -38,15 +41,13 @@ public final class ProductionLine: NSObject {
     /// Queue providing serialization for state changing and other other thread sensitive things
     private let _internalQueue = DispatchQueue(label: "ProductionLineInternal", qos: .background)
     
-    /// The GCD queue on which tasks will perform their work
-    private let _workQueue: DispatchQueue
     
     
     
     // MARK: - Lifecycle
     
     public init(workQueue: DispatchQueue = DispatchQueue.global(qos: .background), maxConcurrentTasks: Int = 0) {
-        _workQueue = workQueue
+        self.workQueue = workQueue
         self.maxConcurrentTasks = maxConcurrentTasks
     }
     
@@ -136,6 +137,6 @@ public final class ProductionLine: NSObject {
         }
         
         // Kick it off
-        task.start(using: _workQueue)
+        task.start(using: workQueue)
     }
 }
