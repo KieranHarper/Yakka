@@ -914,6 +914,7 @@ class YakkaSpec: QuickSpec {
             }
 
             it("should run tasks that are queued before it starts") {
+                productionLine.stop()
                 let multiple = self.setOfSuccedingTasks()
                 var startCount = 0
                 var set1 = [Task]()
@@ -966,6 +967,18 @@ class YakkaSpec: QuickSpec {
 
                 // Wait
                 expect(startCount).toEventually(equal(multiple.count))
+            }
+            
+            it("lets you provide a task via closures") {
+                waitUntil(timeout: 3.0) { (done) in
+                    productionLine.add {
+                        let task = self.suceedingTask()
+                        task.onFinish { _ in
+                            done()
+                        }
+                        return task
+                    }
+                }
             }
 
             it("should limit the maximum number of tasks when asked") {

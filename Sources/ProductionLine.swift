@@ -71,6 +71,11 @@ public final class ProductionLine: NSObject {
         }
     }
     
+    /// Add a task to the pipeline using a closure. This approach can facilitate easier comprehension at the call site.
+    public func add(using closure: ()->Task) {
+        addTask(closure())
+    }
+    
     /// Start the pipeline. This will start any tasks that were already added (up to maxConcurrentTasks)
     public func start() {
         _internalQueue.async {
