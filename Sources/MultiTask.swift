@@ -117,10 +117,8 @@ open class MultiTask: Task {
         }
         
         // Schedule completion
-        task.onFinish { (outcome) in
-            self._internalQueue.async {
-                self.subtaskFinished(task, withOutcome: outcome)
-            }
+        task.onFinish(via: _internalQueue) { (outcome) in
+            self.subtaskFinished(task, withOutcome: outcome)
         }
         
         // Kick it off
