@@ -84,19 +84,19 @@ class YakkaSpec: QuickSpec {
     override func spec() {
         
         describe("any task") {
-            
+
             var task: Task!
             let waitTime: TimeInterval = 3.0
             let line = ProductionLine()
-            
+
             beforeEach {
                 task = self.suceedingTask()
             }
-            
+
             it("should begin in 'not started' state") {
                 expect(task.currentState).to(equal(Task.State.notStarted))
             }
-            
+
             it("should transition to 'running' state when it actually starts to run") {
                 waitUntil(timeout: waitTime) { (done) in
                     task.onStart {
@@ -106,7 +106,7 @@ class YakkaSpec: QuickSpec {
                     line.addTask(task)
                 }
             }
-            
+
             it("should not be able to run again if already been run") {
                 waitUntil(timeout: waitTime) { (done) in
                     let toSucceed = self.suceedingTask()
@@ -121,7 +121,7 @@ class YakkaSpec: QuickSpec {
                     }
                     line.addTask(toSucceed)
                 }
-                
+
                 waitUntil(timeout: waitTime) { (done) in
                     let toFail = self.failingTask()
                     toFail.onFinish { (_) in
@@ -136,7 +136,7 @@ class YakkaSpec: QuickSpec {
                     line.addTask(toFail)
                 }
             }
-            
+
             it("should never finish if the work doesn't") {
                 var hit = false
                 let hangingTask = Task { (process) in
@@ -462,7 +462,7 @@ class YakkaSpec: QuickSpec {
                 }
             }
         }
-        
+
         describe("a successful task") {
 
             var task: Task!
@@ -621,7 +621,7 @@ class YakkaSpec: QuickSpec {
         }
 
         describe("a multi task") {
-            
+
             let line = ProductionLine()
 
             it("should provide overall progress") {
@@ -714,9 +714,9 @@ class YakkaSpec: QuickSpec {
         }
 
         describe("a serial task") {
-            
+
             let line = ProductionLine()
-            
+
             it("should run tasks to completion in the right order") {
 
                 let expectedOrder: [Int] = [0, 1, 2, 3, 4]
@@ -781,9 +781,9 @@ class YakkaSpec: QuickSpec {
         }
 
         describe("a parallel task") {
-            
+
             let line = ProductionLine()
-            
+
             it("should start no more than the specified max at a time") {
                 let maxTasks = 4
                 var startFlags = [Int]()
@@ -968,7 +968,7 @@ class YakkaSpec: QuickSpec {
                 // Wait
                 expect(startCount).toEventually(equal(multiple.count))
             }
-            
+
             it("lets you provide a task via closures") {
                 waitUntil(timeout: 3.0) { (done) in
                     productionLine.add {
@@ -1097,7 +1097,7 @@ class YakkaSpec: QuickSpec {
                 expect(cancelledCount).toEventually(equal(tasksCount))
                 expect((startedCount == tasksCount) && !productionLine.isRunning).toEventually(equal(true))
             }
-            
+
             it("should be useful in throwaway scope") {
                 waitUntil(timeout: 3.0) { (done) in
                     var tasks = [Task]()
@@ -1120,6 +1120,32 @@ class YakkaSpec: QuickSpec {
                         let line = ProductionLine()
                         line.addTasks(tasks)
                     }
+                }
+            }
+            
+            it("notifies when it becomes empty") {
+                waitUntil(timeout: 3.0) { (done) in
+                    productionLine.onBecameEmpty {
+                        done()
+                    }
+                    productionLine.maxConcurrentTasks = 2
+                    productionLine.addTasks(self.setOfSuccedingTasks())
+                }
+            }
+            
+            it("notifies when it starts tasks") {
+                waitUntil(timeout: 3.0) { (done) in
+                    let tasks = self.setOfSuccedingTasks()
+                    let taskCount = tasks.count
+                    var startedSoFar = 0
+                    productionLine.onNextTaskStarted { (t) in
+                        startedSoFar = startedSoFar + 1
+                        if startedSoFar == taskCount {
+                            done()
+                        }
+                    }
+                    productionLine.maxConcurrentTasks = 2
+                    productionLine.addTasks(tasks)
                 }
             }
         }

@@ -305,7 +305,7 @@ open class Task: NSObject {
     // MARK: - Feedback
     
     /// Register a closure to handle 'it started' feedback, with an optional queue to use (overriding queueForStartFeedback)
-    public final func onStart(via queue: DispatchQueue? = nil, handler: @escaping ()->()) {
+    public final func onStart(via queue: DispatchQueue? = nil, handler: @escaping StartHandler) {
         _internalQueue.async {
             self._startHandlers.append((handler, queue))
         }
@@ -326,7 +326,7 @@ open class Task: NSObject {
     }
     
     /// Register a closure to handle 'it started again' feedback, with an optional queue to use (overriding queueForRetryFeedback)
-    public final func onRetry(via queue: DispatchQueue? = nil, handler: @escaping ()->()) {
+    public final func onRetry(via queue: DispatchQueue? = nil, handler: @escaping RetryHandler) {
         _internalQueue.async {
             self._retryHandlers.append((handler, queue))
         }
