@@ -23,7 +23,7 @@ target 'Yakka-iOS' do
 end
 
 target 'Yakka-macOS' do  
-    platform :osx, '10.9'
+    platform :osx, '10.10'
     dependency_pods
 end
 
