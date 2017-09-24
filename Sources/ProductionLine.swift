@@ -78,11 +78,12 @@ public final class ProductionLine: NSObject {
     // MARK: - Public methods
     
     /// Add a task to the pipeline. If the pipeline is running then the task will be started asap, depending on maxConcurrentTasks
-    public func addTask(_ task: Task) {
+    @discardableResult public func addTask(_ task: Task) -> Task {
         _internalQueue.async {
             self._pendingTasks.append(task)
             self.processSubtasks()
         }
+        return task
     }
     
     /// Add multiple tasks to the pipeline. If the pipeline is running then the task will be started asap, depending on maxConcurrentTasks
@@ -94,8 +95,8 @@ public final class ProductionLine: NSObject {
     }
     
     /// Add a task to the pipeline using a closure. This approach can facilitate easier comprehension at the call site.
-    public func add(using closure: ()->Task) {
-        addTask(closure())
+    @discardableResult public func add(using closure: ()->Task) -> Task {
+        return addTask(closure())
     }
     
     /// Start the pipeline. This will start any tasks that were already added (up to maxConcurrentTasks)
