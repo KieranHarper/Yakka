@@ -17,6 +17,10 @@
 		8933C78E1EB5B82C000D00A4 /* YakkaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7891EB5B82A000D00A4 /* YakkaTests.swift */; };
 		8933C78F1EB5B82C000D00A4 /* YakkaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7891EB5B82A000D00A4 /* YakkaTests.swift */; };
 		8933C7901EB5B82D000D00A4 /* YakkaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8933C7891EB5B82A000D00A4 /* YakkaTests.swift */; };
+		897A9B861F77432200B5E921 /* FeedbackHandlerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 897A9B851F77432200B5E921 /* FeedbackHandlerHelper.swift */; };
+		897A9B871F77432A00B5E921 /* FeedbackHandlerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 897A9B851F77432200B5E921 /* FeedbackHandlerHelper.swift */; };
+		897A9B881F77432B00B5E921 /* FeedbackHandlerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 897A9B851F77432200B5E921 /* FeedbackHandlerHelper.swift */; };
+		897A9B891F77432C00B5E921 /* FeedbackHandlerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 897A9B851F77432200B5E921 /* FeedbackHandlerHelper.swift */; };
 		898821E61EC6DCA600425EA6 /* MultiTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E21EC6DCA600425EA6 /* MultiTask.swift */; };
 		898821E71EC6DCA600425EA6 /* MultiTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E21EC6DCA600425EA6 /* MultiTask.swift */; };
 		898821E81EC6DCA600425EA6 /* MultiTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 898821E21EC6DCA600425EA6 /* MultiTask.swift */; };
@@ -78,6 +82,7 @@
 		828CEFB7291BBAF15B0ECDCF /* Pods_Yakka_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Yakka_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8933C7891EB5B82A000D00A4 /* YakkaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YakkaTests.swift; sourceTree = "<group>"; };
 		895E33C4F6469E4157C7095C /* Pods-Yakka-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yakka-macOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Yakka-macOS/Pods-Yakka-macOS.debug.xcconfig"; sourceTree = "<group>"; };
+		897A9B851F77432200B5E921 /* FeedbackHandlerHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackHandlerHelper.swift; sourceTree = "<group>"; };
 		898821E21EC6DCA600425EA6 /* MultiTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiTask.swift; sourceTree = "<group>"; };
 		898821E31EC6DCA600425EA6 /* ProductionLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductionLine.swift; sourceTree = "<group>"; };
 		898821E41EC6DCA600425EA6 /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
@@ -219,6 +224,7 @@
 				898821E31EC6DCA600425EA6 /* ProductionLine.swift */,
 				898821E41EC6DCA600425EA6 /* Task.swift */,
 				898821E51EC6DCA600425EA6 /* TaskRetryHelper.swift */,
+				897A9B851F77432200B5E921 /* FeedbackHandlerHelper.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -863,6 +869,7 @@
 				898821EE1EC6DCA600425EA6 /* Task.swift in Sources */,
 				898821E61EC6DCA600425EA6 /* MultiTask.swift in Sources */,
 				898821F21EC6DCA600425EA6 /* TaskRetryHelper.swift in Sources */,
+				897A9B861F77432200B5E921 /* FeedbackHandlerHelper.swift in Sources */,
 				898821EA1EC6DCA600425EA6 /* ProductionLine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -882,6 +889,7 @@
 				898821F01EC6DCA600425EA6 /* Task.swift in Sources */,
 				898821E81EC6DCA600425EA6 /* MultiTask.swift in Sources */,
 				898821F41EC6DCA600425EA6 /* TaskRetryHelper.swift in Sources */,
+				897A9B881F77432B00B5E921 /* FeedbackHandlerHelper.swift in Sources */,
 				898821EC1EC6DCA600425EA6 /* ProductionLine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -893,6 +901,7 @@
 				898821F11EC6DCA600425EA6 /* Task.swift in Sources */,
 				898821E91EC6DCA600425EA6 /* MultiTask.swift in Sources */,
 				898821F51EC6DCA600425EA6 /* TaskRetryHelper.swift in Sources */,
+				897A9B891F77432C00B5E921 /* FeedbackHandlerHelper.swift in Sources */,
 				898821ED1EC6DCA600425EA6 /* ProductionLine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -904,6 +913,7 @@
 				898821EF1EC6DCA600425EA6 /* Task.swift in Sources */,
 				898821E71EC6DCA600425EA6 /* MultiTask.swift in Sources */,
 				898821F31EC6DCA600425EA6 /* TaskRetryHelper.swift in Sources */,
+				897A9B871F77432A00B5E921 /* FeedbackHandlerHelper.swift in Sources */,
 				898821EB1EC6DCA600425EA6 /* ProductionLine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

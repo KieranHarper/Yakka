@@ -58,10 +58,10 @@ public final class ProductionLine: NSObject {
     private let _internalQueue = DispatchQueue(label: "ProductionLineInternal", qos: .background)
     
     /// Set of handler + custom delivery queue pairings for those interested in 'line is now empty' feedback
-    private var _becameEmptyHandlers = Array<(BecameEmptyHandler, DispatchQueue?)>()
+    private var _becameEmptyHandlers = Array<FeedbackHandlerHelper<Void>>()
     
     /// Set of handler + custom delivery queue pairings for those interested in 'next task started' feedback
-    private var _taskStartedHandlers = Array<(StartedTaskHandler, DispatchQueue?)>()
+    private var _taskStartedHandlers = Array<FeedbackHandlerHelper<Task>>()
     
     
     
@@ -138,14 +138,16 @@ public final class ProductionLine: NSObject {
     /// Register a closure to handle 'line is now empty' feedback, with an optional queue to use (overriding queueForBecameEmptyFeedback)
     public final func onBecameEmpty(via queue: DispatchQueue? = nil, handler: @escaping BecameEmptyHandler) {
         _internalQueue.async {
-            self._becameEmptyHandlers.append((handler, queue))
+            let helper = FeedbackHandlerHelper<Void>(queue: queue, handler: handler)
+            self._becameEmptyHandlers.append(helper)
         }
     }
     
     /// Register a closure to handle 'next task started' feedback, with an optional queue to use (overriding queueForNextTaskStartedFeedback)
     public final func onNextTaskStarted(via queue: DispatchQueue? = nil, handler: @escaping StartedTaskHandler) {
         _internalQueue.async {
-            self._taskStartedHandlers.append((handler, queue))
+            let helper = FeedbackHandlerHelper<Task>(queue: queue, handler: handler)
+            self._taskStartedHandlers.append(helper)
         }
     }
     
@@ -165,23 +167,7 @@ public final class ProductionLine: NSObject {
         
         // Notify when there aren't any more running tasks
         if _runningTasks.isEmpty {
-            let emptiedHandlers = _becameEmptyHandlers // copied for thread safety
-            if !emptiedHandlers.isEmpty {
-                queueForBecameEmptyFeedback.async {
-                    for feedback in emptiedHandlers {
-
-                        // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
-                        let handler = feedback.0
-                        if let customQueue = feedback.1 {
-                            customQueue.async {
-                                handler()
-                            }
-                        } else {
-                            handler()
-                        }
-                    }
-                }
-            }
+            notifyHandlers(from: _becameEmptyHandlers, defaultQueue: queueForBecameEmptyFeedback)
         }
     }
     
@@ -201,10 +187,10 @@ public final class ProductionLine: NSObject {
         }
         
         // Register for start feedback if we care about forwarding that information
-        for handler in _taskStartedHandlers {
-            task.onStart(via: handler.1) { [weak task] in
+        for helper in _taskStartedHandlers {
+            task.onStart(via: helper.queue) { [weak task] in
                 if let strongTask = task { // (avoid capturing task in its own handler here...)
-                    handler.0(strongTask)
+                    helper.handler(strongTask)
                 }
             }
         }

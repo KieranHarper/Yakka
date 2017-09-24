@@ -199,16 +199,16 @@ open class Task: NSObject {
     private var _workToDo: TaskWorkClosure?
     
     /// Set of handler + custom delivery queue pairings for those interested in 'it started' feedback
-    private var _startHandlers = Array<(StartHandler, DispatchQueue?)>()
+    private var _startHandlers = Array<FeedbackHandlerHelper<Void>>()
     
     /// Set of handler + custom delivery queue pairings for those interested in progress feedback
-    private var _progressHandlers = Array<(ProgressHandler, DispatchQueue?)>()
+    private var _progressHandlers = Array<FeedbackHandlerHelper<Float>>()
     
     /// Set of handler + custom delivery queue pairings for those interested in 'it finished' feedback
-    private var _finishHandlers = Array<(FinishHandler, DispatchQueue?)>()
+    private var _finishHandlers = Array<FeedbackHandlerHelper<Outcome>>()
     
     /// Set of handler + custom delivery queue pairings for those interested in 'it started again' feedback
-    private var _retryHandlers = Array<(RetryHandler, DispatchQueue?)>()
+    private var _retryHandlers = Array<FeedbackHandlerHelper<Void>>()
     
     /// Helper that assists in tracking the number of retry attempts and performing the delays (nil when no retry behaviour asked for)
     private var _retryHelper: TaskRetryHelper?
@@ -307,28 +307,32 @@ open class Task: NSObject {
     /// Register a closure to handle 'it started' feedback, with an optional queue to use (overriding queueForStartFeedback)
     public final func onStart(via queue: DispatchQueue? = nil, handler: @escaping StartHandler) {
         _internalQueue.async {
-            self._startHandlers.append((handler, queue))
+            let helper = FeedbackHandlerHelper<Void>(queue: queue, handler: handler)
+            self._startHandlers.append(helper)
         }
     }
     
     /// Register a closure to handle progress feedback, with an optional queue to use (overriding queueForProgressFeedback)
     public final func onProgress(via queue: DispatchQueue? = nil, handler: @escaping ProgressHandler) {
         _internalQueue.async {
-            self._progressHandlers.append((handler, queue))
+            let helper = FeedbackHandlerHelper<Float>(queue: queue, handler: handler)
+            self._progressHandlers.append(helper)
         }
     }
     
     /// Register a closure to handle 'it finished' feedback, with an optional queue to use (overriding queueForFinishFeedback)
     public final func onFinish(via queue: DispatchQueue? = nil, handler: @escaping FinishHandler) {
         _internalQueue.async {
-            self._finishHandlers.append((handler, queue))
+            let helper = FeedbackHandlerHelper<Outcome>(queue: queue, handler: handler)
+            self._finishHandlers.append(helper)
         }
     }
     
     /// Register a closure to handle 'it started again' feedback, with an optional queue to use (overriding queueForRetryFeedback)
     public final func onRetry(via queue: DispatchQueue? = nil, handler: @escaping RetryHandler) {
         _internalQueue.async {
-            self._retryHandlers.append((handler, queue))
+            let helper = FeedbackHandlerHelper<Void>(queue: queue, handler: handler)
+            self._retryHandlers.append(helper)
         }
     }
     
@@ -356,23 +360,7 @@ open class Task: NSObject {
         
         // If needed, start providing feedback about the fact we've started
         // NOTE: What's important is our currentState has changed, which can only happen on this internal queue and therefore just asking a task to start from any queue will not synchronously result in the state changing – we need this notification mechanism instead.
-        let startHandlers = _startHandlers // copied for thread safety
-        if startHandlers.count > 0 {
-            queueForStartFeedback.async {
-                for feedback in startHandlers {
-                    
-                    // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
-                    let handler = feedback.0
-                    if let customQueue = feedback.1 {
-                        customQueue.async {
-                            handler()
-                        }
-                    } else {
-                        handler()
-                    }
-                }
-            }
-        }
+        notifyHandlers(from: _startHandlers, defaultQueue: queueForStartFeedback)
         
         // Actually start the work on the worker queue now
         _queueForWork.async {
@@ -393,23 +381,7 @@ open class Task: NSObject {
         Task.cache(task: nil, forID: identifier)
         
         // Notify as needed
-        let finishHandlers = _finishHandlers // copied for thread safety
-        if finishHandlers.count > 0 {
-            queueForFinishFeedback.async {
-                for feedback in finishHandlers {
-                    
-                    // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
-                    let handler = feedback.0
-                    if let customQueue = feedback.1 {
-                        customQueue.async {
-                            handler(outcome)
-                        }
-                    } else {
-                        handler(outcome)
-                    }
-                }
-            }
-        }
+        notifyHandlers(from: _finishHandlers, defaultQueue: queueForFinishFeedback, parameters: outcome)
     }
     
     /// Handle state stuff and make the task's work run again
@@ -425,23 +397,7 @@ open class Task: NSObject {
         }
         
         // If needed, provide feedback about the fact we've restarted
-        let retryHandlers = _retryHandlers // copied for thread safety
-        if retryHandlers.count > 0 {
-            queueForRetryFeedback.async {
-                for feedback in retryHandlers {
-                    
-                    // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
-                    let handler = feedback.0
-                    if let customQueue = feedback.1 {
-                        customQueue.async {
-                            handler()
-                        }
-                    } else {
-                        handler()
-                    }
-                }
-            }
-        }
+        notifyHandlers(from: _retryHandlers, defaultQueue: queueForRetryFeedback)
         
         // Actually restart the work on the worker queue now
         _queueForWork.async {
@@ -460,22 +416,7 @@ open class Task: NSObject {
         currentProgress = percent
         
         // Do the reporting
-        if _progressHandlers.count > 0 {
-            queueForProgressFeedback.async {
-                for feedback in self._progressHandlers {
-                    
-                    // Use the custom queue override if applicable, otherwise run straight on the normal feedback queue
-                    let handler = feedback.0
-                    if let customQueue = feedback.1 {
-                        customQueue.async {
-                            handler(percent)
-                        }
-                    } else {
-                        handler(percent)
-                    }
-                }
-            }
-        }
+        notifyHandlers(from: _progressHandlers, defaultQueue: queueForProgressFeedback, parameters: percent)
     }
     
     /// Simple helper for finishing that makes queue management slightly clearer
