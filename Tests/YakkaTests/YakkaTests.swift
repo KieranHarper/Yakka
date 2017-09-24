@@ -87,7 +87,7 @@ class YakkaSpec: QuickSpec {
 
             var task: Task!
             let waitTime: TimeInterval = 3.0
-            let line = ProductionLine()
+            let line = Line()
 
             beforeEach {
                 task = self.suceedingTask()
@@ -467,7 +467,7 @@ class YakkaSpec: QuickSpec {
 
             var task: Task!
             let waitTime: TimeInterval = 3.0
-            let line = ProductionLine()
+            let line = Line()
 
             beforeEach {
                 task = self.suceedingTask()
@@ -500,7 +500,7 @@ class YakkaSpec: QuickSpec {
 
             var task: Task!
             let waitTime: TimeInterval = 3.0
-            let line = ProductionLine()
+            let line = Line()
 
             beforeEach {
                 task = self.failingTask()
@@ -538,7 +538,7 @@ class YakkaSpec: QuickSpec {
 
             var task: Task!
             let waitTime: TimeInterval = 5.0
-            let line = ProductionLine()
+            let line = Line()
 
             beforeEach {
                 task = self.processAwareSucceedingTask()
@@ -622,7 +622,7 @@ class YakkaSpec: QuickSpec {
 
         describe("a multi task") {
 
-            let line = ProductionLine()
+            let line = Line()
 
             it("should provide overall progress") {
                 var tasks = [Task]()
@@ -715,7 +715,7 @@ class YakkaSpec: QuickSpec {
 
         describe("a serial task") {
 
-            let line = ProductionLine()
+            let line = Line()
 
             it("should run tasks to completion in the right order") {
 
@@ -782,7 +782,7 @@ class YakkaSpec: QuickSpec {
 
         describe("a parallel task") {
 
-            let line = ProductionLine()
+            let line = Line()
 
             it("should start no more than the specified max at a time") {
                 let maxTasks = 4
@@ -901,20 +901,20 @@ class YakkaSpec: QuickSpec {
             }
         }
 
-        describe("a production line") {
+        describe("a yakka line") {
 
-            var productionLine: ProductionLine!
+            var line: Line!
 
             beforeEach {
-                productionLine = ProductionLine()
+                line = Line()
             }
 
             it("should begin in 'running' state") {
-                expect(productionLine.isRunning).to(equal(true))
+                expect(line.isRunning).to(equal(true))
             }
 
             it("should run tasks that are queued before it starts") {
-                productionLine.stop()
+                line.stop()
                 let multiple = self.setOfSuccedingTasks()
                 var startCount = 0
                 var set1 = [Task]()
@@ -931,13 +931,13 @@ class YakkaSpec: QuickSpec {
                 }
 
                 // Deliberately exercise both add methods
-                productionLine.addTasks(set1)
+                line.addTasks(set1)
                 for task in set2 {
-                    productionLine.addTask(task)
+                    line.addTask(task)
                 }
 
                 // Start
-                productionLine.start()
+                line.start()
                 expect(startCount).toEventually(equal(multiple.count))
             }
 
@@ -960,9 +960,9 @@ class YakkaSpec: QuickSpec {
                 }
 
                 // Deliberately exercise both add methods
-                productionLine.addTasks(set1)
+                line.addTasks(set1)
                 for task in set2 {
-                    productionLine.addTask(task)
+                    line.addTask(task)
                 }
 
                 // Wait
@@ -971,7 +971,7 @@ class YakkaSpec: QuickSpec {
 
             it("lets you provide a task via closures") {
                 waitUntil(timeout: 3.0) { (done) in
-                    productionLine.add {
+                    line.add {
                         let task = self.suceedingTask()
                         task.onFinish { _ in
                             done()
@@ -1008,8 +1008,8 @@ class YakkaSpec: QuickSpec {
                     tasks.append(t)
                 }
 
-                productionLine.maxConcurrentTasks = maxTasks
-                productionLine.addTasks(tasks)
+                line.maxConcurrentTasks = maxTasks
+                line.addTasks(tasks)
                 expect(finishCount).toEventually(equal(tasks.count), timeout: 5.0)
             }
 
@@ -1022,7 +1022,7 @@ class YakkaSpec: QuickSpec {
                         DispatchQueue.main.async {
                             startCount = startCount + 1
                             if startCount == tasks.count {
-                                productionLine.stop()
+                                line.stop()
                             }
                         }
                     }
@@ -1034,11 +1034,11 @@ class YakkaSpec: QuickSpec {
                         }
                     })
                 }
-                productionLine.addTasks(tasks)
+                line.addTasks(tasks)
                 expect(startCount).toEventually(equal(tasks.count))
                 expect(finishCount).toEventually(equal(tasks.count))
-                expect(productionLine.isRunning).toEventually(equal(false))
-                expect((startCount == tasks.count) && !productionLine.isRunning).toEventually(equal(true))
+                expect(line.isRunning).toEventually(equal(false))
+                expect((startCount == tasks.count) && !line.isRunning).toEventually(equal(true))
             }
 
             it("should let you easily ask all running tasks to cancel") {
@@ -1059,12 +1059,12 @@ class YakkaSpec: QuickSpec {
                     task.onStart {
                         startedCount = startedCount + 1
                         if startedCount == tasksCount {
-                            productionLine.cancelTasks()
+                            line.cancelTasks()
                         }
                     }
                 }
-                productionLine.addTasks(tasks)
-                expect(productionLine.isRunning).toEventually(equal(true))
+                line.addTasks(tasks)
+                expect(line.isRunning).toEventually(equal(true))
                 expect(cancelledCount).toEventually(equal(tasksCount))
             }
 
@@ -1080,7 +1080,7 @@ class YakkaSpec: QuickSpec {
                         DispatchQueue.main.async {
                             startedCount = startedCount + 1
                             if startedCount == tasksCount {
-                                productionLine.stopAndCancel()
+                                line.stopAndCancel()
                             }
                         }
                     }
@@ -1092,10 +1092,10 @@ class YakkaSpec: QuickSpec {
                         }
                     })
                 }
-                productionLine.addTasks(tasks)
-                productionLine.start()
+                line.addTasks(tasks)
+                line.start()
                 expect(cancelledCount).toEventually(equal(tasksCount))
-                expect((startedCount == tasksCount) && !productionLine.isRunning).toEventually(equal(true))
+                expect((startedCount == tasksCount) && !line.isRunning).toEventually(equal(true))
             }
 
             it("should be useful in throwaway scope") {
@@ -1117,7 +1117,7 @@ class YakkaSpec: QuickSpec {
                         })
                     }
                     if tasksCount >= 5 { // just create throwaway scope...
-                        let line = ProductionLine()
+                        let line = Line()
                         line.addTasks(tasks)
                     }
                 }
@@ -1125,11 +1125,11 @@ class YakkaSpec: QuickSpec {
             
             it("notifies when it becomes empty") {
                 waitUntil(timeout: 3.0) { (done) in
-                    productionLine.onBecameEmpty {
+                    line.onBecameEmpty {
                         done()
                     }
-                    productionLine.maxConcurrentTasks = 2
-                    productionLine.addTasks(self.setOfSuccedingTasks())
+                    line.maxConcurrentTasks = 2
+                    line.addTasks(self.setOfSuccedingTasks())
                 }
             }
             
@@ -1138,14 +1138,14 @@ class YakkaSpec: QuickSpec {
                     let tasks = self.setOfSuccedingTasks()
                     let taskCount = tasks.count
                     var startedSoFar = 0
-                    productionLine.onNextTaskStarted { (t) in
+                    line.onNextTaskStarted { (t) in
                         startedSoFar = startedSoFar + 1
                         if startedSoFar == taskCount {
                             done()
                         }
                     }
-                    productionLine.maxConcurrentTasks = 2
-                    productionLine.addTasks(tasks)
+                    line.maxConcurrentTasks = 2
+                    line.addTasks(tasks)
                 }
             }
         }

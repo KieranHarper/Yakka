@@ -1,5 +1,5 @@
 //
-//  ProductionLine.swift
+//  Line.swift
 //  Yakka
 //
 //  Created by Kieran Harper on 1/3/17.
@@ -9,12 +9,12 @@
 import Foundation
 import Dispatch
 
-/* Object that can execute a number of tasks simultaneously and continue to accept and queue new tasks over its lifetime.
+/** Object that can execute a number of tasks simultaneously and continue to accept and queue new tasks over its lifetime.
  This is a bit like an OperationQueue in that you create one and add tasks to it as a way to coordinate execution.
  Tasks are started in the order they're added. You can control the maximum number that can be started before others finish, via the maxConcurrentTasks property.
- NOTE: While Task and its subclasses will retain itself while running, ProductionLine will not.
+ NOTE: While Task and its subclasses will retain itself while running, Line will not.
  */
-public final class ProductionLine: NSObject {
+public final class Line: NSObject {
     
     
     // MARK: - Types
@@ -32,7 +32,7 @@ public final class ProductionLine: NSObject {
     /// Optional limit on the number of tasks that can run concurrently. Defaults to unlimited (0)
     public var maxConcurrentTasks: Int
     
-    /// Whether or not the production line is running / will execute tasks upon adding (and when ready, depending on maxConcurrentTasks)
+    /// Whether or not the line is running / will execute tasks upon adding (and when ready, depending on maxConcurrentTasks)
     public private(set) var isRunning = true
     
     /// The GCD queue on which tasks will perform their work
@@ -55,7 +55,7 @@ public final class ProductionLine: NSObject {
     private lazy var _runningTasks = [Task]()
     
     /// Queue providing serialization for state changing and other other thread sensitive things
-    private let _internalQueue = DispatchQueue(label: "ProductionLineInternal", qos: .background)
+    private let _internalQueue = DispatchQueue(label: "YakkaLineInternal", qos: .background)
     
     /// Set of handler + custom delivery queue pairings for those interested in 'line is now empty' feedback
     private var _becameEmptyHandlers = Array<FeedbackHandlerHelper<Void>>()
