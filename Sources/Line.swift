@@ -179,11 +179,12 @@ public final class Line: NSObject {
         move(subtask: task, fromCollection: &_pendingTasks, toCollection: &_runningTasks)
         
         // Schedule completion so we can consider starting new tasks
-        task.onFinish(via: _internalQueue) { [weak self] (outcome) in
-            guard let selfRef = self else { return }
+        // NOTE: Careful not to retain self OR the task here
+        task.onFinish(via: _internalQueue) { [weak self, weak task] (outcome) in
+            guard let selfRef = self, let taskRef = task else { return }
             
             // Remove it from the running pile and consider starting any subsequent task/s
-            remove(subtask: task, fromCollection: &selfRef._runningTasks)
+            remove(subtask: taskRef, fromCollection: &selfRef._runningTasks)
             selfRef.processSubtasks()
         }
         
