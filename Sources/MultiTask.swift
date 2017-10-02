@@ -63,9 +63,18 @@ open class MultiTask: Task {
             // Start executing tasks
             selfRef._overallProcess = process
             selfRef._pendingTasks = tasks
-            selfRef._internalQueue.async {
-                selfRef.processSubtasks()
+            selfRef.helperGetStarted()
+        }
+    }
+    
+    private func helperGetStarted() {
+        _overallProcess?.onShouldCancel { [weak self] in
+            self?._internalQueue.async {
+                self?.handleCancelling()
             }
+        }
+        _internalQueue.async {
+            self.processSubtasks()
         }
     }
     
@@ -79,10 +88,7 @@ open class MultiTask: Task {
         
         // Check for cancellation by passing it on to subtasks and prevent pending ones from starting
         if currentState == .cancelling {
-            for task in _allTasks {
-                task.cancel()
-            }
-            _pendingTasks.removeAll()
+            handleCancelling()
         }
         
         // Start any tasks we can and/or have remaining
@@ -147,6 +153,14 @@ open class MultiTask: Task {
         
         // Otherwise consider starting any subsequent task/s
         processSubtasks()
+    }
+    
+    /// Handle the intention to cancel by telling everything to cancel and removing tasks that haven't run yet
+    private func handleCancelling() {
+        for task in _allTasks {
+            task.cancel()
+        }
+        _pendingTasks.removeAll()
     }
 }
 
