@@ -110,15 +110,20 @@ open class MultiTask: Task {
         move(subtask: task, fromCollection: &_pendingTasks, toCollection: &_runningTasks)
         
         // Handle progress, by accumulating the percentages of all tasks (they're equally weighted)
-        task.onProgress(via: _internalQueue) { (percent) in
-            self._taskProgressions[task.identifier] = percent
-            let overallPercent = self._taskProgressions.reduce(0.0, { $0 + $1.value }) / Float(self._allTasks.count)
-            self._overallProcess?.progress(overallPercent)
+        // NOTE: Careful not to retain self OR the task here
+        let taskID = task.identifier
+        task.onProgress(via: _internalQueue) { [weak self] (percent) in
+            guard let selfRef = self else { return }
+            selfRef._taskProgressions[taskID] = percent
+            let overallPercent = selfRef._taskProgressions.reduce(0.0, { $0 + $1.value }) / Float(selfRef._allTasks.count)
+            selfRef._overallProcess?.progress(overallPercent)
         }
         
         // Schedule completion
-        task.onFinish(via: _internalQueue) { (outcome) in
-            self.subtaskFinished(task, withOutcome: outcome)
+        // NOTE: Careful not to retain self OR the task here
+        task.onFinish(via: _internalQueue) { [weak self, weak task] (outcome) in
+            guard let selfRef = self, let taskRef = task else { return }
+            selfRef.subtaskFinished(taskRef, withOutcome: outcome)
         }
         
         // Kick it off
