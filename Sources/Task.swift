@@ -24,6 +24,10 @@ open class Task: NSObject {
         
         // Finished cases
         case successful, cancelled, failed
+        
+        func isFinished() -> Bool {
+            return self == .successful || self == .cancelled || self == .failed
+        }
     }
     
     /// Possible outcomes when finished
@@ -307,14 +311,22 @@ open class Task: NSObject {
     /// Register a closure to handle 'it started' feedback, with an optional queue to use (overriding queueForStartFeedback)
     public final func onStart(via queue: DispatchQueue? = nil, handler: @escaping StartHandler) {
         _internalQueue.async {
+            
+            // Only accepting handlers if it hasn't started yet
+            guard self.currentState == .notStarted else { return }
+            
             let helper = FeedbackHandlerHelper<Void>(queue: queue, handler: handler)
             self._startHandlers.append(helper)
         }
     }
     
-    /// Register a closure to handle progress feedback, with an optional queue to use (overriding queueForProgressFeedback)
+    /// Register a closure to handle progress feedback, with an optional queue to use (overriding queueForProgressFeedback). Do not strongly reference the task or it will never deinit.
     public final func onProgress(via queue: DispatchQueue? = nil, handler: @escaping ProgressHandler) {
         _internalQueue.async {
+            
+            // Only accepting handlers if it hasn't finishd yet
+            guard !self.currentState.isFinished() else { return }
+            
             let helper = FeedbackHandlerHelper<Float>(queue: queue, handler: handler)
             self._progressHandlers.append(helper)
         }
@@ -323,14 +335,22 @@ open class Task: NSObject {
     /// Register a closure to handle 'it finished' feedback, with an optional queue to use (overriding queueForFinishFeedback)
     public final func onFinish(via queue: DispatchQueue? = nil, handler: @escaping FinishHandler) {
         _internalQueue.async {
+            
+            // Only accepting handlers if it hasn't finishd yet
+            guard !self.currentState.isFinished() else { return }
+            
             let helper = FeedbackHandlerHelper<Outcome>(queue: queue, handler: handler)
             self._finishHandlers.append(helper)
         }
     }
     
-    /// Register a closure to handle 'it started again' feedback, with an optional queue to use (overriding queueForRetryFeedback)
+    /// Register a closure to handle 'it started again' feedback, with an optional queue to use (overriding queueForRetryFeedback). Do not strongly reference the task or it will never deinit.
     public final func onRetry(via queue: DispatchQueue? = nil, handler: @escaping RetryHandler) {
         _internalQueue.async {
+            
+            // Only accepting handlers if it hasn't finishd yet
+            guard !self.currentState.isFinished() else { return }
+            
             let helper = FeedbackHandlerHelper<Void>(queue: queue, handler: handler)
             self._retryHandlers.append(helper)
         }
@@ -361,6 +381,7 @@ open class Task: NSObject {
         // If needed, start providing feedback about the fact we've started
         // NOTE: What's important is our currentState has changed, which can only happen on this internal queue and therefore just asking a task to start from any queue will not synchronously result in the state changing – we need this notification mechanism instead.
         notifyHandlers(from: _startHandlers, defaultQueue: queueForStartFeedback)
+        _startHandlers.removeAll()
         
         // Actually start the work on the worker queue now
         _queueForWork.async {
@@ -382,6 +403,7 @@ open class Task: NSObject {
         
         // Notify as needed
         notifyHandlers(from: _finishHandlers, defaultQueue: queueForFinishFeedback, parameters: outcome)
+        _finishHandlers.removeAll()
     }
     
     /// Handle state stuff and make the task's work run again
