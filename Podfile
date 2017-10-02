@@ -10,8 +10,8 @@ def dependency_pods
 end
 
 def testing_pods
-    pod 'Quick'
-    pod 'Nimble', :git => 'https://github.com/Quick/Nimble.git', :branch => 'master'
+    pod 'Quick', '~> 1.2.0'
+    pod 'Nimble', '~> 7.0.2'
 end
 
 
