@@ -856,6 +856,43 @@ class YakkaSpec: QuickSpec {
                     line.addTask(parallel)
                 }
             }
+            
+            it("supports tasks that are already involved in other parallel tasks") {
+                
+                let maxTasks = 2
+                var tasks = [Task]()
+                for _ in 0...9 {
+                    let t = Task { (process) in
+                        let delay: TimeInterval = 0.25
+                        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                            process.succeed()
+                        }
+                    }
+                    tasks.append(t)
+                }
+                
+                let group1 = ParallelTask(involving: [tasks[0], tasks[1], tasks[2], tasks[3]])
+                let group2 = ParallelTask(involving: [tasks[4], tasks[5], tasks[6], tasks[7]])
+                let group3 = ParallelTask(involving: [tasks[8], tasks[9], tasks[2], tasks[3]])
+                let group4 = ParallelTask(involving: [tasks[4], tasks[5], tasks[0], tasks[1]])
+                let group5 = ParallelTask(involving: [tasks[7], tasks[0], tasks[5], tasks[4]])
+                let group6 = ParallelTask(involving: [tasks[2], tasks[6], tasks[9], tasks[1]])
+                group1.maxConcurrentTasks = maxTasks
+                group2.maxConcurrentTasks = maxTasks
+                group3.maxConcurrentTasks = maxTasks
+                group4.maxConcurrentTasks = maxTasks
+                group5.maxConcurrentTasks = maxTasks
+                group6.maxConcurrentTasks = maxTasks
+                
+                waitUntil(timeout: 5.0) { (done) in
+                    let parallel = ParallelTask(involving: [group1, group2, group3, group4, group5, group6])
+                    parallel.onFinish { (outcome) in
+                        expect(outcome).to(equal(Task.Outcome.success))
+                        done()
+                    }
+                    line.addTask(parallel)
+                }
+            }
         }
 
         describe("exponential backoff") {
@@ -1122,7 +1159,7 @@ class YakkaSpec: QuickSpec {
                     }
                 }
             }
-            
+
             it("notifies when it becomes empty") {
                 waitUntil(timeout: 3.0) { (done) in
                     line.onBecameEmpty {
@@ -1132,7 +1169,7 @@ class YakkaSpec: QuickSpec {
                     line.addTasks(self.setOfSuccedingTasks())
                 }
             }
-            
+
             it("notifies when it starts tasks") {
                 waitUntil(timeout: 3.0) { (done) in
                     let tasks = self.setOfSuccedingTasks()
