@@ -97,6 +97,19 @@ open class Task: NSObject {
             _task?.failOrRetry()
         }
         
+        /// Finish up with a certain outcome
+        public final func finish(with outcome: Outcome) {
+            switch outcome {
+            case .success:
+                succeed()
+            case .cancelled:
+                cancel()
+            case .failure:
+                fail()
+            }
+        }
+        
+        
         
         /// Protected stuff:
         
