@@ -232,11 +232,13 @@ Some points about that:
 - Task instances are single shot – they can't be run again after they finish.
 
 #### A note on memory management:
-Tasks retain themselves while running, which is done deliberately to make it easier to work with. The working queue used by the task is also retained while running. All you gotta do is make sure your work eventually finishes by calling one of the methods on the process object, and that the process object isn't retained beyond that point. If for example your task involves multiple async closures that need the process object but only one will run and clean up, ensure you only weakly capture the process object.
+Tasks retain themselves while running, which is done deliberately to make them easier to work with. The working queue used by the task is also retained while running. All you gotta do is make sure your work eventually finishes by calling one of the methods on the process object, and that the process object isn't strongly retained beyond that point.
 
 SerialTask and ParallelTask both retain the tasks you give to them regardless of whether or not they are started. They retain themselves while running because they're also just Tasks.
 
 Lines do not retain themselves and in throwaway situations they will be deallocated as they fall out of scope, but they are not needed for tasks to continue running.
+
+Event closures onStart and onFinish are fine to retain the task within them, as they will be let go of after those events occur. However onProgress and onRetry closures are retained during the lifetime of the task, so you do not want to strongly capture the task within those event closures.
 
 
 ## Yakka?
