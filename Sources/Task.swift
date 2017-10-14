@@ -167,7 +167,14 @@ open class Task: NSObject {
     public final private(set) var identifier = UUID().uuidString
     
     /// State of the task's lifecycle
-    public final private(set) var currentState = State.notStarted
+    public final var currentState: State {
+        var state: State = .notStarted
+        _internalQueue.sync {
+            state = _currentState
+        }
+        return state
+    }
+    private var _currentState = State.notStarted
     
     /// The queue to deliver 'it started' feedback on (default main)
     public final var queueForStartFeedback = DispatchQueue.main
@@ -303,8 +310,8 @@ open class Task: NSObject {
         _internalQueue.async {
             
             // Change the state
-            if self.currentState == .running {
-                self.currentState = .cancelling
+            if self._currentState == .running {
+                self._currentState = .cancelling
             }
             
             // Notify the work of the task itself that the state changed to cancelling (in case it wants to support cancelling but can't poll for the state)
@@ -326,7 +333,7 @@ open class Task: NSObject {
         _internalQueue.async {
             
             // Only accepting handlers if it hasn't started yet
-            guard self.currentState == .notStarted else { return }
+            guard self._currentState == .notStarted else { return }
             
             let helper = FeedbackHandlerHelper<Void>(queue: queue, handler: handler)
             self._startHandlers.append(helper)
@@ -338,7 +345,7 @@ open class Task: NSObject {
         _internalQueue.async {
             
             // Only accepting handlers if it hasn't finishd yet
-            guard !self.currentState.isFinished() else { return }
+            guard !self._currentState.isFinished() else { return }
             
             let helper = FeedbackHandlerHelper<Float>(queue: queue, handler: handler)
             self._progressHandlers.append(helper)
@@ -350,7 +357,7 @@ open class Task: NSObject {
         _internalQueue.async {
             
             // Only accepting handlers if it hasn't finishd yet
-            guard !self.currentState.isFinished() else { return }
+            guard !self._currentState.isFinished() else { return }
             
             let helper = FeedbackHandlerHelper<Outcome>(queue: queue, handler: handler)
             self._finishHandlers.append(helper)
@@ -362,7 +369,7 @@ open class Task: NSObject {
         _internalQueue.async {
             
             // Only accepting handlers if it hasn't finishd yet
-            guard !self.currentState.isFinished() else { return }
+            guard !self._currentState.isFinished() else { return }
             
             let helper = FeedbackHandlerHelper<Void>(queue: queue, handler: handler)
             self._retryHandlers.append(helper)
@@ -377,7 +384,7 @@ open class Task: NSObject {
     private func internalStart() {
         
         // Only allowed to do this if we haven't been run yet
-        guard currentState == .notStarted else { return }
+        guard _currentState == .notStarted else { return }
         
         // Retain ourself and cache for retrieval later
         Task.cache(task: self, forID: identifier)
@@ -389,10 +396,10 @@ open class Task: NSObject {
         }
         
         // Change the state to running just before we do anything
-        currentState = .running
+        _currentState = .running
         
         // If needed, start providing feedback about the fact we've started
-        // NOTE: What's important is our currentState has changed, which can only happen on this internal queue and therefore just asking a task to start from any queue will not synchronously result in the state changing – we need this notification mechanism instead.
+        // NOTE: What's important is our _currentState has changed, which can only happen on this internal queue and therefore just asking a task to start from any queue will not synchronously result in the state changing – we need this notification mechanism instead.
         notifyHandlers(from: _startHandlers, defaultQueue: queueForStartFeedback)
         _startHandlers.removeAll()
         
@@ -406,10 +413,10 @@ open class Task: NSObject {
     private func internalFinish(withOutcome outcome: Outcome) {
         
         // Don't do anything if we've already finished
-        guard currentState != .successful, currentState != .failed, currentState != .cancelled else { return }
+        guard _currentState != .successful, _currentState != .failed, _currentState != .cancelled else { return }
         
         // Change the state
-        currentState = stateFromOutcome(outcome)
+        _currentState = stateFromOutcome(outcome)
         
         // Remove ourself from the running cache / stop deliberately retaining self
         Task.cache(task: nil, forID: identifier)
@@ -423,7 +430,7 @@ open class Task: NSObject {
     private func internalRetry() {
         
         // Only allowed to do this if we're currently running
-        guard currentState == .running else { return }
+        guard _currentState == .running else { return }
         
         // Ensure we actually have work to do, fail otherwise
         guard let work = _workToDo else {
@@ -485,7 +492,7 @@ open class Task: NSObject {
             self._onCancellingHandler = handler
             
             // Notify straight away if we're already in the cancelling state
-            if self.currentState == .cancelling {
+            if self._currentState == .cancelling {
                 self._queueForWork.async {
                     handler()
                 }
