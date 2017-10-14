@@ -625,6 +625,7 @@ class YakkaSpec: QuickSpec {
             let line = Line()
 
             it("should provide overall progress") {
+                var progress: Float = 0.0
                 var tasks = [Task]()
                 for _ in 0...10 {
                     let t = self.processAwareSucceedingTask()
@@ -634,10 +635,36 @@ class YakkaSpec: QuickSpec {
                 waitUntil(timeout: 5.0) { (done) in
                     let parallel = ParallelTask(involving: tasks)
                     parallel.onProgress { (percent) in
+                        progress = percent
                         expect(percent).to(beGreaterThanOrEqualTo(0.0))
                         expect(percent).to(beLessThanOrEqualTo(1.0))
                     }
                     parallel.onFinish { (outcome) in
+                        expect(progress).to(equal(1.0))
+                        expect(outcome).to(equal(Task.Outcome.success))
+                        done()
+                    }
+                    line.addTask(parallel)
+                }
+            }
+            
+            it("can provide overall progress regardless of task's support for progress") {
+                var progress: Float = 0.0
+                var tasks = [Task]()
+                for _ in 0...10 {
+                    let t = self.suceedingTask()
+                    tasks.append(t)
+                }
+                
+                waitUntil(timeout: 5.0) { (done) in
+                    let parallel = ParallelTask(involving: tasks)
+                    parallel.onProgress { (percent) in
+                        progress = percent
+                        expect(percent).to(beGreaterThanOrEqualTo(0.0))
+                        expect(percent).to(beLessThanOrEqualTo(1.0))
+                    }
+                    parallel.onFinish { (outcome) in
+                        expect(progress).to(equal(1.0))
                         expect(outcome).to(equal(Task.Outcome.success))
                         done()
                     }
@@ -856,9 +883,9 @@ class YakkaSpec: QuickSpec {
                     line.addTask(parallel)
                 }
             }
-            
+
             it("supports tasks that are already involved in other parallel tasks") {
-                
+
                 let maxTasks = 2
                 var tasks = [Task]()
                 for _ in 0...9 {
@@ -870,7 +897,7 @@ class YakkaSpec: QuickSpec {
                     }
                     tasks.append(t)
                 }
-                
+
                 let group1 = ParallelTask(involving: [tasks[0], tasks[1], tasks[2], tasks[3]])
                 let group2 = ParallelTask(involving: [tasks[4], tasks[5], tasks[6], tasks[7]])
                 let group3 = ParallelTask(involving: [tasks[8], tasks[9], tasks[2], tasks[3]])
@@ -883,7 +910,7 @@ class YakkaSpec: QuickSpec {
                 group4.maxConcurrentTasks = maxTasks
                 group5.maxConcurrentTasks = maxTasks
                 group6.maxConcurrentTasks = maxTasks
-                
+
                 waitUntil(timeout: 5.0) { (done) in
                     let parallel = ParallelTask(involving: [group1, group2, group3, group4, group5, group6])
                     parallel.onFinish { (outcome) in

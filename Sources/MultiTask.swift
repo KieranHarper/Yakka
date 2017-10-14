@@ -119,10 +119,7 @@ open class MultiTask: Task {
         // NOTE: Careful not to retain self OR the task here
         let taskID = task.identifier
         task.onProgress(via: _internalQueue) { [weak self] (percent) in
-            guard let selfRef = self else { return }
-            selfRef._taskProgressions[taskID] = percent
-            let overallPercent = selfRef._taskProgressions.reduce(0.0, { $0 + $1.value }) / Float(selfRef._allTasks.count)
-            selfRef._overallProcess?.progress(overallPercent)
+            self?.helperReportProgress(percent, forTaskID: taskID)
         }
         
         // Schedule completion
@@ -148,6 +145,11 @@ open class MultiTask: Task {
     /// Handle a subtask finishing, consider what to do next
     private func subtaskFinished(_ task: Task, withOutcome outcome: Outcome) {
         
+        // Ensure we report a minimum level of progress
+        if outcome == .success {
+            helperReportProgress(1.0, forTaskID: task.identifier)
+        }
+        
         // Put it in the finished pile
         move(subtask: task, fromCollection: &_runningTasks, toCollection: &_finishedTasks)
         
@@ -170,6 +172,13 @@ open class MultiTask: Task {
             task.cancel()
         }
         _pendingTasks.removeAll()
+    }
+    
+    /// Report progress for a subtask
+    private func helperReportProgress(_ progress: Float, forTaskID taskID: String) {
+        _taskProgressions[taskID] = progress
+        let overallPercent = _taskProgressions.reduce(0.0, { $0 + $1.value }) / Float(_allTasks.count)
+        _overallProcess?.progress(overallPercent)
     }
 }
 
