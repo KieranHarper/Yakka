@@ -174,7 +174,7 @@ open class Task: NSObject {
         }
         return state
     }
-    private var _currentState = State.notStarted
+    internal var _currentState = State.notStarted
     
     /// The queue to deliver 'it started' feedback on (default main)
     public final var queueForStartFeedback = DispatchQueue.main
@@ -214,7 +214,7 @@ open class Task: NSObject {
     // MARK: - Private variables
     
     /// Queue that isolates and coordinates operations such as state changing (otherwise thread-unsafe)
-    private let _internalQueue = DispatchQueue(label: "YakkaTaskInternal", qos: .background)
+    internal let _internalQueue = DispatchQueue(label: "YakkaTaskInternal", qos: .background)
     
     /// The queue to run the work closure on (default is a background queue)
     internal private(set) final var _queueForWork: DispatchQueue!

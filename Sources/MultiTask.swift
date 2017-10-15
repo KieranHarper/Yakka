@@ -35,10 +35,7 @@ open class MultiTask: Task {
     
     /// Set of tasks that have finished running
     private var _finishedTasks = Array<Task>()
-    
-    /// Queue providing serialization for state changing and other other thread sensitive things
-    private let _internalQueue = DispatchQueue(label: "YakkaMultiTaskInternal", qos: .background)
-    
+        
     /// The maximum number of tasks we're going to ask to start before waiting for some to finish. Defaults to unlimited (0)
     fileprivate var _maxParallelTasks = 0
     
@@ -87,7 +84,7 @@ open class MultiTask: Task {
     private func processSubtasks() {
         
         // Check for cancellation by passing it on to subtasks and prevent pending ones from starting
-        if currentState == .cancelling {
+        if _currentState == .cancelling {
             handleCancelling()
         }
         
@@ -100,7 +97,7 @@ open class MultiTask: Task {
         if _pendingTasks.count == 0, _runningTasks.count == 0 {
             
             // Consider whether or not we're here because all our tasks were actually cancelling
-            if currentState == .cancelling {
+            if _currentState == .cancelling {
                 _overallProcess?.cancel()
             } else {
                 _overallProcess?.succeed()
