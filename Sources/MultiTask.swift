@@ -127,16 +127,8 @@ open class MultiTask: Task {
         }
         
         // Kick it off
-        switch task.currentState {
-        case .successful:
-            subtaskFinished(task, withOutcome: .success)
-        case .cancelled:
-            subtaskFinished(task, withOutcome: .cancelled)
-        case .failed:
-            subtaskFinished(task, withOutcome: .failure)
-        default:
-            task.start(using: self._queueForWork)
-        }
+        // NOTE: If already running or finished, this will do nothing but onFinish will run
+        task.start(using: self._queueForWork)
     }
     
     /// Handle a subtask finishing, consider what to do next

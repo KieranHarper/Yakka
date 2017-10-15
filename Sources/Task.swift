@@ -28,6 +28,20 @@ open class Task: NSObject {
         func isFinished() -> Bool {
             return self == .successful || self == .cancelled || self == .failed
         }
+        
+        /// Helper to translate to Outcome type if applicable
+        func finishOutcome() -> Outcome? {
+            switch self {
+            case .successful:
+                return .success
+            case .cancelled:
+                return .cancelled
+            case .failed:
+                return .failure
+            default:
+                return nil
+            }
+        }
     }
     
     /// Possible outcomes when finished
@@ -356,11 +370,18 @@ open class Task: NSObject {
     public final func onFinish(via queue: DispatchQueue? = nil, handler: @escaping FinishHandler) {
         _internalQueue.async {
             
-            // Only accepting handlers if it hasn't finishd yet
-            guard !self._currentState.isFinished() else { return }
+            // Hang onto the handler for later if we haven't finished yet
+            if !self._currentState.isFinished() {
+                let helper = FeedbackHandlerHelper<Outcome>(queue: queue, handler: handler)
+                self._finishHandlers.append(helper)
+            }
             
-            let helper = FeedbackHandlerHelper<Outcome>(queue: queue, handler: handler)
-            self._finishHandlers.append(helper)
+            // Otherwise notify straight away with the outcome we finished with
+            else if let outcome = self._currentState.finishOutcome() {
+                (queue ?? DispatchQueue.main).async {
+                    handler(outcome)
+                }
+            }
         }
     }
     

@@ -213,6 +213,18 @@ class YakkaSpec: QuickSpec {
                     }
                 }
             }
+            
+            it("should run a new finish handler even if it has already finished") {
+                waitUntil(timeout: waitTime) { (done) in
+                    task.onFinish { _ in
+                        task.onFinish { outcome in
+                            expect(outcome).to(equal(Task.Outcome.success))
+                            done()
+                        }
+                    }
+                    line.addTask(task)
+                }
+            }
 
             it("should run notification handlers on the main queue by default") {
                 waitUntil(timeout: 10.0) { (done) in
@@ -647,7 +659,7 @@ class YakkaSpec: QuickSpec {
                     line.addTask(parallel)
                 }
             }
-            
+
             it("can provide overall progress regardless of task's support for progress") {
                 var progress: Float = 0.0
                 var tasks = [Task]()
@@ -655,7 +667,7 @@ class YakkaSpec: QuickSpec {
                     let t = self.suceedingTask()
                     tasks.append(t)
                 }
-                
+
                 waitUntil(timeout: 5.0) { (done) in
                     let parallel = ParallelTask(involving: tasks)
                     parallel.onProgress { (percent) in
@@ -915,7 +927,12 @@ class YakkaSpec: QuickSpec {
                     let parallel = ParallelTask(involving: [group1, group2, group3, group4, group5, group6])
                     parallel.onFinish { (outcome) in
                         expect(outcome).to(equal(Task.Outcome.success))
-                        done()
+                        
+                        let again = ParallelTask(involving: [tasks[0], tasks[1], tasks[2], tasks[3], tasks[4], tasks[5], tasks[6], tasks[7]])
+                        line.addTask(again).onFinish { (outcome) in
+                            expect(outcome).to(equal(Task.Outcome.success))
+                            done()
+                        }
                     }
                     line.addTask(parallel)
                 }
