@@ -346,11 +346,18 @@ open class Task: NSObject {
     public final func onStart(via queue: DispatchQueue? = nil, handler: @escaping StartHandler) {
         _internalQueue.async {
             
-            // Only accepting handlers if it hasn't started yet
-            guard self._currentState == .notStarted else { return }
-            
-            let helper = FeedbackHandlerHelper<Void>(queue: queue, handler: handler)
-            self._startHandlers.append(helper)
+            // Hang onto the handler for later if we haven't started yet
+            if self._currentState == .notStarted {
+                let helper = FeedbackHandlerHelper<Void>(queue: queue, handler: handler)
+                self._startHandlers.append(helper)
+            }
+                
+            // Otherwise if currently still running, notify straight away
+            else if !self._currentState.isFinished() {
+                (queue ?? DispatchQueue.main).async {
+                    handler()
+                }
+            }
         }
     }
     
