@@ -1213,6 +1213,19 @@ class YakkaSpec: QuickSpec {
                     line.addTasks(self.setOfSuccedingTasks())
                 }
             }
+            
+            it("lets you inspect whether or not it is current empty") {
+                waitUntil(timeout: 3.0) { (done) in
+                    let line = Line()
+                    expect(line.isEmpty).to(beTrue())
+                    line.addTasks(self.setOfSuccedingTasks())
+                    expect(line.isEmpty).to(beFalse())
+                    line.onBecameEmpty {
+                        expect(line.isEmpty).to(beTrue())
+                        done()
+                    }
+                }
+            }
 
             it("notifies when it starts tasks") {
                 waitUntil(timeout: 3.0) { (done) in

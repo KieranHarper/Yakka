@@ -44,6 +44,15 @@ public final class Line: NSObject {
     /// The queue to deliver 'next task started' feedback on (default main)
     public final var queueForNextTaskStartedFeedback = DispatchQueue.main
     
+    /// Whether or not the line is currently running tasks / has tasks still to run
+    public var isEmpty: Bool {
+        var isEmpty = false
+        _internalQueue.sync {
+            isEmpty = _runningTasks.isEmpty && _pendingTasks.isEmpty
+        }
+        return isEmpty
+    }
+    
     
     
     // MARK: - Private variables
