@@ -25,12 +25,12 @@ open class Task: NSObject {
         // Finished cases
         case successful, cancelled, failed
         
-        func isFinished() -> Bool {
+        public func isFinished() -> Bool {
             return self == .successful || self == .cancelled || self == .failed
         }
         
         /// Helper to translate to Outcome type if applicable
-        func finishOutcome() -> Outcome? {
+        public func finishOutcome() -> Outcome? {
             switch self {
             case .successful:
                 return .success
