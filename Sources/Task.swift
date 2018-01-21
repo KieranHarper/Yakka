@@ -449,6 +449,13 @@ open class Task: NSObject {
         // Remove ourself from the running cache / stop deliberately retaining self
         Task.cache(task: nil, forID: identifier)
         
+        // Clean up other closures that are no longer needed
+        _workToDo = nil
+        _progressHandlers.removeAll()
+        _retryHandlers.removeAll()
+        _startHandlers.removeAll()
+        _onCancellingHandler = nil
+        
         // Notify as needed
         notifyHandlers(from: _finishHandlers, defaultQueue: queueForFinishFeedback, parameters: outcome)
         _finishHandlers.removeAll()
