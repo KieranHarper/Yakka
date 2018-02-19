@@ -354,7 +354,7 @@ open class Task: NSObject {
                 
             // Otherwise if currently still running, notify straight away
             else if !self._currentState.isFinished() {
-                (queue ?? DispatchQueue.main).async {
+                (queue ?? self.queueForStartFeedback).async {
                     handler()
                 }
             }
@@ -385,7 +385,7 @@ open class Task: NSObject {
             
             // Otherwise notify straight away with the outcome we finished with
             else if let outcome = self._currentState.finishOutcome() {
-                (queue ?? DispatchQueue.main).async {
+                (queue ?? self.queueForFinishFeedback).async {
                     handler(outcome)
                 }
             }
