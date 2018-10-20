@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "Yakka"
-  s.version      = "2.1.2"
+  s.version      = "2.1.3"
   s.summary      = "A toolkit for coordinating the doing of stuff"
   s.homepage     = "https://github.com/KieranHarper/Yakka"
   s.license      = { :type => "MIT", :file => "LICENSE" }
